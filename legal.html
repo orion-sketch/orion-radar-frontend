@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Legal — ORION RADAR™</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#020a14;--panel:rgba(3,12,26,0.98);
+      --line:rgba(0,210,110,0.09);--line2:rgba(0,210,110,0.20);
+      --green:#00e87a;--green2:#00ff90;--green3:#00c462;
+      --glow2:rgba(0,232,122,0.28);
+      --text:#dff2ea;--muted:#3d6b52;--muted2:#6b9a78;--muted3:#9bbfa8;
+      --mono:'Share Tech Mono',monospace;--display:'Orbitron',sans-serif;
+    }
+    html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;}
+    body{
+      background-image:
+        radial-gradient(ellipse 80% 30% at 50% -5%,rgba(0,232,122,0.04) 0%,transparent 60%),
+        repeating-linear-gradient(0deg,transparent,transparent 47px,rgba(0,210,110,0.018) 48px);
+    }
+
+    /* NAV */
+    .nav{display:flex;align-items:center;justify-content:space-between;
+      padding:14px 24px;border-bottom:1px solid var(--line2);
+      background:var(--panel);position:sticky;top:0;z-index:100;}
+    .nav-logo{font-family:var(--display);font-size:14px;font-weight:900;letter-spacing:5px;color:var(--text);}
+    .nav-logo span{color:var(--green);text-shadow:0 0 12px var(--glow2);}
+    .nav-back{font-family:var(--mono);font-size:10px;color:var(--muted2);text-decoration:none;
+      padding:6px 12px;border:1px solid var(--line2);border-radius:4px;transition:all .14s;}
+    .nav-back:hover{color:var(--green);border-color:rgba(0,232,122,0.3);}
+
+    /* LAYOUT */
+    .container{max-width:860px;margin:0 auto;padding:40px 24px 80px;}
+
+    /* TABS */
+    .tabs{display:flex;gap:8px;margin-bottom:32px;border-bottom:1px solid var(--line2);padding-bottom:0;}
+    .tab{font-family:var(--display);font-size:9px;font-weight:700;letter-spacing:1.5px;
+      padding:10px 20px;cursor:pointer;color:var(--muted2);border-bottom:2px solid transparent;
+      transition:all .14s;margin-bottom:-1px;}
+    .tab:hover{color:var(--text);}
+    .tab.active{color:var(--green);border-bottom-color:var(--green);}
+
+    /* CONTENT */
+    .doc{display:none;}
+    .doc.active{display:block;}
+
+    .doc-header{margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--line2);}
+    .doc-badge{font-family:var(--mono);font-size:9px;color:var(--muted2);letter-spacing:2px;margin-bottom:8px;}
+    .doc-title{font-family:var(--display);font-size:22px;font-weight:900;letter-spacing:3px;
+      color:var(--text);margin-bottom:6px;}
+    .doc-date{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;}
+
+    /* TOC */
+    .toc{background:rgba(0,0,0,0.2);border:1px solid var(--line);border-radius:8px;
+      padding:16px 20px;margin-bottom:32px;}
+    .toc-title{font-family:var(--display);font-size:9px;font-weight:700;letter-spacing:2px;
+      color:var(--muted2);margin-bottom:10px;}
+    .toc a{display:block;font-family:var(--mono);font-size:10px;color:var(--muted3);
+      text-decoration:none;padding:3px 0;transition:color .13s;letter-spacing:.5px;}
+    .toc a:hover{color:var(--green);}
+
+    /* SECTIONS */
+    .section{margin-bottom:36px;}
+    .section-title{font-family:var(--display);font-size:13px;font-weight:700;letter-spacing:2px;
+      color:var(--text);margin-bottom:14px;padding-bottom:8px;
+      border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;}
+    .section-title::before{content:'//';color:var(--green);font-family:var(--mono);font-size:11px;}
+    .section-num{font-family:var(--mono);font-size:10px;color:var(--muted2);}
+
+    .subsection-title{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;
+      color:var(--muted3);margin:14px 0 8px;letter-spacing:.5px;}
+
+    p{font-size:13px;line-height:1.75;color:var(--muted3);margin-bottom:10px;}
+    ul{list-style:none;margin:8px 0 12px;padding:0;}
+    ul li{font-size:13px;line-height:1.6;color:var(--muted3);padding:4px 0 4px 20px;position:relative;}
+    ul li::before{content:'▸';position:absolute;left:0;color:var(--green);font-size:10px;top:6px;}
+
+    .warning-box{background:rgba(255,53,88,0.05);border:1px solid rgba(255,53,88,0.18);
+      border-radius:6px;padding:14px 16px;margin:12px 0;}
+    .warning-box p{color:#ff8a9a;margin:0;}
+
+    .highlight-box{background:rgba(0,232,122,0.04);border:1px solid rgba(0,232,122,0.15);
+      border-left:3px solid var(--green);border-radius:0 6px 6px 0;padding:12px 16px;margin:12px 0;}
+    .highlight-box p{color:var(--muted3);margin:0;}
+
+    .table-wrap{overflow-x:auto;margin:12px 0;}
+    table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:10px;}
+    th{background:rgba(0,232,122,0.08);color:var(--green);padding:8px 12px;text-align:left;
+      border:1px solid var(--line2);letter-spacing:1px;}
+    td{padding:7px 12px;border:1px solid var(--line);color:var(--muted3);}
+    tr:nth-child(even) td{background:rgba(0,0,0,0.15);}
+
+    /* FOOTER */
+    footer{padding:24px;border-top:1px solid var(--line);text-align:center;margin-top:60px;}
+    footer p{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;line-height:1.8;}
+    footer a{color:var(--muted2);text-decoration:none;}
+    footer a:hover{color:var(--green);}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="nav-logo">ORION <span>RADAR</span>™</div>
+  <a href="/" class="nav-back">← BACK TO DASHBOARD</a>
+</div>
+
+<div class="container">
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('terms',this)">TERMS OF SERVICE</div>
+    <div class="tab" onclick="showTab('privacy',this)" id="privacyTab">PRIVACY POLICY</div>
+    <div class="tab" onclick="showTab('disclaimer',this)">RISK DISCLAIMER</div>
+  </div>
+
+  <!-- ── TERMS OF SERVICE ── -->
+  <div class="doc active" id="terms">
+    <div class="doc-header">
+      <div class="doc-badge">LEGAL DOCUMENT</div>
+      <div class="doc-title">TERMS OF SERVICE</div>
+      <div class="doc-date">Effective Date: May 3, 2026 &nbsp;|&nbsp; ORION RADAR™</div>
+    </div>
+
+    <div class="toc">
+      <div class="toc-title">TABLE OF CONTENTS</div>
+      <a href="#t1">1. Acceptance of Terms</a>
+      <a href="#t2">2. Description of Service</a>
+      <a href="#t3">3. Not Financial Advice</a>
+      <a href="#t4">4. Subscription Plans and Payments</a>
+      <a href="#t5">5. User Accounts</a>
+      <a href="#t6">6. Prohibited Uses</a>
+      <a href="#t7">7. Intellectual Property</a>
+      <a href="#t8">8. Disclaimer of Warranties</a>
+      <a href="#t9">9. Limitation of Liability</a>
+      <a href="#t10">10. Governing Law</a>
+      <a href="#t11">11. Changes to Terms</a>
+      <a href="#t12">12. Contact</a>
+    </div>
+
+    <div class="section" id="t1">
+      <div class="section-title"><span class="section-num">01</span> Acceptance of Terms</div>
+      <p>By accessing or using the ORION RADAR™ platform ("Service"), including the website at orion-radar.com, you agree to be legally bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you must not use our Service.</p>
+      <p>These Terms constitute the entire agreement between you and ORION RADAR™ regarding your use of the Service.</p>
+    </div>
+
+    <div class="section" id="t2">
+      <div class="section-title"><span class="section-num">02</span> Description of Service</div>
+      <p>ORION RADAR™ is a market intelligence and signal monitoring platform that provides:</p>
+      <ul>
+        <li>Multi-timeframe technical analysis signals derived from MetaTrader 5 market data</li>
+        <li>Confluence scoring and pattern detection across major financial instruments</li>
+        <li>Educational content about trading patterns and market structure</li>
+        <li>Real-time alerts via web dashboard and Telegram notifications</li>
+        <li>TradingView chart integration for visual analysis</li>
+      </ul>
+      <div class="warning-box">
+        <p>⚠ ORION RADAR™ IS A READ-ONLY INFORMATION SERVICE. We do not execute trades, access your brokerage accounts, or provide investment advice. The user makes all trading decisions independently.</p>
+      </div>
+    </div>
+
+    <div class="section" id="t3">
+      <div class="section-title"><span class="section-num">03</span> Not Financial Advice</div>
+      <div class="warning-box">
+        <p>ALL CONTENT PROVIDED BY ORION RADAR™ IS FOR INFORMATIONAL AND EDUCATIONAL PURPOSES ONLY. Nothing on our platform constitutes financial advice, investment advice, trading advice, or any other type of advice.</p>
+      </div>
+      <p>Trading financial instruments involves substantial risk of loss and is not appropriate for all investors. Past signal performance does not guarantee future results. You may lose some or all of your invested capital.</p>
+      <p>ORION RADAR™ strongly recommends consulting with a qualified financial advisor before making any investment decisions.</p>
+    </div>
+
+    <div class="section" id="t4">
+      <div class="section-title"><span class="section-num">04</span> Subscription Plans and Payments</div>
+
+      <div class="table-wrap">
+        <table>
+          <tr><th>PLAN</th><th>FEATURES</th><th>SIGNALS</th><th>ALERTS</th></tr>
+          <tr><td>Bronze</td><td>Basic access, 3 assets</td><td>Watchlist only</td><td>None</td></tr>
+          <tr><td>Silver</td><td>5 assets, basic indicators</td><td>Watchlist only</td><td>None</td></tr>
+          <tr><td>Gold</td><td>10 assets, advanced indicators</td><td>Live signals</td><td>Site alerts</td></tr>
+          <tr><td>Platinum</td><td>Unlimited assets, all indicators</td><td>All signals</td><td>Site + Telegram</td></tr>
+        </table>
+      </div>
+
+      <div class="subsection-title">4.1 Billing</div>
+      <p>Subscriptions are billed monthly in USD via Stripe. By subscribing, you authorize ORION RADAR™ to charge your payment method on a recurring basis until you cancel.</p>
+
+      <div class="subsection-title">4.2 Cancellation</div>
+      <p>You may cancel your subscription at any time through your account dashboard. Cancellation takes effect at the end of your current billing period. No refunds are issued for partial subscription periods.</p>
+
+      <div class="subsection-title">4.3 Price Changes</div>
+      <p>We reserve the right to modify subscription prices with 30 days' written notice via email. Continued use after the notice period constitutes acceptance of the new pricing.</p>
+    </div>
+
+    <div class="section" id="t5">
+      <div class="section-title"><span class="section-num">05</span> User Accounts</div>
+      <p>You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You must be at least 18 years of age to create an account.</p>
+      <p>You agree to notify us immediately at legal@orionradar.com of any unauthorized use of your account.</p>
+    </div>
+
+    <div class="section" id="t6">
+      <div class="section-title"><span class="section-num">06</span> Prohibited Uses</div>
+      <ul>
+        <li>Redistribute, resell, or sublicense our signals or content to third parties</li>
+        <li>Use automated tools to scrape or extract data from our platform</li>
+        <li>Reverse engineer, decompile, or attempt to extract our source code or algorithms</li>
+        <li>Share your account credentials with others</li>
+        <li>Use our Service for any unlawful purpose</li>
+        <li>Interfere with or disrupt the integrity or performance of our Service</li>
+        <li>Create false accounts or impersonate others</li>
+      </ul>
+    </div>
+
+    <div class="section" id="t7">
+      <div class="section-title"><span class="section-num">07</span> Intellectual Property</div>
+      <div class="highlight-box">
+        <p>ORION RADAR™ is a trademark of ORION RADAR. The platform, algorithms, scoring methodology, pattern detection system, and all related content are proprietary intellectual property protected by copyright, trademark, and trade secret laws.</p>
+      </div>
+      <p>You are granted a limited, non-exclusive, non-transferable license to access and use the Service solely for your personal, non-commercial purposes in accordance with these Terms. Unauthorized use of the ORION RADAR™ name or logo is strictly prohibited.</p>
+    </div>
+
+    <div class="section" id="t8">
+      <div class="section-title"><span class="section-num">08</span> Disclaimer of Warranties</div>
+      <div class="warning-box">
+        <p>THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND. We do not warrant that signals will be accurate or profitable. Market conditions can change rapidly and historical performance is not indicative of future results.</p>
+      </div>
+    </div>
+
+    <div class="section" id="t9">
+      <div class="section-title"><span class="section-num">09</span> Limitation of Liability</div>
+      <div class="warning-box">
+        <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, ORION RADAR™ SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING LOSS OF PROFITS, DATA, OR TRADING CAPITAL.</p>
+      </div>
+      <p>Our total liability to you for any claim shall not exceed the amount paid by you to us in the 12 months preceding the claim.</p>
+    </div>
+
+    <div class="section" id="t10">
+      <div class="section-title"><span class="section-num">10</span> Governing Law</div>
+      <p>These Terms are governed by the laws of the State of Florida, United States. Any disputes shall be resolved through binding arbitration under the American Arbitration Association rules.</p>
+    </div>
+
+    <div class="section" id="t11">
+      <div class="section-title"><span class="section-num">11</span> Changes to Terms</div>
+      <p>We reserve the right to modify these Terms at any time. We will provide notice of material changes via email or platform notice at least 14 days before they take effect.</p>
+    </div>
+
+    <div class="section" id="t12">
+      <div class="section-title"><span class="section-num">12</span> Contact</div>
+      <p>For legal inquiries: <strong style="color:var(--green)">legal@orionradar.com</strong></p>
+      <p>ORION RADAR™ | orion-radar.com</p>
+    </div>
+  </div>
+
+  <!-- ── PRIVACY POLICY ── -->
+  <div class="doc" id="privacy">
+    <div class="doc-header">
+      <div class="doc-badge">LEGAL DOCUMENT</div>
+      <div class="doc-title">PRIVACY POLICY</div>
+      <div class="doc-date">Effective Date: May 3, 2026 &nbsp;|&nbsp; ORION RADAR™</div>
+    </div>
+
+    <div class="toc">
+      <div class="toc-title">TABLE OF CONTENTS</div>
+      <a href="#p1">1. Information We Collect</a>
+      <a href="#p2">2. How We Use Your Information</a>
+      <a href="#p3">3. Data Storage and Security</a>
+      <a href="#p4">4. Third-Party Services</a>
+      <a href="#p5">5. Your Rights</a>
+      <a href="#p6">6. Cookies</a>
+      <a href="#p7">7. Children's Privacy</a>
+      <a href="#p8">8. Changes to Policy</a>
+      <a href="#p9">9. Contact</a>
+    </div>
+
+    <div class="section" id="p1">
+      <div class="section-title"><span class="section-num">01</span> Information We Collect</div>
+      <div class="subsection-title">1.1 Account Information</div>
+      <p>When you register: name, email address, subscription plan, and payment information (processed securely by Stripe — we never store card details).</p>
+      <div class="subsection-title">1.2 Trading Configuration</div>
+      <p>When you configure your account: capital amount, risk percentage, leverage preference, and broker name. Used solely to power the lot size calculator — never shared.</p>
+      <div class="subsection-title">1.3 Usage Data</div>
+      <p>Pages visited, signals viewed, watchlist assets, and feature interactions. Used to improve our platform.</p>
+      <div class="subsection-title">1.4 Telegram Integration</div>
+      <p>If you connect Telegram alerts, we store your Telegram Chat ID. Used exclusively to deliver signal notifications — never sold or shared.</p>
+    </div>
+
+    <div class="section" id="p2">
+      <div class="section-title"><span class="section-num">02</span> How We Use Your Information</div>
+      <ul>
+        <li>Provide, operate, and improve our Service</li>
+        <li>Process payments and manage your subscription</li>
+        <li>Send signal alerts and notifications you have opted into</li>
+        <li>Communicate about your account and Service updates</li>
+        <li>Comply with legal obligations</li>
+      </ul>
+      <div class="highlight-box">
+        <p>We do not sell, rent, or trade your personal information to third parties. Ever.</p>
+      </div>
+    </div>
+
+    <div class="section" id="p3">
+      <div class="section-title"><span class="section-num">03</span> Data Storage and Security</div>
+      <p>Your data is stored securely using Supabase with encryption at rest and in transit. Payments are processed by Stripe (PCI DSS compliant). We implement HTTPS encryption, secure authentication, and strict access controls.</p>
+    </div>
+
+    <div class="section" id="p4">
+      <div class="section-title"><span class="section-num">04</span> Third-Party Services</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>SERVICE</th><th>PURPOSE</th><th>PRIVACY POLICY</th></tr>
+          <tr><td>Stripe</td><td>Payment processing</td><td>stripe.com/privacy</td></tr>
+          <tr><td>Supabase</td><td>Database & auth</td><td>supabase.com/privacy</td></tr>
+          <tr><td>Telegram</td><td>Signal notifications</td><td>telegram.org/privacy</td></tr>
+          <tr><td>TradingView</td><td>Chart visualization</td><td>tradingview.com/privacy-policy</td></tr>
+          <tr><td>Netlify</td><td>Web hosting</td><td>netlify.com/privacy</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section" id="p5">
+      <div class="section-title"><span class="section-num">05</span> Your Rights</div>
+      <ul>
+        <li><strong>Access</strong> — Request a copy of your personal data</li>
+        <li><strong>Correction</strong> — Request correction of inaccurate data</li>
+        <li><strong>Deletion</strong> — Request deletion of your account and data</li>
+        <li><strong>Portability</strong> — Request your data in portable format</li>
+        <li><strong>Opt-out</strong> — Unsubscribe from communications at any time</li>
+      </ul>
+      <p>To exercise these rights: <strong style="color:var(--green)">legal@orionradar.com</strong></p>
+    </div>
+
+    <div class="section" id="p6">
+      <div class="section-title"><span class="section-num">06</span> Cookies</div>
+      <p>We use only essential cookies and local storage to maintain your session and preferences. We do not use tracking cookies for advertising purposes.</p>
+    </div>
+
+    <div class="section" id="p7">
+      <div class="section-title"><span class="section-num">07</span> Children's Privacy</div>
+      <p>Our Service is not directed to individuals under 18. We do not knowingly collect personal information from children. If we become aware that a child has provided data, we will delete it immediately.</p>
+    </div>
+
+    <div class="section" id="p8">
+      <div class="section-title"><span class="section-num">08</span> Changes to Policy</div>
+      <p>We will notify you of significant changes via email or platform notice. Continued use after changes constitutes acceptance.</p>
+    </div>
+
+    <div class="section" id="p9">
+      <div class="section-title"><span class="section-num">09</span> Contact</div>
+      <p>Privacy inquiries: <strong style="color:var(--green)">legal@orionradar.com</strong></p>
+    </div>
+  </div>
+
+  <!-- ── RISK DISCLAIMER ── -->
+  <div class="doc" id="disclaimer">
+    <div class="doc-header">
+      <div class="doc-badge">LEGAL DOCUMENT</div>
+      <div class="doc-title">RISK DISCLAIMER</div>
+      <div class="doc-date">Effective Date: May 3, 2026 &nbsp;|&nbsp; ORION RADAR™</div>
+    </div>
+
+    <div class="warning-box" style="margin-bottom:28px">
+      <p style="font-size:14px;font-weight:600;margin-bottom:8px">⚠ HIGH RISK WARNING</p>
+      <p>Trading foreign exchange, cryptocurrencies, commodities, and other financial instruments carries a high level of risk and may not be suitable for all investors. You could lose some or all of your invested capital.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">ORION RADAR™ Is Not a Financial Advisor</div>
+      <p>ORION RADAR™ is a technology platform that provides technical analysis signals for educational and informational purposes only. We are not a registered investment advisor, broker-dealer, or financial institution.</p>
+      <p>Nothing communicated by ORION RADAR™ through our website, dashboard, Telegram alerts, or any other channel should be considered as financial advice, investment advice, or a recommendation to buy or sell any financial instrument.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Risks of Trading</div>
+      <ul>
+        <li>You may lose your entire investment</li>
+        <li>Leverage can amplify both gains and losses</li>
+        <li>Past signal performance does not guarantee future results</li>
+        <li>Market conditions can change rapidly and unpredictably</li>
+        <li>Technical signals are not infallible and can produce false signals</li>
+        <li>Slippage, spreads, and fees can reduce or eliminate profits</li>
+        <li>Political, economic, and global events can cause extreme market volatility</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Your Responsibility</div>
+      <p>You are solely responsible for your trading decisions. Before using our signals, you should:</p>
+      <ul>
+        <li>Consult with a qualified and licensed financial advisor</li>
+        <li>Understand the risks of the financial instruments you trade</li>
+        <li>Only trade with capital you can afford to lose</li>
+        <li>Develop and follow your own risk management strategy</li>
+        <li>Comply with all applicable laws and regulations in your jurisdiction</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Signal Accuracy</div>
+      <p>ORION RADAR™ signals are generated algorithmically based on technical analysis patterns. While we strive for accuracy, we make no representations or warranties regarding the accuracy, completeness, or profitability of our signals.</p>
+      <div class="highlight-box">
+        <p>The lot size calculator and risk management tools provided are for educational purposes only. Always verify calculations independently before placing any trade.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Regulatory Notice</div>
+      <p>Trading financial instruments may be regulated or restricted in your country. It is your responsibility to ensure compliance with all applicable laws and regulations. ORION RADAR™ does not solicit users in jurisdictions where such services are prohibited.</p>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<footer>
+  <p>
+    © 2026 ORION RADAR™. All rights reserved. &nbsp;|&nbsp;
+    <a href="/">Dashboard</a> &nbsp;|&nbsp;
+    <a href="/plans.html">Plans</a> &nbsp;|&nbsp;
+    <a href="mailto:legal@orionradar.com">legal@orionradar.com</a>
+  </p>
+  <p style="margin-top:6px">ORION RADAR™ is not a licensed financial advisor. For informational purposes only.</p>
+</footer>
+
+<script>
+function showTab(id, el) {
+  document.querySelectorAll('.doc').forEach(d => d.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// Handle direct link to privacy (#privacy)
+if (window.location.hash === '#privacy') {
+  showTab('privacy', document.getElementById('privacyTab'));
+}
+</script>
+
+</body>
+</html>

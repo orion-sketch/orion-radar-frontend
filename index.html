@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>ORION RADAR™ — Multi-Timeframe Signal Intelligence</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #030d1b;
+      --panel: rgba(8,20,40,0.97);
+      --line: rgba(24,50,77,0.8);
+      --text: #ffffff;
+      --muted: #8fa8c4;
+      --green: #27d463;
+      --blue: #3367e3;
+      --red: #ef4444;
+    }
+    html, body { min-height: 100%; font-family: 'Inter', sans-serif; color: var(--text); }
+    body {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 24px;
+      background: radial-gradient(ellipse at 20% 0%, #0c2a4a 0%, #051224 45%, #020b16 100%);
+    }
+    .brand { font-family: 'Rajdhani', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: 3px; text-align: center; margin-bottom: 4px; }
+    .brand span { color: var(--green); }
+    .brand-sub { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; text-align: center; margin-bottom: 28px; }
+    .card {
+      width: 100%; max-width: 420px;
+      background: var(--panel); border: 1px solid var(--line); border-radius: 20px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5); padding: 34px 30px; position: relative; overflow: hidden;
+    }
+    .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(51,103,227,0.5), transparent); }
+    .section { display: none; }
+    .section.active { display: block; }
+    .stitle { font-family: 'Rajdhani', sans-serif; font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+    .ssub { font-size: 13px; color: var(--muted); margin-bottom: 22px; }
+    .msg { display: none; padding: 11px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 16px; line-height: 1.45; }
+    .msg.show { display: block; }
+    .msg.ok { background: rgba(39,212,99,0.1); color: #7dfcb0; border: 1px solid rgba(39,212,99,0.2); }
+    .msg.err { background: rgba(239,68,68,0.1); color: #ffb0b0; border: 1px solid rgba(239,68,68,0.2); }
+    .msg.info { background: rgba(51,103,227,0.1); color: #b0cfff; border: 1px solid rgba(51,103,227,0.2); }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 7px; text-transform: uppercase; }
+    .input-wrap { position: relative; }
+    input, select {
+      width: 100%; height: 48px; border: 1px solid #1a3555; border-radius: 11px;
+      background: rgba(4,14,28,0.8); color: #fff; padding: 0 14px; font-size: 15px;
+      font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input::placeholder { color: #3d5570; }
+    input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(51,103,227,0.12); }
+    .with-eye { padding-right: 46px; }
+    .eye-btn { position: absolute; top: 50%; right: 11px; transform: translateY(-50%); width: 28px; height: 28px; border: none; background: transparent; color: #3d5570; font-size: 16px; cursor: pointer; }
+    .row2 { display: grid; grid-template-columns: 1fr 90px; gap: 10px; }
+    .btn { width: 100%; height: 48px; border: none; border-radius: 11px; color: #fff; font-size: 14px; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer; margin-bottom: 9px; transition: opacity 0.15s, transform 0.08s; letter-spacing: 0.2px; }
+    .btn:active { transform: translateY(1px); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-green { background: linear-gradient(135deg, #1fb854, #27d463); }
+    .btn-blue { background: linear-gradient(135deg, #2558d6, #3367e3); }
+    .btn-ghost { background: transparent; border: 1px solid #1a3555; color: var(--muted); }
+    .link-btn { background: none; border: none; color: #4f8dff; font-size: 13px; font-weight: 600; cursor: pointer; padding: 0; }
+    .center { text-align: center; margin-top: 6px; }
+    hr { border: none; border-top: 1px solid #0f2235; margin: 14px 0; }
+    .status { text-align: center; font-size: 11px; color: #2a4060; margin-top: 16px; letter-spacing: 0.5px; }
+    @media (max-width: 460px) { .card { padding: 26px 18px; } }
+  </style>
+</head>
+<body>
+  <div class="brand">ORION <span>RADAR</span> PRO</div>
+  <div class="brand-sub">Market Intelligence Platform</div>
+  <div class="card">
+    <div id="msg" class="msg"></div>
+
+    <!-- LOGIN -->
+    <section id="sLogin" class="section active">
+      <div class="stitle">Welcome back</div>
+      <div class="ssub">Sign in to your ORION RADAR account.</div>
+      <div class="field"><label>Email</label><input id="loginEmail" type="email" placeholder="you@example.com" autocomplete="off" /></div>
+      <div class="field"><label>Password</label><div class="input-wrap"><input id="loginPwd" class="with-eye" type="password" placeholder="Your password" autocomplete="new-password" /><button id="eyeLogin" class="eye-btn" type="button">👁</button></div></div>
+      <button id="loginBtn" class="btn btn-green">Sign In</button>
+      <hr />
+      <button id="goSignup" class="btn btn-blue">Create Account</button>
+      <div class="center"><button id="goForgot" class="link-btn">Forgot password?</button></div>
+    </section>
+
+    <!-- SIGNUP -->
+    <section id="sSignup" class="section">
+      <div class="stitle">Create account</div>
+      <div class="ssub">Join ORION RADAR today.</div>
+      <div class="field"><label>Full name</label><input id="signupName" type="text" placeholder="Your full name" autocomplete="new-password" /></div>
+      <div class="field"><label>Country</label>
+          <select id="signupCountry">
+            <option value="+1">United States (+1)</option>
+            <option value="+55">Brazil (+55)</option>
+            <option value="+44">United Kingdom (+44)</option>
+            <option value="+351">Portugal (+351)</option>
+            <option value="+34">Spain (+34)</option>
+            <option value="+39">Italy (+39)</option>
+            <option value="+33">France (+33)</option>
+            <option value="+49">Germany (+49)</option>
+          </select>
+        </div>
+      <div class="field"><label>Phone</label><input id="signupPhone" type="tel" placeholder="Phone number" autocomplete="new-password" /></div>
+      <div class="field"><label>Email</label><input id="signupEmail" type="email" placeholder="you@example.com" autocomplete="new-password" /></div>
+      <div class="field"><label>Password</label><div class="input-wrap"><input id="signupPwd" class="with-eye" type="password" placeholder="Create a password" autocomplete="new-password" /><button id="eyeSignup" class="eye-btn">👁</button></div></div>
+      <div class="field"><label>Confirm password</label><div class="input-wrap"><input id="signupPwd2" class="with-eye" type="password" placeholder="Repeat your password" autocomplete="new-password" /><button id="eyeSignup2" class="eye-btn">👁</button></div></div>
+      <button id="signupBtn" class="btn btn-green">Create Account</button>
+      <button id="backToLogin1" class="btn btn-ghost">← Back to login</button>
+      <div class="center"><button id="recoverInline" class="link-btn" style="display:none">Email already registered — Recover password</button></div>
+    </section>
+
+    <!-- FORGOT -->
+    <section id="sForgot" class="section">
+      <div class="stitle">Recover password</div>
+      <div class="ssub">We'll send a reset link to your email.</div>
+      <div class="field"><label>Email</label><input id="forgotEmail" type="email" placeholder="you@example.com" autocomplete="off" /></div>
+      <button id="forgotBtn" class="btn btn-blue">Send Reset Email</button>
+      <button id="backToLogin2" class="btn btn-ghost">← Back to login</button>
+    </section>
+
+    <!-- UPDATE PASSWORD -->
+    <section id="sUpdate" class="section">
+      <div class="stitle">New password</div>
+      <div class="ssub">Set your new password below.</div>
+      <div class="field"><label>New password</label><div class="input-wrap"><input id="newPwd" class="with-eye" type="password" placeholder="New password" autocomplete="new-password" /><button id="eyeNew" class="eye-btn">👁</button></div></div>
+      <div class="field"><label>Confirm new password</label><div class="input-wrap"><input id="newPwd2" class="with-eye" type="password" placeholder="Repeat new password" autocomplete="new-password" /><button id="eyeNew2" class="eye-btn">👁</button></div></div>
+      <button id="updatePwdBtn" class="btn btn-blue">Update Password</button>
+      <button id="backToLogin3" class="btn btn-ghost">← Back to login</button>
+    </section>
+  </div>
+  <div class="status" id="status">Initializing...</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://eyawmevqfeaeioistrqk.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5YXdtZXZxZmVhZWlvaXN0cnFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNjE3MDMsImV4cCI6MjA4OTYzNzcwM30.zFT0i5XKwYEbtF6oWKdBtSNvDI8mo48zy-ucsVTWOoQ';
+    const BACKEND_URL = 'https://orion-radar-backend.onrender.com';
+    const FRONTEND_URL = 'https://orion-radar.com';
+
+    let sb = null;
+    const msgEl = document.getElementById('msg');
+    const statusEl = document.getElementById('status');
+
+    function showMsg(t, k) { msgEl.textContent = t; msgEl.className = 'msg show ' + k; }
+    function clearMsg() { msgEl.className = 'msg'; msgEl.textContent = ''; }
+    function show(id) { ['sLogin','sSignup','sForgot','sUpdate'].forEach(s => document.getElementById(s).classList.remove('active')); document.getElementById(id).classList.add('active'); clearMsg(); }
+    function eye(input, btn) { input.type = input.type === 'password' ? 'text' : 'password'; btn.textContent = input.type === 'password' ? '👁' : '🙈'; }
+    function qp(k) { return new URLSearchParams(window.location.search).get(k); }
+    function hp(k) { const h = window.location.hash.startsWith('#') ? window.location.hash.substring(1) : window.location.hash; return new URLSearchParams(h).get(k); }
+    function isRecovery() { return qp('mode') === 'update-password' || qp('type') === 'recovery' || hp('type') === 'recovery' || window.location.href.includes('type=recovery'); }
+
+    async function redirect(session) {
+      statusEl.textContent = 'Checking subscription...';
+      try {
+        const r = await fetch(BACKEND_URL + '/subscription-status/' + session.user.id, { cache: 'no-store' });
+        const d = await r.json();
+        const sub = d.subscription || {};
+        if (sub.plan && ['active','trialing'].includes(sub.status)) {
+          window.location.href = '/dashboard.html';
+        } else {
+          window.location.href = '/plans.html';
+        }
+      } catch (_) {
+        window.location.href = '/plans.html';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async function () {
+      try {
+        sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        statusEl.textContent = 'Ready';
+      } catch (e) { statusEl.textContent = 'Init error'; showMsg('Failed to initialize.', 'err'); return; }
+
+      if (isRecovery()) { show('sUpdate'); showMsg('Set your new password below.', 'info'); return; }
+
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) { await redirect(session); return; }
+
+      show('sLogin');
+
+      // Desativar autocomplete nos campos de signup via JS
+      setTimeout(() => {
+        ['signupName','signupPhone','signupEmail','signupPwd','signupPwd2'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) { el.setAttribute('autocomplete','off'); el.value = ''; }
+        });
+      }, 100);
+
+      sb.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_IN' && session && !isRecovery()) await redirect(session);
+        if (event === 'PASSWORD_RECOVERY') { show('sUpdate'); showMsg('Set your new password below.', 'info'); }
+      });
+
+      // Eye toggles
+      document.getElementById('eyeLogin').onclick = () => eye(document.getElementById('loginPwd'), document.getElementById('eyeLogin'));
+      document.getElementById('eyeSignup').onclick = () => eye(document.getElementById('signupPwd'), document.getElementById('eyeSignup'));
+      document.getElementById('eyeSignup2').onclick = () => eye(document.getElementById('signupPwd2'), document.getElementById('eyeSignup2'));
+      document.getElementById('eyeNew').onclick = () => eye(document.getElementById('newPwd'), document.getElementById('eyeNew'));
+      document.getElementById('eyeNew2').onclick = () => eye(document.getElementById('newPwd2'), document.getElementById('eyeNew2'));
+
+      // Nav
+      document.getElementById('goSignup').onclick = () => {
+        // Limpar campos ao abrir cadastro
+        ['signupName','signupPhone','signupEmail','signupPwd','signupPwd2'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = '';
+        });
+        show('sSignup');
+      };
+      document.getElementById('goForgot').onclick = () => { document.getElementById('forgotEmail').value = document.getElementById('loginEmail').value.trim(); show('sForgot'); };
+      document.getElementById('backToLogin1').onclick = () => show('sLogin');
+      document.getElementById('backToLogin2').onclick = () => show('sLogin');
+      document.getElementById('backToLogin3').onclick = () => show('sLogin');
+      // Country selection handled natively
+      document.getElementById('recoverInline').onclick = () => { document.getElementById('forgotEmail').value = document.getElementById('signupEmail').value.trim(); show('sForgot'); };
+
+      // LOGIN
+      document.getElementById('loginBtn').onclick = async function() {
+        clearMsg();
+        const email = document.getElementById('loginEmail').value.trim();
+        const pwd = document.getElementById('loginPwd').value;
+        if (!email || !pwd) { showMsg('Please enter email and password.', 'err'); return; }
+        this.disabled = true; this.textContent = 'Signing in...';
+        const { error } = await sb.auth.signInWithPassword({ email, password: pwd });
+        this.disabled = false; this.textContent = 'Sign In';
+        if (error) showMsg(error.message || 'Login failed.', 'err');
+      };
+
+      // SIGNUP
+      document.getElementById('signupBtn').onclick = async function() {
+        clearMsg();
+        document.getElementById('recoverInline').style.display = 'none';
+        const name = document.getElementById('signupName').value.trim();
+        const dial = document.getElementById('signupCountry').value.trim();
+        const phone = document.getElementById('signupPhone').value.trim();
+        const email = document.getElementById('signupEmail').value.trim();
+        const pwd = document.getElementById('signupPwd').value;
+        const pwd2 = document.getElementById('signupPwd2').value;
+        if (!name || !dial || !phone || !email || !pwd || !pwd2) { showMsg('Please fill all fields.', 'err'); return; }
+        if (pwd !== pwd2) { showMsg('Passwords do not match.', 'err'); return; }
+        this.disabled = true; this.textContent = 'Creating account...';
+        const { error } = await sb.auth.signUp({ email, password: pwd, options: { emailRedirectTo: FRONTEND_URL, data: { full_name: name, dial_code: dial, phone } } });
+        this.disabled = false; this.textContent = 'Create Account';
+        if (error) { const m = error.message || 'Could not create account.'; showMsg(m, 'err'); if (m.toLowerCase().includes('already')) document.getElementById('recoverInline').style.display = 'inline-block'; return; }
+        show('sLogin');
+        showMsg('Account created! Check your email to confirm before logging in.', 'ok');
+      };
+
+      // FORGOT
+      document.getElementById('forgotBtn').onclick = async function() {
+        clearMsg();
+        const email = document.getElementById('forgotEmail').value.trim();
+        if (!email) { showMsg('Enter your email first.', 'err'); return; }
+        this.disabled = true; this.textContent = 'Sending...';
+        const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: 'https://orion-radar.com/?mode=update-password' });
+        this.disabled = false; this.textContent = 'Send Reset Email';
+        if (error) { showMsg(error.message || 'Could not send reset email.', 'err'); return; }
+        showMsg('Reset email sent. Check your inbox.', 'ok');
+      };
+
+      // UPDATE PASSWORD
+      document.getElementById('updatePwdBtn').onclick = async function() {
+        clearMsg();
+        const p1 = document.getElementById('newPwd').value;
+        const p2 = document.getElementById('newPwd2').value;
+        if (!p1 || !p2) { showMsg('Please fill both fields.', 'err'); return; }
+        if (p1 !== p2) { showMsg('Passwords do not match.', 'err'); return; }
+        this.disabled = true; this.textContent = 'Updating...';
+        const { error } = await sb.auth.updateUser({ password: p1 });
+        this.disabled = false; this.textContent = 'Update Password';
+        if (error) { showMsg(error.message || 'Could not update password.', 'err'); return; }
+        window.history.replaceState({}, document.title, window.location.pathname);
+        show('sLogin');
+        showMsg('Password updated. You can now log in.', 'ok');
+      };
+    });
+  </script>
+</body>
+</html>

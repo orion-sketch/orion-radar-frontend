@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ORION RADAR™ PRO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#020a14;--bg2:#040f1e;
+      --panel:rgba(3,12,26,0.98);
+      --line:rgba(0,210,110,0.09);--line2:rgba(0,210,110,0.20);--line3:rgba(0,210,110,0.38);
+      --green:#00e87a;--green2:#00ff90;--green3:#00c462;
+      --glow:rgba(0,232,122,0.12);--glow2:rgba(0,232,122,0.28);
+      --red:#ff3558;--amber:#ffb800;--blue:#22d3ee;--purple:#a855f7;
+      --text:#dff2ea;--muted:#3d6b52;--muted2:#6b9a78;--muted3:#9bbfa8;
+      --mono:'Share Tech Mono',monospace;--display:'Orbitron',sans-serif;
+    }
+    html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden}
+    body{
+      background-image:
+        radial-gradient(ellipse 90% 40% at 50% -5%,rgba(0,232,122,0.05) 0%,transparent 65%),
+        repeating-linear-gradient(0deg,transparent,transparent 47px,rgba(0,210,110,0.022) 48px),
+        repeating-linear-gradient(90deg,transparent,transparent 47px,rgba(0,210,110,0.022) 48px);
+      min-height:100vh;
+    }
+    body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9997;
+      background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.035) 4px);}
+
+    /* LOADING */
+    #loadingOverlay{position:fixed;inset:0;background:var(--bg);z-index:9999;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;}
+    .lb-brand{font-family:var(--display);font-size:24px;font-weight:900;letter-spacing:8px;
+      color:var(--green);text-shadow:0 0 40px var(--glow2);}
+    .lb-brand em{color:var(--text);font-style:normal;}
+    .lb-bar{width:200px;height:2px;background:rgba(0,232,122,0.08);border-radius:1px;overflow:hidden;}
+    .lb-fill{height:100%;width:0;background:linear-gradient(to right,var(--green3),var(--green2));
+      animation:lbfill 1.6s cubic-bezier(.4,0,.2,1) forwards;box-shadow:0 0 10px var(--green);}
+    @keyframes lbfill{to{width:100%}}
+    .lb-msg{font-family:var(--mono);font-size:10px;color:var(--muted2);letter-spacing:3px;}
+
+    /* SHELL */
+    .shell{max-width:1540px;margin:0 auto;padding:14px 18px;}
+
+    /* NOTIF BADGE */
+    .notif-badge{position:fixed;top:16px;right:200px;z-index:9996;
+      background:rgba(3,12,26,0.97);color:var(--green);border:1px solid rgba(0,232,122,0.35);
+      font-family:var(--display);font-size:9px;font-weight:700;letter-spacing:1px;
+      padding:8px 16px;border-radius:6px;box-shadow:0 4px 24px rgba(0,232,122,0.25);
+      transform:translateY(-80px);opacity:0;transition:all .38s cubic-bezier(.4,0,.2,1);pointer-events:none;}
+    .notif-badge.show{transform:translateY(0);opacity:1;}
+
+    /* TOPBAR */
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;
+      padding:10px 18px;margin-bottom:13px;
+      background:var(--panel);border:1px solid var(--line2);border-radius:10px;
+      box-shadow:0 0 40px rgba(0,232,122,0.03),inset 0 1px 0 rgba(0,232,122,0.07);}
+    .tb-left{display:flex;align-items:center;gap:20px;}
+    .logo-wrap{display:flex;flex-direction:column;gap:1px;}
+    .logo-main{font-family:var(--display);font-size:14px;font-weight:900;letter-spacing:5px;color:var(--text);}
+    .logo-main .g{color:var(--green);text-shadow:0 0 12px var(--glow2);}
+    .logo-sub{font-family:var(--mono);font-size:8px;color:var(--muted2);letter-spacing:3px;}
+    .sep{width:1px;height:28px;background:var(--line2);}
+    .user-block{display:flex;flex-direction:column;gap:3px;}
+    .user-email{font-family:var(--mono);font-size:11px;color:var(--muted3);}
+    .badges-row{display:flex;align-items:center;gap:7px;}
+    .plan-chip{font-family:var(--display);font-size:8px;font-weight:700;letter-spacing:1.5px;padding:3px 9px;border-radius:3px;}
+    .plan-chip.platinum{background:rgba(0,232,122,0.09);color:var(--green);border:1px solid rgba(0,232,122,0.25);}
+    .plan-chip.gold{background:rgba(255,184,0,0.08);color:var(--amber);border:1px solid rgba(255,184,0,0.22);}
+    .plan-chip.silver{background:rgba(160,185,200,0.08);color:#a8ccd8;border:1px solid rgba(160,185,200,0.20);}
+    .plan-chip.bronze{background:rgba(190,110,40,0.08);color:#d4905a;border:1px solid rgba(190,110,40,0.20);}
+    .feed-pill{font-family:var(--mono);font-size:9px;padding:3px 9px;border-radius:3px;display:flex;align-items:center;gap:5px;}
+    .feed-pill::before{content:'';width:5px;height:5px;border-radius:50%;}
+    .feed-pill.ok{background:rgba(0,232,122,0.07);color:var(--green);border:1px solid rgba(0,232,122,0.16);}
+    .feed-pill.ok::before{background:var(--green);box-shadow:0 0 5px var(--green);animation:blink 2s infinite;}
+    .feed-pill.waiting{background:rgba(255,184,0,0.07);color:var(--amber);border:1px solid rgba(255,184,0,0.16);}
+    .feed-pill.waiting::before{background:var(--amber);}
+    .feed-pill.err{background:rgba(255,53,88,0.07);color:var(--red);border:1px solid rgba(255,53,88,0.16);}
+    .feed-pill.err::before{background:var(--red);}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+    .tb-right{display:flex;gap:8px;}
+    .btn{height:33px;padding:0 13px;border:none;border-radius:5px;font-family:var(--display);
+      font-size:8px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all .15s;}
+    .btn-outline{background:transparent;color:var(--green);border:1px solid rgba(0,232,122,0.22);}
+    .btn-outline:hover{background:rgba(0,232,122,0.07);border-color:var(--line3);}
+    .btn-danger{background:rgba(255,53,88,0.07);color:var(--red);border:1px solid rgba(255,53,88,0.18);}
+    .btn-danger:hover{background:rgba(255,53,88,0.16);}
+
+    /* LAYOUT */
+    .row1{display:grid;grid-template-columns:1fr 290px;gap:12px;margin-bottom:12px;}
+    .row3{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:12px;}
+
+    /* PANEL */
+    .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+      box-shadow:0 4px 30px rgba(0,0,0,0.35);overflow:hidden;}
+    .ph{display:flex;align-items:center;justify-content:space-between;
+      padding:10px 14px;border-bottom:1px solid var(--line);background:rgba(0,232,122,0.012);}
+    .ph-title{font-family:var(--display);font-size:9px;font-weight:700;letter-spacing:2.5px;
+      color:var(--muted2);display:flex;align-items:center;gap:7px;}
+    .ph-title::before{content:'//';color:var(--green);font-family:var(--mono);font-size:10px;}
+    .ph-right{font-family:var(--mono);font-size:9px;color:var(--muted);}
+    .pb{padding:13px 14px;}
+
+    /* LOCKED OVERLAY */
+    .locked-overlay{position:relative;}
+    .locked-overlay .lock-cover{
+      position:absolute;inset:0;z-index:10;
+      background:rgba(2,10,20,0.82);backdrop-filter:blur(3px);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+      border-radius:0 0 10px 10px;
+    }
+    .lock-cover span{font-family:var(--mono);font-size:10px;color:var(--muted2);letter-spacing:1.5px;text-align:center;padding:0 20px;}
+    .lock-cover a{font-family:var(--display);font-size:8px;color:var(--green);
+      border:1px solid rgba(0,232,122,0.2);padding:4px 12px;border-radius:3px;
+      text-decoration:none;letter-spacing:1px;transition:all .14s;}
+    .lock-cover a:hover{background:rgba(0,232,122,0.08);}
+
+    /* LIVE SIGNAL */
+    .live-empty{min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+    .radar{border-radius:50%;border:1px solid rgba(0,232,122,0.13);position:relative;
+      display:flex;align-items:center;justify-content:center;width:54px;height:54px;}
+    .radar::before{content:'';position:absolute;inset:9px;border-radius:50%;border:1px solid rgba(0,232,122,0.07);}
+    .sweep{position:absolute;width:50%;height:1px;top:50%;left:50%;
+      background:linear-gradient(to right,transparent,var(--green));
+      transform-origin:left center;animation:sweep 3s linear infinite;}
+    @keyframes sweep{to{transform:rotate(360deg)}}
+    .live-empty p{font-family:var(--mono);font-size:10px;color:var(--muted2);letter-spacing:2px;}
+    .sigbox{display:none;}
+    .sigbox.on{display:block;}
+    .sig-hd{display:flex;justify-content:space-between;align-items:flex-start;
+      padding-bottom:11px;border-bottom:1px solid var(--line);margin-bottom:11px;}
+    .sig-sym{font-family:var(--display);font-size:26px;font-weight:900;letter-spacing:3px;color:var(--text);}
+    .sig-ts{font-family:var(--mono);font-size:9px;color:var(--muted2);margin-top:3px;}
+    .sig-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+    .sig-side{font-family:var(--display);font-size:10px;font-weight:700;letter-spacing:2px;padding:4px 11px;border-radius:3px;}
+    .sig-side.buy{background:rgba(0,232,122,0.12);color:var(--green);border:1px solid rgba(0,232,122,0.26);}
+    .sig-side.sell{background:rgba(255,53,88,0.12);color:var(--red);border:1px solid rgba(255,53,88,0.26);}
+    .sig-tf,.sig-setup{font-family:var(--mono);font-size:9px;color:var(--muted2);}
+    .sig-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;}
+    .sc{background:rgba(0,0,0,0.25);border:1px solid var(--line);border-radius:6px;padding:7px 9px;}
+    .sc.e{border-color:rgba(0,232,122,0.16);}
+    .sc.s{border-color:rgba(255,53,88,0.16);}
+    .sc.t{border-color:rgba(34,211,238,0.16);}
+    .sc-l{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:1px;margin-bottom:3px;}
+    .sc-v{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--text);}
+    .sc.e .sc-v{color:var(--green);}
+    .sc.s .sc-v{color:var(--red);}
+    .sc.t .sc-v{color:var(--blue);}
+    .score-row{display:flex;align-items:center;gap:10px;}
+    .score-lbl{font-family:var(--mono);font-size:9px;color:var(--muted2);white-space:nowrap;}
+    .score-track{flex:1;height:3px;background:rgba(0,232,122,0.06);border-radius:2px;overflow:hidden;}
+    .score-fill{height:100%;background:linear-gradient(to right,var(--green3),var(--green2));
+      box-shadow:0 0 8px var(--glow2);transition:width .7s cubic-bezier(.4,0,.2,1);}
+    .score-val{font-family:var(--display);font-size:13px;font-weight:900;color:var(--green);min-width:30px;text-align:right;}
+
+    /* SIGNALS FEED */
+    .fi{display:flex;align-items:center;justify-content:space-between;
+      padding:8px 10px;border-radius:6px;margin-bottom:5px;
+      background:rgba(0,0,0,0.20);border:1px solid transparent;cursor:pointer;transition:all .13s;}
+    .fi:hover{border-color:var(--line2);background:rgba(0,232,122,0.025);}
+    .fi.on{border-color:rgba(0,232,122,0.26);background:rgba(0,232,122,0.04);}
+    .fi-l{display:flex;flex-direction:column;gap:2px;}
+    .fi-sym{font-family:var(--display);font-size:11px;font-weight:700;color:var(--text);}
+    .fi-setup{font-family:var(--mono);font-size:9px;color:var(--muted2);}
+    .fi-r{display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+    .fi-side{font-family:var(--display);font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;}
+    .fi-side.buy{background:rgba(0,232,122,0.09);color:var(--green);}
+    .fi-side.sell{background:rgba(255,53,88,0.09);color:var(--red);}
+    .fi-score{font-family:var(--mono);font-size:9px;color:var(--muted2);}
+    .feed-empty{min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;}
+    .feed-empty span{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;}
+
+    /* WATCHLIST PANEL */
+    .wl-section{padding:10px 14px;border-bottom:1px solid var(--line);background:rgba(0,0,0,0.15);}
+    .wl-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1.5px;margin-bottom:7px;
+      display:flex;align-items:center;justify-content:space-between;}
+    .wl-label span{color:var(--muted2);}
+    .wl-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
+    .wl-chip{font-family:var(--mono);font-size:10px;padding:4px 10px;border-radius:4px;
+      background:rgba(0,232,122,0.08);border:1px solid rgba(0,232,122,0.22);color:var(--green);
+      display:flex;align-items:center;gap:5px;cursor:pointer;transition:all .13s;}
+    .wl-chip:hover{background:rgba(255,53,88,0.08);border-color:rgba(255,53,88,0.22);color:var(--red);}
+    .wl-chip::after{content:'×';font-size:12px;opacity:.6;}
+    .wl-empty{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;padding:4px 0;}
+
+    /* TRADINGVIEW */
+    .tv-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+      padding:9px 14px;border-bottom:1px solid var(--line);background:rgba(0,0,0,0.18);}
+    .tv-search-wrap{position:relative;flex:1;min-width:160px;}
+    .tv-search{width:100%;background:rgba(0,0,0,0.38);border:1px solid var(--line2);
+      border-radius:5px;padding:6px 10px 6px 26px;
+      font-family:var(--mono);font-size:11px;color:var(--text);outline:none;transition:border-color .14s;}
+    .tv-search:focus{border-color:var(--green3);}
+    .tv-search::placeholder{color:var(--muted);}
+    .tv-search-icon{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--muted2);pointer-events:none;font-size:13px;}
+    .tv-dd{position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:200;
+      background:#071420;border:1px solid var(--line2);border-radius:6px;
+      max-height:190px;overflow-y:auto;display:none;box-shadow:0 8px 28px rgba(0,0,0,0.55);}
+    .tv-dd.open{display:block;}
+    .tv-opt{padding:7px 12px;font-family:var(--mono);font-size:11px;color:var(--muted3);
+      cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .1s;}
+    .tv-opt:hover{background:rgba(0,232,122,0.05);color:var(--text);}
+    .tv-opt .tv-opt-cat{font-size:9px;color:var(--muted);}
+    .tv-opt.add-wl{color:var(--green);font-size:10px;}
+    .tv-opt.add-wl:hover{background:rgba(0,232,122,0.08);}
+    .tv-opt.locked-opt{opacity:.3;cursor:not-allowed;}
+    .tf-row{display:flex;gap:4px;}
+    .tf-btn{font-family:var(--mono);font-size:10px;padding:5px 9px;border-radius:3px;
+      background:rgba(0,0,0,0.28);border:1px solid var(--line);color:var(--muted3);
+      cursor:pointer;transition:all .13s;}
+    .tf-btn:hover{border-color:var(--line2);color:var(--text);}
+    .tf-btn.active{background:rgba(0,232,122,0.09);border-color:rgba(0,232,122,0.28);color:var(--green);}
+    .ind-section{padding:7px 14px;border-bottom:1px solid var(--line);
+      display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:rgba(0,0,0,0.12);}
+    .ind-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;white-space:nowrap;}
+    .ind-row{display:flex;gap:5px;flex-wrap:wrap;}
+    .ind-btn{font-family:var(--mono);font-size:9px;padding:4px 9px;border-radius:3px;
+      background:rgba(0,0,0,0.28);border:1px solid var(--line);color:var(--muted3);
+      cursor:pointer;transition:all .13s;white-space:nowrap;}
+    .ind-btn:hover{border-color:var(--line2);color:var(--text);}
+    .ind-btn.active{background:rgba(0,232,122,0.09);border-color:rgba(0,232,122,0.28);color:var(--green);}
+    .ind-btn.locked{opacity:.28;cursor:not-allowed;position:relative;}
+    .ind-btn.locked:hover{border-color:var(--line);color:var(--muted3);}
+    .tv-frame-wrap{width:100%;height:450px;}
+    .tv-frame-wrap iframe{width:100%;height:100%;border:none;display:block;}
+
+    /* MARKET CARDS */
+    .news-item{padding:8px 0;border-bottom:1px solid var(--line);}
+    .news-item:last-child{border-bottom:none;}
+    .news-t{font-size:12px;font-weight:500;line-height:1.4;margin-bottom:3px;color:var(--text);}
+    .news-m{font-family:var(--mono);font-size:9px;color:var(--muted2);}
+    .mv-item{display:flex;align-items:center;justify-content:space-between;
+      padding:7px 9px;border-radius:5px;margin-bottom:4px;
+      background:rgba(0,0,0,0.18);border:1px solid var(--line);}
+    .mv-sym{font-family:var(--display);font-size:10px;font-weight:700;color:var(--text);}
+    .mv-chg{font-family:var(--mono);font-size:11px;font-weight:600;}
+    .mv-chg.up{color:var(--green);}
+    .mv-chg.down{color:var(--red);}
+    .ins-item{padding:8px 10px;border-radius:5px;margin-bottom:5px;
+      background:rgba(0,232,122,0.022);border-left:2px solid rgba(0,232,122,0.22);
+      font-family:var(--mono);font-size:10px;line-height:1.5;color:var(--muted3);}
+    .empty-s{min-height:80px;display:flex;align-items:center;justify-content:center;}
+    .empty-s span{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;}
+
+    /* TOGGLE */
+    .tog-wrap{position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;}
+    .tog-wrap input{opacity:0;width:0;height:0;}
+    .tog-slider{position:absolute;inset:0;background:rgba(0,0,0,0.28);border:1px solid var(--line2);border-radius:24px;transition:.3s;}
+    .tog-slider::before{content:'';position:absolute;width:18px;height:18px;left:2px;bottom:2px;background:var(--muted2);border-radius:50%;transition:.3s;}
+    .tog-wrap input:checked + .tog-slider{background:rgba(0,232,122,0.14);border-color:rgba(0,232,122,0.32);}
+    .tog-wrap input:checked + .tog-slider::before{transform:translateX(20px);background:var(--green);box-shadow:0 0 8px var(--glow2);}
+
+
+    /* ── SCORE RANKING ── */
+    .score-rank{display:flex;align-items:center;gap:6px;margin-top:8px;padding:8px 10px;border-radius:6px;border:1px solid var(--line);}
+    .score-rank-bar{flex:1;height:6px;border-radius:3px;overflow:hidden;background:rgba(0,0,0,0.3);}
+    .score-rank-fill{height:100%;border-radius:3px;transition:width .6s ease;}
+    .score-rank-label{font-family:var(--mono);font-size:9px;white-space:nowrap;min-width:110px;}
+    .score-rank-num{font-family:var(--display);font-size:11px;font-weight:700;min-width:28px;text-align:right;}
+    .rank-weak{background:rgba(255,100,50,0.08);border-color:rgba(255,100,50,0.2);}
+    .rank-weak .score-rank-fill{background:linear-gradient(to right,#ff6432,#ff8c5a);}
+    .rank-weak .score-rank-label{color:#ff8c5a;}
+    .rank-weak .score-rank-num{color:#ff8c5a;}
+    .rank-ok{background:rgba(255,184,0,0.06);border-color:rgba(255,184,0,0.2);}
+    .rank-ok .score-rank-fill{background:linear-gradient(to right,#ffb800,#ffd040);}
+    .rank-ok .score-rank-label{color:var(--amber);}
+    .rank-ok .score-rank-num{color:var(--amber);}
+    .rank-good{background:rgba(0,200,160,0.06);border-color:rgba(0,200,160,0.2);}
+    .rank-good .score-rank-fill{background:linear-gradient(to right,#00c8a0,#00e8b8);}
+    .rank-good .score-rank-label{color:#00c8a0;}
+    .rank-good .score-rank-num{color:#00c8a0;}
+    .rank-strong{background:rgba(0,232,122,0.08);border-color:rgba(0,232,122,0.25);}
+    .rank-strong .score-rank-fill{background:linear-gradient(to right,var(--green3),var(--green2));box-shadow:0 0 8px var(--glow2);}
+    .rank-strong .score-rank-label{color:var(--green);}
+    .rank-strong .score-rank-num{color:var(--green);}
+    .rank-elite{background:rgba(168,85,247,0.08);border-color:rgba(168,85,247,0.3);}
+    .rank-elite .score-rank-fill{background:linear-gradient(to right,#a855f7,#c084fc);box-shadow:0 0 10px rgba(168,85,247,0.3);}
+    .rank-elite .score-rank-label{color:#c084fc;}
+    .rank-elite .score-rank-num{color:#c084fc;}
+
+    /* ── SIGNAL EXPAND PANEL ── */
+    .sig-expand{display:none;margin-top:12px;border-top:1px solid var(--line);padding-top:12px;}
+    .sig-expand.open{display:block;}
+    .expand-section{margin-bottom:14px;}
+    .expand-title{font-family:var(--display);font-size:9px;font-weight:700;letter-spacing:2px;
+      color:var(--muted2);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+    .expand-title::before{content:'▸';color:var(--green);font-size:10px;}
+    .confluence-chips{display:flex;flex-wrap:wrap;gap:5px;}
+    .conf-chip{font-family:var(--mono);font-size:9px;padding:3px 10px;border-radius:3px;
+      background:rgba(0,232,122,0.07);border:1px solid rgba(0,232,122,0.2);color:var(--green);}
+    .conf-chip.pattern{background:rgba(34,211,238,0.08);border-color:rgba(34,211,238,0.25);color:var(--blue);}
+
+    /* Stop configurador */
+    .stop-config{background:rgba(0,0,0,0.2);border:1px solid var(--line);border-radius:7px;padding:12px 14px;}
+    .stop-mode-row{display:flex;gap:6px;margin-bottom:10px;}
+    .stop-mode-btn{font-family:var(--mono);font-size:9px;padding:4px 10px;border-radius:3px;
+      background:rgba(0,0,0,0.3);border:1px solid var(--line);color:var(--muted3);cursor:pointer;transition:all .13s;}
+    .stop-mode-btn.active{background:rgba(0,232,122,0.09);border-color:rgba(0,232,122,0.3);color:var(--green);}
+    .stop-inputs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+    .stop-input-wrap{display:flex;flex-direction:column;gap:3px;}
+    .stop-input-lbl{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:1px;}
+    .stop-input{background:rgba(0,0,0,0.35);border:1px solid var(--line2);border-radius:4px;
+      padding:6px 9px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;width:100%;transition:border-color .14s;}
+    .stop-input:focus{border-color:var(--green3);}
+    .lot-result{background:rgba(0,232,122,0.05);border:1px solid rgba(0,232,122,0.15);border-radius:6px;
+      padding:10px 12px;display:flex;align-items:center;justify-content:space-between;}
+    .lot-label{font-family:var(--mono);font-size:9px;color:var(--muted2);letter-spacing:1px;}
+    .lot-value{font-family:var(--display);font-size:16px;font-weight:900;color:var(--green);}
+    .lot-risk{font-family:var(--mono);font-size:9px;color:var(--muted2);}
+
+    /* Glossário */
+    .glossary-item{border:1px solid var(--line);border-radius:6px;margin-bottom:5px;overflow:hidden;}
+    .glossary-header{display:flex;align-items:center;justify-content:space-between;
+      padding:8px 12px;cursor:pointer;background:rgba(0,0,0,0.15);transition:background .13s;}
+    .glossary-header:hover{background:rgba(0,232,122,0.04);}
+    .glossary-name{font-family:var(--display);font-size:9px;font-weight:700;color:var(--text);letter-spacing:1px;}
+    .glossary-arrow{font-family:var(--mono);font-size:10px;color:var(--muted2);transition:transform .2s;}
+    .glossary-body{display:none;padding:10px 12px;border-top:1px solid var(--line);
+      font-family:var(--mono);font-size:10px;line-height:1.6;color:var(--muted3);}
+    .glossary-body.open{display:block;}
+    .glossary-arrow.open{transform:rotate(90deg);}
+    .glossary-tag{display:inline-block;font-family:var(--mono);font-size:8px;
+      padding:2px 6px;border-radius:2px;margin-right:4px;margin-bottom:4px;}
+    .tag-buy{background:rgba(0,232,122,0.1);color:var(--green);border:1px solid rgba(0,232,122,0.2);}
+    .tag-sell{background:rgba(255,53,88,0.1);color:var(--red);border:1px solid rgba(255,53,88,0.2);}
+    .tag-neutral{background:rgba(34,211,238,0.1);color:var(--blue);border:1px solid rgba(34,211,238,0.2);}
+
+    /* ── ONBOARDING POPUP ── */
+    .popup-overlay{position:fixed;inset:0;background:rgba(2,10,20,0.88);z-index:9998;
+      display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+    .popup-box{background:#040e1c;border:1px solid var(--line2);border-radius:14px;
+      padding:28px 28px 24px;width:min(480px,92vw);box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(0,232,122,0.05);}
+    .popup-logo{font-family:var(--display);font-size:11px;font-weight:900;letter-spacing:4px;
+      color:var(--green);margin-bottom:4px;}
+    .popup-title{font-family:var(--display);font-size:16px;font-weight:700;color:var(--text);
+      letter-spacing:1px;margin-bottom:4px;}
+    .popup-sub{font-family:var(--mono);font-size:10px;color:var(--muted2);margin-bottom:20px;letter-spacing:1px;}
+    .popup-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+    .popup-field{display:flex;flex-direction:column;gap:4px;}
+    .popup-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1.5px;}
+    .popup-input{background:rgba(0,0,0,0.4);border:1px solid var(--line2);border-radius:5px;
+      padding:8px 11px;font-family:var(--mono);font-size:12px;color:var(--text);outline:none;transition:border-color .14s;}
+    .popup-input:focus{border-color:var(--green3);}
+    .popup-select{background:rgba(0,0,0,0.4);border:1px solid var(--line2);border-radius:5px;
+      padding:8px 11px;font-family:var(--mono);font-size:12px;color:var(--text);outline:none;
+      cursor:pointer;appearance:none;}
+    .popup-btn{width:100%;height:42px;background:linear-gradient(135deg,rgba(0,200,100,0.15),rgba(0,232,122,0.08));
+      border:1px solid rgba(0,232,122,0.3);border-radius:6px;
+      font-family:var(--display);font-size:10px;font-weight:700;letter-spacing:2px;
+      color:var(--green);cursor:pointer;transition:all .15s;}
+    .popup-btn:hover{background:rgba(0,232,122,0.15);box-shadow:0 0 20px rgba(0,232,122,0.1);}
+    .popup-skip{text-align:center;margin-top:10px;font-family:var(--mono);font-size:9px;
+      color:var(--muted);cursor:pointer;transition:color .13s;}
+    .popup-skip:hover{color:var(--muted3);}
+
+    /* ── SCORE RANKING WIDGET ── */
+    .score-ranking-panel{padding:13px 14px;}
+    .ranking-title{font-family:var(--display);font-size:9px;font-weight:700;letter-spacing:2.5px;
+      color:var(--muted2);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+    .ranking-title::before{content:'//';color:var(--green);font-family:var(--mono);}
+
+    @media(max-width:1100px){.row1,.row3{grid-template-columns:1fr}}
+    @media(max-width:640px){.sig-grid{grid-template-columns:repeat(2,1fr)}.topbar{flex-wrap:wrap}}
+  </style>
+</head>
+<body>
+
+<div id="loadingOverlay">
+  <div class="lb-brand">ORION <em>RADAR</em></div>
+  <div class="lb-bar"><div class="lb-fill"></div></div>
+  <div class="lb-msg" id="loadMsg">INITIALIZING SYSTEMS...</div>
+</div>
+
+
+<!-- ONBOARDING POPUP -->
+<div class="popup-overlay" id="onboardingPopup" style="display:none">
+  <div class="popup-box">
+    <div class="popup-logo">ORION RADAR™ PRO</div>
+    <div class="popup-title">Configure sua conta</div>
+    <div class="popup-sub">ESSAS INFORMAÇÕES SÃO USADAS PARA CALCULAR O TAMANHO DO LOTE</div>
+    <div class="popup-grid">
+      <div class="popup-field" style="grid-column:1/-1">
+        <label class="popup-label">CAPITAL DISPONÍVEL (USD)</label>
+        <input class="popup-input" id="ob_capital" type="number" placeholder="Ex: 10000" min="100" step="100"/>
+      </div>
+      <div class="popup-field">
+        <label class="popup-label">RISCO POR TRADE (%)</label>
+        <input class="popup-input" id="ob_risk" type="number" placeholder="1" min="0.1" max="10" step="0.1" value="1"/>
+      </div>
+      <div class="popup-field">
+        <label class="popup-label">ALAVANCAGEM</label>
+        <input class="popup-input" id="ob_leverage" type="number" placeholder="100" min="1" max="1000" step="1" value="100"/>
+      </div>
+      <div class="popup-field">
+        <label class="popup-label">CORRETORA</label>
+        <input class="popup-input" id="ob_broker" type="text" placeholder="Ex: XM, IC Markets..."/>
+      </div>
+      <div class="popup-field">
+        <label class="popup-label">MOEDA DA CONTA</label>
+        <select class="popup-select popup-input" id="ob_currency">
+          <option value="USD">USD — Dólar</option>
+          <option value="EUR">EUR — Euro</option>
+          <option value="BRL">BRL — Real</option>
+          <option value="GBP">GBP — Libra</option>
+        </select>
+      </div>
+    </div>
+    <button class="popup-btn" id="ob_save">SALVAR E COMEÇAR →</button>
+    <div class="popup-skip" id="ob_skip">Pular por agora</div>
+  </div>
+</div>
+
+<div class="notif-badge" id="notifBadge">🛰 NEW SIGNAL</div>
+
+<div class="shell" id="mainContent" style="display:none">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="logo-wrap">
+        <div class="logo-main">ORION <span class="g">RADAR</span> <span style="font-size:9px;color:var(--muted2);letter-spacing:2px">PRO</span></div>
+        <div class="logo-sub">MULTI-TIMEFRAME SIGNAL INTELLIGENCE</div>
+      </div>
+      <div class="sep"></div>
+      <div class="user-block">
+        <div class="user-email" id="userName">—</div>
+        <div class="badges-row">
+          <span class="plan-chip" id="planBadge">—</span>
+          <span class="feed-pill waiting" id="feedStatus">CONNECTING</span>
+        </div>
+      </div>
+    </div>
+    <div class="tb-right">
+      <button class="btn btn-outline" id="langBtn" onclick="switchLang()" style="font-size:11px;letter-spacing:0">🇧🇷 PT</button>
+      <button class="btn btn-outline" id="manageBtn">MANAGE PLAN</button>
+      <button class="btn btn-danger" id="logoutBtn">LOGOUT</button>
+    </div>
+  </div>
+
+  <!-- ROW 1: Signal + Feed -->
+  <div class="row1">
+    <!-- Live Signal — locked for Bronze/Silver -->
+    <div class="panel">
+      <div class="ph">
+        <div class="ph-title"><span id="ph-live">LIVE MARKET PREVIEW</span></div>
+        <div class="ph-right" id="liveUpdated">—</div>
+      </div>
+      <div class="pb locked-overlay" id="livePreviewWrap">
+        <div class="live-empty" id="signalEmpty">
+          <div class="radar"><div class="sweep"></div></div>
+          <p>WAITING FOR LIVE SIGNAL...</p>
+        </div>
+        <div class="sigbox" id="signalBox">
+          <div class="sig-hd">
+            <div>
+              <div class="sig-sym" id="liveSym">—</div>
+              <div class="sig-ts" id="liveSts">—</div>
+            </div>
+            <div class="sig-right">
+              <div class="sig-side buy" id="liveSide">—</div>
+              <div class="sig-tf" id="liveTfLbl">—</div>
+              <div class="sig-setup" id="liveSetupLbl">—</div>
+            </div>
+          </div>
+          <div class="sig-grid">
+            <div class="sc e"><div class="sc-l">ENTRY</div><div class="sc-v" id="liveEntry">—</div></div>
+            <div class="sc s"><div class="sc-l">STOP</div><div class="sc-v" id="liveSl">—</div></div>
+            <div class="sc t"><div class="sc-l">TP1</div><div class="sc-v" id="liveTp1">—</div></div>
+            <div class="sc t"><div class="sc-l">TP2</div><div class="sc-v" id="liveTp2">—</div></div>
+          </div>
+          <div class="score-row">
+            <span class="score-lbl">CONFLUENCE SCORE</span>
+            <div class="score-track"><div class="score-fill" id="scoreFill" style="width:0%"></div></div>
+            <span class="score-val" id="liveScore">—</span>
+          </div>
+
+          <!-- SIGNAL EXPAND — Gold/Platinum only -->
+          <div id="sigExpandToggle" style="display:none;margin-top:10px;text-align:center;cursor:pointer;
+            font-family:var(--mono);font-size:9px;color:var(--muted2);letter-spacing:1px;
+            padding:5px;border:1px solid var(--line);border-radius:4px;transition:all .13s;"
+            onmouseover="this.style.borderColor='rgba(0,232,122,0.3)'"
+            onmouseout="this.style.borderColor='var(--line)'">
+            ▸ VER ANÁLISE COMPLETA
+          </div>
+          <div class="sig-expand" id="sigExpandPanel">
+
+            <!-- Confluências -->
+            <div class="expand-section">
+              <div class="expand-title" id="expandConfTitle">CONFLUÊNCIAS DETECTADAS</div>
+              <div class="confluence-chips" id="expandConf"></div>
+            </div>
+
+            <!-- Glossário do padrão -->
+            <div class="expand-section">
+              <div class="expand-title" id="expandPattTitle">COMO FUNCIONA ESSE PADRÃO</div>
+              <div id="expandGlossary"></div>
+            </div>
+
+            <!-- Stop configurável — Gold/Platinum -->
+            <div class="expand-section" id="stopConfigSection" style="display:none">
+              <div class="expand-title" id="expandStopTitle">CONFIGURAR STOP & TAMANHO DO LOTE</div>
+              <div class="stop-config">
+                <div class="stop-mode-row">
+                  <button class="stop-mode-btn active" data-mode="tech" onclick="setStopMode('tech',this)">TÉCNICO</button>
+                  <button class="stop-mode-btn" data-mode="atr" onclick="setStopMode('atr',this)">ATR×1.2</button>
+                  <button class="stop-mode-btn" data-mode="fixed" onclick="setStopMode('fixed',this)">FIXO</button>
+                </div>
+                <div class="stop-inputs">
+                  <div class="stop-input-wrap">
+                    <span class="stop-input-lbl">CAPITAL (USD)</span>
+                    <input class="stop-input" id="stopCapital" type="number" placeholder="10000" min="100"/>
+                  </div>
+                  <div class="stop-input-wrap">
+                    <span class="stop-input-lbl">RISCO (%)</span>
+                    <input class="stop-input" id="stopRisk" type="number" placeholder="1" min="0.1" max="10" step="0.1" value="1"/>
+                  </div>
+                  <div class="stop-input-wrap" id="fixedStopWrap" style="display:none">
+                    <span class="stop-input-lbl">STOP FIXO (PIPS)</span>
+                    <input class="stop-input" id="stopFixed" type="number" placeholder="20" min="1"/>
+                  </div>
+                  <div class="stop-input-wrap">
+                    <span class="stop-input-lbl">CONTRATO (LOTE)</span>
+                    <input class="stop-input" id="stopContract" type="number" placeholder="100000" value="100000"/>
+                  </div>
+                </div>
+                <div class="lot-result">
+                  <div>
+                    <div class="lot-label">TAMANHO SUGERIDO</div>
+                    <div class="lot-value" id="lotSize">—</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div class="lot-risk" id="lotRiskUsd">Risco: —</div>
+                    <div class="lot-risk" id="lotRR">RR: 1:2 / 1:4</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Signals Feed — locked for Bronze/Silver -->
+    <div class="panel">
+      <div class="ph">
+        <div class="ph-title"><span id="ph-feed">SIGNALS FEED</span></div>
+        <div class="ph-right" id="feedCount">0 ACTIVE</div>
+      </div>
+      <div class="locked-overlay" id="signalFeedWrap">
+        <div class="pb" id="signalsFeed">
+          <div class="feed-empty">
+            <div class="radar" style="width:36px;height:36px"><div class="sweep"></div></div>
+            <span>NO LIVE SIGNALS YET</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- SCORE RANKING -->
+  <div class="panel" style="margin-bottom:12px">
+    <div class="ph">
+      <div class="ph-title"><span id="ph-ranking">SIGNAL QUALITY RANKING</span></div>
+      <div class="ph-right">CONFLUENCE SCORE GUIDE</div>
+    </div>
+    <div class="score-ranking-panel">
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">
+        <div class="score-rank rank-weak">
+          <div style="flex:1">
+            <div class="score-rank-label" id="rank-risky-lbl">⚠ RISKY SETUP</div>
+            <div id="rank-risky-desc" style="font-family:var(--mono);font-size:8px;color:rgba(255,140,90,0.6);margin-top:2px">Poucos filtros confirmados. Alto risco.</div>
+            <div class="score-rank-bar" style="margin-top:6px"><div class="score-rank-fill" style="width:50%"></div></div>
+          </div>
+          <div class="score-rank-num">50-59</div>
+        </div>
+        <div class="score-rank rank-ok">
+          <div style="flex:1">
+            <div class="score-rank-label" id="rank-watch-lbl">◈ WATCHLIST</div>
+            <div id="rank-watch-desc" style="font-family:var(--mono);font-size:8px;color:rgba(255,184,0,0.6);margin-top:2px">Setup em formação. Aguardar confirmação.</div>
+            <div class="score-rank-bar" style="margin-top:6px"><div class="score-rank-fill" style="width:65%"></div></div>
+          </div>
+          <div class="score-rank-num">60-69</div>
+        </div>
+        <div class="score-rank rank-good">
+          <div style="flex:1">
+            <div class="score-rank-label" id="rank-good-lbl">✦ GOOD SETUP</div>
+            <div id="rank-good-desc" style="font-family:var(--mono);font-size:8px;color:rgba(0,200,160,0.6);margin-top:2px">Múltiplas confluências. Setup válido.</div>
+            <div class="score-rank-bar" style="margin-top:6px"><div class="score-rank-fill" style="width:75%"></div></div>
+          </div>
+          <div class="score-rank-num">70-79</div>
+        </div>
+        <div class="score-rank rank-strong">
+          <div style="flex:1">
+            <div class="score-rank-label" id="rank-strong-lbl">★ STRONG SIGNAL</div>
+            <div id="rank-strong-desc" style="font-family:var(--mono);font-size:8px;color:rgba(0,232,122,0.6);margin-top:2px">Alta confluência. Entrada prioritária.</div>
+            <div class="score-rank-bar" style="margin-top:6px"><div class="score-rank-fill" style="width:86%"></div></div>
+          </div>
+          <div class="score-rank-num">80-89</div>
+        </div>
+        <div class="score-rank rank-elite">
+          <div style="flex:1">
+            <div class="score-rank-label" id="rank-elite-lbl">⬡ ELITE SIGNAL</div>
+            <div id="rank-elite-desc" style="font-family:var(--mono);font-size:8px;color:rgba(192,132,252,0.6);margin-top:2px">Máxima confluência. Setup institucional.</div>
+            <div class="score-rank-bar" style="margin-top:6px"><div class="score-rank-fill" style="width:95%"></div></div>
+          </div>
+          <div class="score-rank-num">90+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WATCHLIST + TRADINGVIEW -->
+  <div class="panel" style="margin-bottom:12px">
+    <div class="ph">
+      <div class="ph-title"><span id="ph-chart">CHART ANALYSIS</span></div>
+      <span class="ph-right" id="tvCurrentLbl">EURUSD · M5</span>
+    </div>
+
+    <!-- Watchlist -->
+    <div class="wl-section">
+      <div class="wl-label">
+        WATCHLIST
+        <span id="wlCount">0/3</span>
+      </div>
+      <div class="wl-chips" id="wlChips">
+        <div class="wl-empty" id="wlEmpty">No assets added yet — search and add below</div>
+      </div>
+    </div>
+
+    <!-- Asset search + timeframes -->
+    <div class="tv-controls">
+      <div class="tv-search-wrap">
+        <span class="tv-search-icon">⌕</span>
+        <input class="tv-search" id="tvSearch" type="text" placeholder="Search asset to add to watchlist..." autocomplete="off"/>
+        <div class="tv-dd" id="tvDd"></div>
+      </div>
+      <div class="tf-row" id="tfRow">
+        <button class="tf-btn active" data-tf="5">M5</button>
+        <button class="tf-btn" data-tf="15">M15</button>
+        <button class="tf-btn" data-tf="60">H1</button>
+        <button class="tf-btn" data-tf="240">H4</button>
+        <button class="tf-btn" data-tf="D">D</button>
+        <button class="tf-btn" data-tf="W">W</button>
+      </div>
+    </div>
+
+    <!-- Indicators -->
+    <div class="ind-section">
+      <span class="ind-label">INDICATORS</span>
+      <div class="ind-row" id="indRow"></div>
+      <span id="lockNotice" style="display:none;font-family:var(--mono);font-size:8px;color:var(--amber);background:rgba(255,184,0,0.07);border:1px solid rgba(255,184,0,0.18);border-radius:2px;padding:2px 7px;margin-left:6px;"></span>
+    </div>
+
+    <div class="tv-frame-wrap">
+      <iframe id="tvFrame" allowtransparency="true" scrolling="no"></iframe>
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS -->
+  <div class="panel" style="margin-bottom:12px">
+    <div class="ph">
+      <div class="ph-title"><span id="ph-notif">NOTIFICATIONS</span></div>
+      <div class="ph-right" id="notifPlanNote"></div>
+    </div>
+    <div class="pb">
+      <!-- Bronze/Silver locked -->
+      <div id="notifLocked" style="display:none;min-height:70px;align-items:center;justify-content:center;flex-direction:column;gap:8px">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px">🔒 NOTIFICATIONS AVAILABLE FROM GOLD PLAN</span>
+        <a href="/plans.html" style="font-family:var(--display);font-size:8px;color:var(--green);border:1px solid rgba(0,232,122,0.2);padding:4px 12px;border-radius:3px;text-decoration:none;letter-spacing:1px">UPGRADE PLAN →</a>
+      </div>
+      <!-- Gold+: site alerts -->
+      <div id="notifSite" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)">
+          <div>
+            <div style="font-family:var(--display);font-size:10px;font-weight:700;color:var(--text);letter-spacing:1px">SITE ALERTS</div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);margin-top:2px">Banner notification when a new signal arrives</div>
+          </div>
+          <label class="tog-wrap"><input type="checkbox" id="siteToggle"><span class="tog-slider"></span></label>
+        </div>
+        <div id="siteAlertMsg" style="display:none;margin-top:10px;padding:9px 12px;background:rgba(0,232,122,0.05);border:1px solid rgba(0,232,122,0.18);border-radius:6px;font-family:var(--mono);font-size:10px;color:var(--green)">
+          ✅ Site alerts active — new signals will show a notification banner
+        </div>
+      </div>
+      <!-- Platinum: Telegram -->
+      <div id="notifTg" style="display:none;margin-top:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0 8px">
+          <div>
+            <div style="font-family:var(--display);font-size:10px;font-weight:700;color:var(--text);letter-spacing:1px">
+              TELEGRAM ALERTS
+              <span style="font-size:8px;color:var(--green);background:rgba(0,232,122,0.09);border:1px solid rgba(0,232,122,0.2);border-radius:2px;padding:2px 7px;margin-left:6px">PLATINUM</span>
+            </div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);margin-top:2px">Receive signals in real-time on your Telegram</div>
+          </div>
+          <div id="tgStatusLbl" style="font-family:var(--mono);font-size:9px;color:var(--muted)">—</div>
+        </div>
+        <div id="tgNotConnected" style="display:none">
+          <div style="background:rgba(0,0,0,0.22);border:1px solid var(--line);border-radius:7px;padding:12px 14px;margin-bottom:10px">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--muted3);line-height:1.8;margin-bottom:10px">
+              <span style="color:var(--green)">1.</span> Open Telegram → search <strong style="color:var(--text)">@orion_radar_bot</strong><br>
+              <span style="color:var(--green)">2.</span> Send <code style="background:rgba(0,232,122,0.08);padding:1px 5px;border-radius:2px;color:var(--green)">/start</code><br>
+              <span style="color:var(--green)">3.</span> Enter your Chat ID below and connect
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input id="tgChatInput" type="text" placeholder="Your Chat ID (e.g. 8696691676)"
+                style="flex:1;background:rgba(0,0,0,0.32);border:1px solid var(--line2);border-radius:5px;padding:7px 10px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none"/>
+              <button id="tgConnectBtn" class="btn btn-outline">CONNECT</button>
+            </div>
+            <div id="tgConnectMsg" style="font-family:var(--mono);font-size:10px;margin-top:7px;display:none"></div>
+          </div>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--muted);line-height:1.6">
+            💡 Don't know your Chat ID? Send /start to <strong style="color:var(--muted3)">@orion_radar_bot</strong> then
+            <a href="https://api.telegram.org/bot8284218464:AAFBDe73fH2D2_Ssni4XAjHTw0vD79CcKlY/getUpdates" target="_blank" style="color:var(--green)">click here</a>
+          </div>
+        </div>
+        <div id="tgConnected" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(0,232,122,0.04);border:1px solid rgba(0,232,122,0.16);border-radius:7px;padding:11px 14px">
+            <div>
+              <div style="font-family:var(--mono);font-size:11px;color:var(--green)">✅ Telegram connected</div>
+              <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);margin-top:2px">Signals arriving in real-time on your Telegram</div>
+            </div>
+            <button id="tgDisconnectBtn" class="btn btn-danger" style="height:30px;font-size:8px;padding:0 10px">DISCONNECT</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3: Market data -->
+  <div class="row3">
+    <div class="panel">
+      <div class="ph"><div class="ph-title"><span id="ph-news">MARKET NEWS</span></div></div>
+      <div class="locked-overlay" id="newsWrap">
+        <div class="pb" id="newsBody"><div class="empty-s"><span>LOADING...</span></div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ph"><div class="ph-title"><span id="ph-movers">TOP MOVERS</span></div></div>
+      <div class="locked-overlay" id="moversWrap">
+        <div class="pb" id="moversBody"><div class="empty-s"><span>LOADING...</span></div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ph"><div class="ph-title"><span id="ph-insight">ORION INSIGHT</span></div></div>
+      <div class="locked-overlay" id="insightWrap">
+        <div class="pb" id="insightBody"><div class="empty-s"><span>LOADING...</span></div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /shell -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL  = 'https://eyawmevqfeaeioistrqk.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5YXdtZXZxZmVhZWlvaXN0cnFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNjE3MDMsImV4cCI6MjA4OTYzNzcwM30.zFT0i5XKwYEbtF6oWKdBtSNvDI8mo48zy-ucsVTWOoQ';
+const BACKEND_URL   = 'https://orion-radar-backend.onrender.com';
+
+let sb, session, signalsPoller, marketPoller;
+let currentPlan = 'bronze';
+let tvSymbol    = 'FX:EURUSD';
+let tvInterval  = '5';
+let activeInds  = [];
+let watchlist   = []; // saved per user in Supabase
+let allSignals  = [];
+let siteAlertsEnabled = false;
+let lastSignalId = null;
+let notifTimeout = null;
+
+// ── Plan config ──────────────────────────────────────────────────
+const PLAN_ORDER = ['bronze','silver','gold','platinum'];
+const planRank   = p => PLAN_ORDER.indexOf(p || 'bronze');
+const canUse     = min => planRank(currentPlan) >= planRank(min);
+
+const PLAN_LIMITS = {
+  bronze:   { assets: 3  },
+  silver:   { assets: 5  },
+  gold:     { assets: 10 },
+  platinum: { assets: 999 },
+};
+
+const INDICATORS = [
+  { id:'MASimple@tv-basicstudies', label:'SMA 200',  min:'silver'   },
+  { id:'MAExp@tv-basicstudies',    label:'EMA 9/20', min:'silver'   },
+  { id:'BB@tv-basicstudies',       label:'Bollinger',min:'silver'   },
+  { id:'RSI@tv-basicstudies',      label:'RSI',      min:'gold'     },
+  { id:'MACD@tv-basicstudies',     label:'MACD',     min:'gold'     },
+  { id:'Volume@tv-basicstudies',   label:'Volume',   min:'gold'     },
+  { id:'IchimokuCloud@tv-basicstudies',label:'Ichimoku',min:'platinum'},
+  { id:'VWAP@tv-basicstudies',     label:'VWAP',     min:'platinum' },
+  { id:'FibonacciRetracement@tv-basicstudies',label:'Fibonacci',min:'platinum'},
+];
+
+const ASSETS_ALL = [
+  {sym:'FX:EURUSD',   lbl:'EURUSD',  cat:'Forex'},
+  {sym:'FX:GBPUSD',   lbl:'GBPUSD',  cat:'Forex'},
+  {sym:'OANDA:XAUUSD',lbl:'XAUUSD',  cat:'Metal'},
+  {sym:'FX:USDJPY',   lbl:'USDJPY',  cat:'Forex'},
+  {sym:'BITSTAMP:BTCUSD',lbl:'BTCUSD',cat:'Crypto'},
+  {sym:'FX:AUDUSD',   lbl:'AUDUSD',  cat:'Forex'},
+  {sym:'FX:USDCAD',   lbl:'USDCAD',  cat:'Forex'},
+  {sym:'FX:NZDUSD',   lbl:'NZDUSD',  cat:'Forex'},
+  {sym:'FX:EURJPY',   lbl:'EURJPY',  cat:'Forex'},
+  {sym:'FX:GBPJPY',   lbl:'GBPJPY',  cat:'Forex'},
+  {sym:'FX:EURGBP',   lbl:'EURGBP',  cat:'Forex'},
+  {sym:'FX:USDCHF',   lbl:'USDCHF',  cat:'Forex'},
+  {sym:'OANDA:XAGUSD',lbl:'XAGUSD',  cat:'Metal'},
+  {sym:'TVC:USOIL',   lbl:'WTI Oil', cat:'Commodity'},
+  {sym:'BITSTAMP:ETHUSD',lbl:'ETHUSD',cat:'Crypto'},
+  {sym:'COINBASE:SOLUSD',lbl:'SOLUSD',cat:'Crypto'},
+  {sym:'SP:SPX',      lbl:'S&P 500', cat:'Index'},
+  {sym:'FOREXCOM:NSXUSD',lbl:'NAS100',cat:'Index'},
+  {sym:'TVC:DXY',     lbl:'DXY',     cat:'Index'},
+  {sym:'NASDAQ:AAPL', lbl:'AAPL',    cat:'Stocks'},
+  {sym:'NASDAQ:TSLA', lbl:'TSLA',    cat:'Stocks'},
+  {sym:'NASDAQ:NVDA', lbl:'NVDA',    cat:'Stocks'},
+];
+
+// ── Helpers ──────────────────────────────────────────────────────
+const fv  = v => (v===null||v===undefined||v==='') ? '—' : String(v);
+const fc  = v => { if(!v)return'—'; try{return new Date(v).toLocaleString()}catch(_){return v} };
+const fts = v => { if(!v)return'—'; try{return new Date(v).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}catch(_){return v} };
+function setLoad(m){ document.getElementById('loadMsg').textContent = m; }
+function showDash(){ document.getElementById('loadingOverlay').style.display='none'; document.getElementById('mainContent').style.display='block'; }
+function setFeed(t,m){ const e=document.getElementById('feedStatus'); e.textContent=t; e.className='feed-pill '+(m||'waiting'); }
+
+// ── Lock overlay helper ───────────────────────────────────────────
+function lockPanel(wrapperId, minPlan, msg) {
+  if (canUse(minPlan)) return;
+  const wrap = document.getElementById(wrapperId);
+  if (!wrap) return;
+  const cover = document.createElement('div');
+  cover.className = 'lock-cover';
+  cover.innerHTML = `<span>🔒 ${msg || 'UPGRADE TO UNLOCK'}</span><a href="/plans.html">UPGRADE PLAN →</a>`;
+  wrap.appendChild(cover);
+}
+
+// ── Plan gates ────────────────────────────────────────────────────
+function applyPlanGates() {
+  // Live preview — Gold+
+  lockPanel('livePreviewWrap', 'gold', 'AVAILABLE FROM GOLD PLAN');
+  // Signals feed — Gold+
+  lockPanel('signalFeedWrap', 'gold', 'LIVE SIGNALS FROM GOLD PLAN');
+  // Market news — Silver+
+  lockPanel('newsWrap', 'silver', 'MARKET NEWS FROM SILVER PLAN');
+  // Top movers — Silver+
+  lockPanel('moversWrap', 'silver', 'TOP MOVERS FROM SILVER PLAN');
+  // Insight — Gold+
+  lockPanel('insightWrap', 'gold', 'ORION INSIGHT FROM GOLD PLAN');
+}
+
+// ── Watchlist ─────────────────────────────────────────────────────
+function wlLimit(){ return PLAN_LIMITS[currentPlan]?.assets || 3; }
+
+function renderWatchlist() {
+  const chips = document.getElementById('wlChips');
+  const empty = document.getElementById('wlEmpty');
+  const count = document.getElementById('wlCount');
+  count.textContent = watchlist.length + '/' + wlLimit();
+  if (!watchlist.length) {
+    chips.innerHTML = '';
+    chips.appendChild(empty);
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  chips.innerHTML = watchlist.map(sym => {
+    const a = ASSETS_ALL.find(x => x.lbl === sym) || { lbl: sym };
+    return `<div class="wl-chip" onclick="removeFromWatchlist('${sym}')" title="Click to remove">${a.lbl}</div>`;
+  }).join('');
+}
+
+window.removeFromWatchlist = async function(sym) {
+  watchlist = watchlist.filter(s => s !== sym);
+  renderWatchlist();
+  renderFeed(allSignals);
+  await saveWatchlist();
+};
+
+async function addToWatchlist(sym, lbl) {
+  if (watchlist.includes(lbl)) { setSymbol(sym, lbl); return; }
+  if (watchlist.length >= wlLimit()) {
+    alert(`Your ${currentPlan} plan allows up to ${wlLimit()} assets. Remove one or upgrade.`);
+    return;
+  }
+  watchlist.push(lbl);
+  renderWatchlist();
+  renderFeed(allSignals);
+  setSymbol(sym, lbl);
+  await saveWatchlist();
+}
+
+async function saveWatchlist() {
+  if (!sb || !session) return;
+  try {
+    await sb.from('profiles').update({ watchlist, updated_at: new Date().toISOString() }).eq('id', session.user.id);
+  } catch(_) {}
+}
+
+async function loadWatchlist() {
+  if (!sb || !session) return;
+  try {
+    const { data } = await sb.from('profiles').select('watchlist').eq('id', session.user.id).maybeSingle();
+    if (data?.watchlist && Array.isArray(data.watchlist)) {
+      watchlist = data.watchlist.slice(0, wlLimit());
+    }
+  } catch(_) {}
+  renderWatchlist();
+}
+
+// ── TradingView ───────────────────────────────────────────────────
+function updateTvLabel(){
+  const tfLabel = document.querySelector('#tfRow .tf-btn.active')?.textContent || tvInterval;
+  document.getElementById('tvCurrentLbl').textContent = tvSymbol.split(':').pop() + ' · ' + tfLabel;
+}
+
+function buildTvUrl(){
+  const studies = activeInds.map(id => `"${id}"`).join(',');
+  return `https://s.tradingview.com/widgetembed/?frameElementId=tv_chart`
+    +`&symbol=${encodeURIComponent(tvSymbol)}`
+    +`&interval=${tvInterval}`
+    +`&hidesidetoolbar=0&symboledit=1&saveimage=1`
+    +`&studies=[${studies}]`
+    +`&theme=dark&style=1&timezone=UTC&withdateranges=1&locale=en`
+    +`&toolbarbg=040e1c&utm_source=orion-radar.com`;
+}
+
+function loadTv(){ document.getElementById('tvFrame').src = buildTvUrl(); updateTvLabel(); }
+
+function setSymbol(sym, lbl){
+  tvSymbol = sym;
+  document.getElementById('tvSearch').value = lbl;
+  document.getElementById('tvDd').classList.remove('open');
+  loadTv();
+}
+
+function buildIndicatorButtons(){
+  const row    = document.getElementById('indRow');
+  const notice = document.getElementById('lockNotice');
+  row.innerHTML = '';
+  let lockedCount = 0;
+  INDICATORS.forEach(ind => {
+    const ok = canUse(ind.min);
+    if (!ok) lockedCount++;
+    const btn = document.createElement('button');
+    btn.className = 'ind-btn' + (ok ? '' : ' locked');
+    btn.textContent = ind.label;
+    btn.title = ok ? 'Toggle indicator' : `Requires ${ind.min} plan`;
+    if (ok) {
+      btn.onclick = () => {
+        const idx = activeInds.indexOf(ind.id);
+        if (idx >= 0) { activeInds.splice(idx, 1); btn.classList.remove('active'); }
+        else { activeInds.push(ind.id); btn.classList.add('active'); }
+        loadTv();
+      };
+    }
+    row.appendChild(btn);
+  });
+  if (lockedCount > 0) {
+    notice.textContent = lockedCount + ' indicators locked — upgrade to unlock';
+    notice.style.display = 'inline-block';
+  }
+}
+
+function initTvSearch(){
+  const input = document.getElementById('tvSearch');
+  const dd    = document.getElementById('tvDd');
+  const limit = wlLimit();
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { dd.classList.remove('open'); return; }
+    const matches = ASSETS_ALL.filter(a =>
+      a.lbl.toLowerCase().includes(q) || a.cat.toLowerCase().includes(q)
+    ).slice(0, 10);
+    if (!matches.length) { dd.classList.remove('open'); return; }
+    dd.innerHTML = matches.map(a => {
+      const inWl = watchlist.includes(a.lbl);
+      const full = watchlist.length >= limit && !inWl;
+      if (full) {
+        return `<div class="tv-opt locked-opt" title="Watchlist full — remove an asset first">${a.lbl} <span class="tv-opt-cat">🔒 ${a.cat}</span></div>`;
+      }
+      return `<div class="tv-opt" onclick="addToWatchlist('${a.sym}','${a.lbl}')">
+        ${a.lbl} <span class="tv-opt-cat">${inWl ? '✅' : '+'} ${a.cat}</span>
+      </div>`;
+    }).join('');
+    dd.classList.add('open');
+  });
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Escape') dd.classList.remove('open');
+    if (e.key === 'Enter') {
+      const q = input.value.trim().toUpperCase();
+      const found = ASSETS_ALL.find(a => a.lbl === q);
+      if (found) addToWatchlist(found.sym, found.lbl);
+      dd.classList.remove('open');
+    }
+  });
+  document.addEventListener('click', e => { if (!e.target.closest('.tv-search-wrap')) dd.classList.remove('open'); });
+}
+
+function initTfButtons(){
+  document.querySelectorAll('#tfRow .tf-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#tfRow .tf-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      tvInterval = btn.dataset.tf;
+      loadTv();
+    });
+  });
+}
+
+// ── Signals ───────────────────────────────────────────────────────
+function filterSignals(signals) {
+  if (!Array.isArray(signals)) return [];
+  // Platinum sees all; others see only watchlist
+  if (currentPlan === 'platinum') return signals;
+  if (!watchlist.length) return [];
+  return signals.filter(s => watchlist.includes(s.symbol));
+}
+
+function renderSignal(sig, updatedAt){
+  const box  = document.getElementById('signalBox');
+  const emp  = document.getElementById('signalEmpty');
+  document.getElementById('liveUpdated').textContent = updatedAt ? fts(updatedAt) : '—';
+  if (!sig) { box.classList.remove('on'); emp.style.display='flex'; return; }
+  box.classList.add('on'); emp.style.display='none';
+  document.getElementById('liveSym').textContent = fv(sig.symbol);
+  const side = String(sig.side||'').toUpperCase();
+  const sideEl = document.getElementById('liveSide');
+  sideEl.textContent = side || '—';
+  sideEl.className = 'sig-side ' + (side === 'SELL' ? 'sell' : 'buy');
+  document.getElementById('liveTfLbl').textContent = 'TF: ' + fv(sig.tf||sig.timeframe);
+  document.getElementById('liveSetupLbl').textContent = fv(sig.setup);
+  document.getElementById('liveEntry').textContent = fv(sig.entry);
+  document.getElementById('liveSl').textContent    = fv(sig.sl);
+  document.getElementById('liveTp1').textContent   = fv(sig.tp1||sig.tp);
+  document.getElementById('liveTp2').textContent   = fv(sig.tp2);
+  const sc = parseInt(sig.score) || 0;
+  document.getElementById('liveScore').textContent = sc || '—';
+  // Color score value by rank
+  const scoreValEl = document.getElementById('liveScore');
+  if (scoreValEl) {
+    if (sc>=90) scoreValEl.style.color='#c084fc';
+    else if (sc>=80) scoreValEl.style.color='var(--green)';
+    else if (sc>=70) scoreValEl.style.color='#00c8a0';
+    else if (sc>=60) scoreValEl.style.color='var(--amber)';
+    else scoreValEl.style.color='#ff8c5a';
+  }
+  document.getElementById('liveSts').textContent   = fts(sig.created_at || updatedAt);
+  // Score bar width + color by rank
+  const fillEl = document.getElementById('scoreFill');
+  if (fillEl) {
+    fillEl.style.width = sc + '%';
+    if (sc>=90) fillEl.style.background='linear-gradient(to right,#a855f7,#c084fc)';
+    else if (sc>=80) fillEl.style.background='linear-gradient(to right,var(--green3),var(--green2))';
+    else if (sc>=70) fillEl.style.background='linear-gradient(to right,#00c8a0,#00e8b8)';
+    else if (sc>=60) fillEl.style.background='linear-gradient(to right,#ffb800,#ffd040)';
+    else fillEl.style.background='linear-gradient(to right,#ff6432,#ff8c5a)';
+  }
+  // Open expand panel if Gold+ — always visible, updates on signal change
+  if (canUse('gold')) {
+    openSignalExpand(sig);
+    const expandPanel = document.getElementById('sigExpandPanel');
+    const expandToggle = document.getElementById('sigExpandToggle');
+    if (expandPanel) expandPanel.classList.add('open');
+    if (expandToggle) expandToggle.style.display = 'none'; // hide toggle btn
+  }
+  // Auto-sync chart
+  if (sig.symbol) {
+    const found = ASSETS_ALL.find(a => a.lbl === sig.symbol || a.sym.endsWith(':' + sig.symbol));
+    if (found && tvSymbol !== found.sym) setSymbol(found.sym, found.lbl);
+  }
+}
+
+function renderFeed(signals){
+  const el    = document.getElementById('signalsFeed');
+  const filtered = filterSignals(signals);
+  document.getElementById('feedCount').textContent = filtered.length + ' ACTIVE';
+  if (!filtered.length) {
+    const msg = !canUse('gold') ? 'ADD ASSETS TO WATCHLIST' : 'NO LIVE SIGNALS YET';
+    el.innerHTML = `<div class="feed-empty"><div class="radar" style="width:34px;height:34px"><div class="sweep"></div></div><span>${msg}</span></div>`;
+    return;
+  }
+  el.innerHTML = filtered.slice(0, 12).map((s, i) => {
+    const sell = String(s.side||'').toUpperCase() === 'SELL';
+    const sc = parseInt(s.score)||0;
+    let scoreColor, scoreBg, scoreBorder;
+    if (sc >= 90) { scoreColor='#c084fc'; scoreBg='rgba(168,85,247,0.10)'; scoreBorder='rgba(168,85,247,0.28)'; }
+    else if (sc >= 80) { scoreColor='var(--green)'; scoreBg='rgba(0,232,122,0.09)'; scoreBorder='rgba(0,232,122,0.28)'; }
+    else if (sc >= 70) { scoreColor='#00c8a0'; scoreBg='rgba(0,200,160,0.08)'; scoreBorder='rgba(0,200,160,0.25)'; }
+    else if (sc >= 60) { scoreColor='var(--amber)'; scoreBg='rgba(255,184,0,0.08)'; scoreBorder='rgba(255,184,0,0.25)'; }
+    else { scoreColor='#ff8c5a'; scoreBg='rgba(255,100,50,0.08)'; scoreBorder='rgba(255,100,50,0.25)'; }
+    const rank = sc>=90?'ELITE':sc>=80?'STRONG':sc>=70?'GOOD':sc>=60?'WATCH':'RISKY';
+    return `<div class="fi ${i===0?'on':''}" onclick="selectSignal(${i})">
+      <div class="fi-l">
+        <div class="fi-sym">${fv(s.symbol)}</div>
+        <div class="fi-setup">${fv(s.setup||s.tf||'—')}</div>
+      </div>
+      <div class="fi-r">
+        <span class="fi-side ${sell?'sell':'buy'}">${fv(s.side)}</span>
+        <span style="font-family:var(--mono);font-size:8px;padding:2px 7px;border-radius:3px;
+          color:${scoreColor};background:${scoreBg};border:1px solid ${scoreBorder};
+          white-space:nowrap;letter-spacing:.5px">
+          ${sc} · ${rank}
+        </span>
+      </div>
+    </div>`;
+  }).join('');
+  window._filteredSignals = filtered;
+}
+
+window.selectSignal = function(i){
+  const sigs = window._filteredSignals || [];
+  if (sigs[i]) renderSignal(sigs[i], null);
+  document.querySelectorAll('.fi').forEach((el,j) => el.classList.toggle('on', j===i));
+};
+
+// ── Notifications ─────────────────────────────────────────────────
+function showNotifBadge(text) {
+  const badge = document.getElementById('notifBadge');
+  if (!badge) return;
+  badge.textContent = text;
+  badge.classList.add('show');
+  clearTimeout(notifTimeout);
+  notifTimeout = setTimeout(() => badge.classList.remove('show'), 5000);
+}
+
+function checkNewSignal(signals) {
+  if (!siteAlertsEnabled || !Array.isArray(signals) || !signals.length) return;
+  const filtered = filterSignals(signals);
+  if (!filtered.length) return;
+  const latest   = filtered[0];
+  const latestId = latest.id || (latest.symbol + latest.created_at);
+  if (lastSignalId && latestId !== lastSignalId) {
+    const side  = String(latest.side||'').toUpperCase();
+    const emoji = side === 'BUY' ? '🟢' : '🔴';
+    showNotifBadge(emoji + ' ' + (latest.symbol||'') + ' ' + side + ' · SC ' + (latest.score||'—'));
+  }
+  lastSignalId = latestId;
+}
+
+function initNotifications() {
+  const locked   = document.getElementById('notifLocked');
+  const site     = document.getElementById('notifSite');
+  const tg       = document.getElementById('notifTg');
+  const planNote = document.getElementById('notifPlanNote');
+
+  if (planNote) planNote.textContent = currentPlan.toUpperCase() + ' PLAN';
+
+  if (!canUse('gold')) {
+    if (locked) locked.style.display = 'flex';
+    return;
+  }
+
+  if (site) {
+    site.style.display = 'block';
+    const tog = document.getElementById('siteToggle');
+    const msg = document.getElementById('siteAlertMsg');
+    if (tog) tog.addEventListener('change', () => {
+      siteAlertsEnabled = tog.checked;
+      if (msg) msg.style.display = tog.checked ? 'block' : 'none';
+    });
+  }
+
+  if (canUse('platinum') && tg) {
+    tg.style.display = 'block';
+    loadTgStatus();
+  }
+}
+
+async function loadTgStatus() {
+  const lbl          = document.getElementById('tgStatusLbl');
+  const connected    = document.getElementById('tgConnected');
+  const notConnected = document.getElementById('tgNotConnected');
+  if (!lbl) return;
+  try {
+    const r = await fetch(BACKEND_URL + '/telegram-status/' + session.user.id, {cache:'no-store'});
+    const d = await r.json();
+    if (d.connected) {
+      lbl.textContent = 'CONNECTED'; lbl.style.color = 'var(--green)';
+      if (connected)    connected.style.display    = 'block';
+      if (notConnected) notConnected.style.display = 'none';
+    } else {
+      lbl.textContent = 'NOT CONNECTED'; lbl.style.color = 'var(--muted)';
+      if (connected)    connected.style.display    = 'none';
+      if (notConnected) notConnected.style.display = 'block';
+    }
+  } catch(_) { if(lbl) lbl.textContent = 'ERROR'; }
+}
+
+function initTgButtons() {
+  const connectBtn    = document.getElementById('tgConnectBtn');
+  const disconnectBtn = document.getElementById('tgDisconnectBtn');
+  if (connectBtn) {
+    connectBtn.onclick = async function() {
+      const input  = document.getElementById('tgChatInput');
+      const msg    = document.getElementById('tgConnectMsg');
+      const chatId = input ? input.value.trim() : '';
+      if (!chatId || isNaN(chatId)) {
+        if (msg) { msg.textContent='⚠ Enter a valid numeric Chat ID'; msg.style.color='var(--red)'; msg.style.display='block'; }
+        return;
+      }
+      this.textContent = 'CONNECTING...';
+      try {
+        const r = await fetch(BACKEND_URL + '/register-telegram', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ userId: session.user.id, chatId })
+        });
+        const d = await r.json();
+        if (d.ok) {
+          if (msg) { msg.textContent='✅ Connected! Check your Telegram.'; msg.style.color='var(--green)'; msg.style.display='block'; }
+          setTimeout(loadTgStatus, 1500);
+        } else {
+          if (msg) { msg.textContent='❌ '+(d.error||'Failed'); msg.style.color='var(--red)'; msg.style.display='block'; }
+        }
+      } catch(_) {
+        if (msg) { msg.textContent='❌ Connection error'; msg.style.color='var(--red)'; msg.style.display='block'; }
+      }
+      this.textContent = 'CONNECT';
+    };
+  }
+  if (disconnectBtn) {
+    disconnectBtn.onclick = async function() {
+      this.textContent = 'DISCONNECTING...';
+      try {
+        await fetch(BACKEND_URL + '/unregister-telegram', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ userId: session.user.id })
+        });
+        loadTgStatus();
+      } catch(_) {}
+      this.textContent = 'DISCONNECT';
+    };
+  }
+}
+
+// ── Market data ───────────────────────────────────────────────────
+async function loadSignals(){
+  try{
+    const r = await fetch(BACKEND_URL+'/signals',{cache:'no-store'});
+    const d = await r.json();
+    allSignals = Array.isArray(d.signals) ? d.signals : [];
+    const filtered = filterSignals(allSignals);
+    renderSignal(filtered[0]||null, d.updated_at||null);
+    renderFeed(allSignals);
+    checkNewSignal(allSignals);
+    setFeed(filtered.length ? 'LIVE · '+filtered.length+' SIGNALS' : 'SCANNING...', filtered.length ? 'ok' : 'waiting');
+  }catch(_){ setFeed('CONNECTION ERROR','err'); }
+}
+
+async function loadMarket(){
+  try{
+    const [nr,mr,ir] = await Promise.all([
+      fetch(BACKEND_URL+'/market-news',  {cache:'no-store'}),
+      fetch(BACKEND_URL+'/market-movers',{cache:'no-store'}),
+      fetch(BACKEND_URL+'/market-insight',{cache:'no-store'})
+    ]);
+    const nd=await nr.json(), md=await mr.json(), id_=await ir.json();
+    const news    = Array.isArray(nd.news)    ? nd.news    : [];
+    const movers  = Array.isArray(md.movers)  ? md.movers  : [];
+    const insight = Array.isArray(id_.insight)? id_.insight: [];
+
+    document.getElementById('newsBody').innerHTML = news.length
+      ? news.slice(0,5).map(n=>`<div class="news-item"><div class="news-t">${fv(n.title)}</div><div class="news-m">${fv(n.source)} · ${fc(n.time)}</div></div>`).join('')
+      : '<div class="empty-s"><span>NO MARKET NEWS</span></div>';
+
+    document.getElementById('moversBody').innerHTML = movers.length
+      ? movers.slice(0,7).map(m=>{ const v=Number(m.change||0); const c=v>=0?'up':'down'; const s=v>=0?'+':''; return`<div class="mv-item"><span class="mv-sym">${fv(m.symbol)}</span><span class="mv-chg ${c}">${s}${v}%</span></div>`; }).join('')
+      : '<div class="empty-s"><span>NO MOVERS DATA</span></div>';
+
+    document.getElementById('insightBody').innerHTML = insight.length
+      ? insight.slice(0,5).map(i=>`<div class="ins-item">${fv(i)}</div>`).join('')
+      : '<div class="empty-s"><span>AWAITING INTEL...</span></div>';
+  }catch(_){}
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+
+  // ── SCORE RANKING ─────────────────────────────────────────
+  function getScoreRank(score) {
+    const s = parseInt(score) || 0;
+    if (s >= 90) return { cls:'rank-elite',  label:'⬡ ELITE'  };
+    if (s >= 80) return { cls:'rank-strong', label:'★ STRONG' };
+    if (s >= 70) return { cls:'rank-good',   label:'✦ GOOD'   };
+    if (s >= 60) return { cls:'rank-ok',     label:'◈ WATCH'  };
+    return              { cls:'rank-weak',   label:'⚠ RISKY'  };
+  }
+
+  // ── GLOSSARY ───────────────────────────────────────────────
+  const GLOSSARY_DATA = {
+    en: {
+      BOS:  { name:'BOS — Break of Structure',         body:'Market breaks a relevant previous high/low confirming structural change. BUY when breaking high, SELL when breaking low. Stop below/above the breakout candle.' },
+      CHOCH:{ name:'CHOCH — Change of Character',      body:'First evidence of reversal. Price breaks a swing point opposite to the current move. More aggressive than BOS — early signal of flow change.' },
+      FVG:  { name:'FVG — Fair Value Gap',             body:'Liquidity gap between 3 candles where market moved too fast. Price tends to return to rebalance. Entry at midpoint of gap. Stop below/above the gap edge.' },
+      LSR:  { name:'LSR — Liquidity Sweep & Reclaim',  body:'Price sweeps stops beyond a relevant swing and immediately reclaims the level. Retail trap — smart money absorbed liquidity and reversed. Institutional setup.' },
+      SFP:  { name:'SFP — Swing Failure Pattern',      body:'Attempt to break swing point fails — closes back inside range. Level rejection with possible reversal. Similar to LSR without explicit reclaim.' },
+      SRR:  { name:'SRR — Support/Resistance Reclaim', body:'Price retests S/R level after breaking it and reintegrates the level. Classic pull-back to broken level. Stop beyond level with buffer.' },
+      OB:   { name:'OB — Order Block',                 body:'Last opposing candle before impulsive move. Zone of institutional orders. Price frequently returns to rebalance before continuing.' },
+      DVG:  { name:'DVG — Divergence',                 body:'Divergence between price and oscillator. Price makes new highs/lows but indicator does not confirm. Use as additional filter.' },
+      ENG:  { name:'ENG — Engulfing',                  body:'2-candle reversal: second candle fully engulfs the first. Bullish: green engulfs red. Bearish: red engulfs green. Stronger at S/R zones.' },
+      HNS:  { name:'HNS — Head and Shoulders',         body:'Bearish reversal: 3 peaks, center is highest. Entry on neckline break. Stop above right shoulder.' },
+      IHNS: { name:'IHNS — Inverse Head & Shoulders',  body:'Bullish reversal: 3 troughs, center is lowest. Entry on neckline break. Stop below right shoulder.' },
+      TRD:  { name:'TRD — Trend Detection',            body:'Trend detection by high/low structure. Used as context filter — trading in trend direction increases win rate.' },
+      BB:   { name:'BB — Bollinger Bands Signal',      body:'Signal at Bollinger Bands — touch of upper/lower band with reversal. Effective in ranging markets. In trends, use as filter.' },
+    },
+    pt: {
+      BOS:  { name:'BOS — Break of Structure',         body:'O mercado rompe topo/fundo relevante anterior confirmando mudança estrutural. BUY quando rompe topo, SELL quando rompe fundo. Stop abaixo/acima do candle de breakout.' },
+      CHOCH:{ name:'CHOCH — Change of Character',      body:'Primeira evidência de reversão. O preço quebra swing point contrário ao movimento atual. Mais agressivo que o BOS — sinal antecipado de mudança de fluxo.' },
+      FVG:  { name:'FVG — Fair Value Gap',             body:'Gap de liquidez entre 3 candles onde o mercado se moveu rápido. O preço tende a retornar para reequilibrar. Entrada no midpoint do gap. Stop abaixo/acima da borda.' },
+      LSR:  { name:'LSR — Liquidity Sweep & Reclaim',  body:'Preço varre stops além de swing relevante e imediatamente recupera o nível. Indica armadilha para retail — smart money absorveu liquidez e reverteu. Setup institucional.' },
+      SFP:  { name:'SFP — Swing Failure Pattern',      body:'Tentativa de romper swing point falha — fecha de volta no range. Rejeição de nível com possível reversão. Similar ao LSR sem reclaim explícito.' },
+      SRR:  { name:'SRR — Support/Resistance Reclaim', body:'Preço retesta nível de S/R após rompê-lo e reintegra o nível. Clássico pull-back para o nível rompido. Stop além do nível com buffer.' },
+      OB:   { name:'OB — Order Block',                 body:'Última vela oposta antes de movimento impulsivo. Zona de ordens institucionais. Preço frequentemente retorna para reequilibrar antes de continuar.' },
+      DVG:  { name:'DVG — Divergência',                body:'Divergência entre preço e oscilador. Preço faz novas máximas/mínimas mas indicador não confirma. Usar como filtro adicional.' },
+      ENG:  { name:'ENG — Engolfo (Engulfing)',         body:'Reversão de 2 velas: segunda engolfa completamente a primeira. Bullish: verde engolfa vermelha. Bearish: vermelha engolfa verde. Mais forte em zonas de S/R.' },
+      HNS:  { name:'HNS — Head and Shoulders',         body:'Padrão de reversão de baixa: 3 topos, central é o mais alto. Entrada no rompimento da neckline. Stop acima do ombro direito.' },
+      IHNS: { name:'IHNS — Inverse Head & Shoulders',  body:'Reversão de alta: 3 fundos, central é o mais baixo. Entrada no rompimento da neckline. Stop abaixo do ombro direito.' },
+      TRD:  { name:'TRD — Trend Detection',            body:'Detecção de tendência por estrutura de máximas/mínimas. Usado como filtro de contexto — operar na direção da tendência aumenta a taxa de acerto.' },
+      BB:   { name:'BB — Bollinger Bands Signal',      body:'Sinal nas Bandas de Bollinger — toque na banda superior/inferior com reversão. Efetivo em mercados laterais. Em tendência, usar como filtro.' },
+    },
+    es: {
+      BOS:  { name:'BOS — Break of Structure',         body:'El mercado rompe un máximo/mínimo relevante confirmando cambio estructural. BUY cuando rompe máximo, SELL cuando rompe mínimo. Stop debajo/encima del candle de ruptura.' },
+      CHOCH:{ name:'CHOCH — Change of Character',      body:'Primera evidencia de reversión. El precio rompe un swing point contrario al movimiento actual. Más agresivo que el BOS — señal anticipada de cambio de flujo.' },
+      FVG:  { name:'FVG — Fair Value Gap',             body:'Gap de liquidez entre 3 velas donde el mercado se movió rápido. El precio tiende a volver para reequilibrar. Entrada en el midpoint del gap. Stop debajo/encima del borde.' },
+      LSR:  { name:'LSR — Liquidity Sweep & Reclaim',  body:'El precio barre stops más allá de un swing relevante y recupera el nivel inmediatamente. Trampa para retail — smart money absorbió liquidez y revirtió. Setup institucional.' },
+      SFP:  { name:'SFP — Swing Failure Pattern',      body:'Intento de romper swing point falla — cierra de vuelta en el rango. Rechazo de nivel con posible reversión. Similar al LSR sin reclaim explícito.' },
+      SRR:  { name:'SRR — Support/Resistance Reclaim', body:'El precio retesta nivel S/R después de romperlo y lo reintegra. Pull-back clásico al nivel roto. Stop más allá del nivel con buffer.' },
+      OB:   { name:'OB — Order Block',                 body:'Última vela opuesta antes de movimiento impulsivo. Zona de órdenes institucionales. El precio frecuentemente vuelve a reequilibrar antes de continuar.' },
+      DVG:  { name:'DVG — Divergencia',                body:'Divergencia entre precio y oscilador. El precio hace nuevos máx/mín pero el indicador no confirma. Usar como filtro adicional.' },
+      ENG:  { name:'ENG — Engulfing',                  body:'Reversión de 2 velas: la segunda envuelve completamente a la primera. Bullish: verde envuelve roja. Bearish: roja envuelve verde. Más fuerte en zonas S/R.' },
+      HNS:  { name:'HNS — Head and Shoulders',         body:'Reversión bajista: 3 picos, el central es el más alto. Entrada en ruptura del neckline. Stop encima del hombro derecho.' },
+      IHNS: { name:'IHNS — Inverse Head & Shoulders',  body:'Reversión alcista: 3 mínimos, el central es el más bajo. Entrada en ruptura del neckline. Stop debajo del hombro derecho.' },
+      TRD:  { name:'TRD — Trend Detection',            body:'Detección de tendencia por estructura de máx/mín. Usado como filtro de contexto — operar en dirección de tendencia aumenta la tasa de acierto.' },
+      BB:   { name:'BB — Bollinger Bands Signal',      body:'Señal en Bandas de Bollinger — toque en banda superior/inferior con reversión. Efectivo en mercados laterales. En tendencia, usar como filtro.' },
+    }
+  };
+  // Proxy to always return current language glossary
+  function getGlossary(pattern) {
+    return GLOSSARY_DATA[currentLang]?.[pattern] || GLOSSARY_DATA.en[pattern];
+  }
+
+  function renderGlossary(pattern) {
+    const el = document.getElementById('expandGlossary');
+    if (!el) return;
+    const g = getGlossary(pattern);
+    const body = g ? g.body : (pattern + ' — padrão técnico de confluência detectado pelo ORION.');
+    const name = g ? g.name : pattern;
+    el.innerHTML =
+      '<div class="glossary-item">' +
+        '<div class="glossary-header" onclick="var b=this.nextElementSibling;b.classList.toggle(&quot;open&quot;);this.querySelector(&quot;.glossary-arrow&quot;).classList.toggle(&quot;open&quot;)">' +
+          '<span class="glossary-name">' + name + '</span>' +
+          '<span class="glossary-arrow">▸</span>' +
+        '</div>' +
+        '<div class="glossary-body open">' + body + '</div>' +
+      '</div>';
+  }
+
+  // ── STOP CALCULATOR ────────────────────────────────────────
+  let currentSig = null;
+  let stopMode   = 'tech';
+
+  window.setStopMode = function(mode, btn) {
+    stopMode = mode;
+    document.querySelectorAll('.stop-mode-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    const fw = document.getElementById('fixedStopWrap');
+    if (fw) fw.style.display = mode === 'fixed' ? 'flex' : 'none';
+    calcLot();
+  };
+
+  function calcLot() {
+    if (!currentSig) return;
+    const capital  = parseFloat(document.getElementById('stopCapital')?.value)  || userCapital || 1000;
+    const riskPct  = parseFloat(document.getElementById('stopRisk')?.value)     || userRisk    || 1;
+    const contract = parseFloat(document.getElementById('stopContract')?.value) || 100000;
+    const entry    = parseFloat(currentSig.entry) || 0;
+    const sl       = parseFloat(currentSig.sl)    || 0;
+    if (!entry || !sl) { if(document.getElementById('lotSize')) document.getElementById('lotSize').textContent='—'; return; }
+
+    let stopDist = Math.abs(entry - sl);
+    if (stopMode === 'fixed') {
+      const fp = parseFloat(document.getElementById('stopFixed')?.value) || 20;
+      const pv = entry > 1000 ? 1 : entry > 100 ? 0.1 : entry > 10 ? 0.01 : 0.0001;
+      stopDist = fp * pv;
+    } else if (stopMode === 'atr') {
+      stopDist = entry * 0.003;
+    }
+    if (stopDist <= 0) return;
+
+    const riskAmt = capital * (riskPct / 100);
+    const pipVal  = stopDist / entry * contract;
+    const lotSize = riskAmt / pipVal;
+    const tp1p    = parseFloat(currentSig.tp1) || 0;
+    const tp2p    = parseFloat(currentSig.tp2) || 0;
+    const rr1     = tp1p && entry ? (Math.abs(tp1p-entry)/stopDist).toFixed(1) : '—';
+    const rr2     = tp2p && entry ? (Math.abs(tp2p-entry)/stopDist).toFixed(1) : '—';
+
+    const ls = document.getElementById('lotSize');
+    const lu = document.getElementById('lotRiskUsd');
+    const lr = document.getElementById('lotRR');
+    if (ls) ls.textContent = (lotSize < 0.01 ? lotSize.toFixed(4) : lotSize.toFixed(2)) + ' lots';
+    if (lu) lu.textContent = 'Risco: $' + riskAmt.toFixed(2);
+    if (lr) lr.textContent = 'RR TP1: 1:' + rr1 + ' | TP2: 1:' + rr2;
+  }
+
+  // ── SIGNAL EXPAND ──────────────────────────────────────────
+  let expandOpen = false;
+
+  function openSignalExpand(sig) {
+    currentSig = sig;
+    const toggle  = document.getElementById('sigExpandToggle');
+    const confEl  = document.getElementById('expandConf');
+    const stopSec = document.getElementById('stopConfigSection');
+    if (!toggle) return;
+    toggle.style.display = 'block';
+
+    const confs = Array.isArray(sig.confluences) ? sig.confluences : [sig.setup || '—'];
+    if (confEl) confEl.innerHTML = confs.map((cf,i) =>
+      '<span class="conf-chip ' + (i===0?'pattern':'') + '">' + cf + '</span>'
+    ).join('');
+
+    renderGlossary(sig.setup || '');
+
+    if (stopSec) {
+      stopSec.style.display = canUse('gold') ? 'block' : 'none';
+      if (canUse('gold')) {
+        const cap = document.getElementById('stopCapital');
+        const rsk = document.getElementById('stopRisk');
+        if (cap && userCapital) cap.value = userCapital;
+        if (rsk && userRisk)    rsk.value = userRisk;
+        ['stopCapital','stopRisk','stopFixed','stopContract'].forEach(function(id) {
+          const el = document.getElementById(id);
+          if (el) { el.removeEventListener('input', calcLot); el.addEventListener('input', calcLot); }
+        });
+        calcLot();
+      }
+    }
+  }
+
+  window.toggleExpand = function() {
+    // Panel stays open — no toggle needed
+  };
+
+  // ── USER ACCOUNT CONFIG ────────────────────────────────────
+  let userCapital  = 1000;
+  let userRisk     = 1;
+  let userLeverage = 100;
+  let userBroker   = '';
+
+  async function loadUserConfig() {
+    if (!sb || !session) return;
+    try {
+      const { data } = await sb.from('profiles')
+        .select('capital,risk_percent,leverage,broker,account_configured')
+        .eq('id', session.user.id).maybeSingle();
+      if (data) {
+        userCapital  = data.capital      || 1000;
+        userRisk     = data.risk_percent || 1;
+        userLeverage = data.leverage     || 100;
+        userBroker   = data.broker       || '';
+        if (!data.account_configured) showOnboarding();
+      } else { showOnboarding(); }
+    } catch(_) {}
+  }
+
+  function showOnboarding() {
+    const p = document.getElementById('onboardingPopup');
+    if (p) p.style.display = 'flex';
+  }
+
+  async function saveUserConfig(capital, risk, leverage, broker) {
+    userCapital = capital; userRisk = risk; userLeverage = leverage; userBroker = broker;
+    if (!sb || !session) return;
+    try {
+      await sb.from('profiles').update({
+        capital, risk_percent: risk, leverage, broker,
+        account_configured: true, updated_at: new Date().toISOString()
+      }).eq('id', session.user.id);
+    } catch(_) {}
+  }
+
+  function initOnboarding() {
+    const popup   = document.getElementById('onboardingPopup');
+    const saveBtn = document.getElementById('ob_save');
+    const skipBtn = document.getElementById('ob_skip');
+    if (saveBtn) saveBtn.onclick = async function() {
+      const capital  = parseFloat(document.getElementById('ob_capital')?.value)  || 1000;
+      const risk     = parseFloat(document.getElementById('ob_risk')?.value)     || 1;
+      const leverage = parseInt(document.getElementById('ob_leverage')?.value)   || 100;
+      const broker   = document.getElementById('ob_broker')?.value               || '';
+      await saveUserConfig(capital, risk, leverage, broker);
+      if (popup) popup.style.display = 'none';
+    };
+    if (skipBtn) skipBtn.onclick = function() { if (popup) popup.style.display = 'none'; };
+  }
+
+
+  // ── LANGUAGE / IDIOMA ─────────────────────────────────────
+  let currentLang = localStorage.getItem('orion_lang') || 'en';
+
+  const LANG = {
+    en: {
+      livePreview:    'LIVE MARKET PREVIEW',
+      signalsFeed:    'SIGNALS FEED',
+      chartAnalysis:  'CHART ANALYSIS',
+      watchlist:      'WATCHLIST',
+      indicators:     'INDICATORS',
+      notifications:  'NOTIFICATIONS',
+      marketNews:     'MARKET NEWS',
+      topMovers:      'TOP MOVERS',
+      orionInsight:   'ORION INSIGHT',
+      signalRanking:  'SIGNAL QUALITY RANKING',
+      confluenceGuide:'CONFLUENCE SCORE GUIDE',
+      waiting:        'WAITING FOR LIVE SIGNAL...',
+      noSignals:      'NO LIVE SIGNALS YET',
+      siteAlerts:     'SITE ALERTS',
+      siteAlertsSub:  'Banner notification when a new signal arrives',
+      telegramAlerts: 'TELEGRAM ALERTS',
+      telegramSub:    'Receive signals in real-time on your Telegram',
+      managePlan:     'MANAGE PLAN',
+      logout:         'LOGOUT',
+      entry:          'ENTRY',
+      stop:           'STOP',
+      confluences:    'CONFLUENCES DETECTED',
+      howPattern:     'HOW THIS PATTERN WORKS',
+      configStop:     'CONFIGURE STOP & LOT SIZE',
+      capital:        'CAPITAL (USD)',
+      risk:           'RISK (%)',
+      contract:       'CONTRACT (LOT)',
+      suggested:      'SUGGESTED SIZE',
+      riskUsd:        'Risk',
+      active:         'ACTIVE',
+      addAssets:      'No assets added yet — search and add below',
+      scanning:       'SCANNING...',
+      connecting:     'CONNECTING',
+      upgradePlan:    'UPGRADE PLAN →',
+      risky:          '⚠ RISKY SETUP',
+      riskyDesc:      'Few filters confirmed. High risk.',
+      watchlst:       '◈ WATCHLIST',
+      watchDesc:      'Setup forming. Await confirmation.',
+      good:           '✦ GOOD SETUP',
+      goodDesc:       'Multiple confluences. Valid setup.',
+      strong:         '★ STRONG SIGNAL',
+      strongDesc:     'High confluence. Priority entry.',
+      elite:          '⬡ ELITE SIGNAL',
+      eliteDesc:      'Max confluence. Institutional setup.',
+    },
+    pt: {
+      livePreview:    'PRÉVIA DO MERCADO AO VIVO',
+      signalsFeed:    'FEED DE SINAIS',
+      chartAnalysis:  'ANÁLISE GRÁFICA',
+      watchlist:      'WATCHLIST',
+      indicators:     'INDICADORES',
+      notifications:  'NOTIFICAÇÕES',
+      marketNews:     'NOTÍCIAS DO MERCADO',
+      topMovers:      'MAIORES MOVIMENTOS',
+      orionInsight:   'ORION INSIGHT',
+      signalRanking:  'RANKING DE QUALIDADE',
+      confluenceGuide:'GUIA DE PONTUAÇÃO',
+      waiting:        'AGUARDANDO SINAL AO VIVO...',
+      noSignals:      'NENHUM SINAL ATIVO',
+      siteAlerts:     'ALERTAS NO SITE',
+      siteAlertsSub:  'Notificação quando um novo sinal chegar',
+      telegramAlerts: 'ALERTAS TELEGRAM',
+      telegramSub:    'Receba sinais em tempo real no seu Telegram',
+      managePlan:     'GERENCIAR PLANO',
+      logout:         'SAIR',
+      entry:          'ENTRADA',
+      stop:           'STOP',
+      confluences:    'CONFLUÊNCIAS DETECTADAS',
+      howPattern:     'COMO FUNCIONA ESSE PADRÃO',
+      configStop:     'CONFIGURAR STOP & TAMANHO DO LOTE',
+      capital:        'CAPITAL (USD)',
+      risk:           'RISCO (%)',
+      contract:       'CONTRATO (LOTE)',
+      suggested:      'TAMANHO SUGERIDO',
+      riskUsd:        'Risco',
+      active:         'ATIVO',
+      addAssets:      'Nenhum ativo adicionado — pesquise e adicione abaixo',
+      scanning:       'ESCANEANDO...',
+      connecting:     'CONECTANDO',
+      upgradePlan:    'FAZER UPGRADE →',
+      risky:          '⚠ SETUP ARRISCADO',
+      riskyDesc:      'Poucos filtros confirmados. Alto risco.',
+      watchlst:       '◈ OBSERVAÇÃO',
+      watchDesc:      'Setup em formação. Aguardar confirmação.',
+      good:           '✦ BOM SETUP',
+      goodDesc:       'Múltiplas confluências. Setup válido.',
+      strong:         '★ SINAL FORTE',
+      strongDesc:     'Alta confluência. Entrada prioritária.',
+      elite:          '⬡ SINAL ELITE',
+      eliteDesc:      'Máxima confluência. Setup institucional.',
+    },
+    es: {
+      livePreview:    'VISTA PREVIA DEL MERCADO',
+      signalsFeed:    'FEED DE SEÑALES',
+      chartAnalysis:  'ANÁLISIS DE GRÁFICO',
+      watchlist:      'WATCHLIST',
+      indicators:     'INDICADORES',
+      notifications:  'NOTIFICACIONES',
+      marketNews:     'NOTICIAS DEL MERCADO',
+      topMovers:      'MAYORES MOVIMIENTOS',
+      orionInsight:   'ORION INSIGHT',
+      signalRanking:  'RANKING DE CALIDAD',
+      confluenceGuide:'GUÍA DE PUNTUACIÓN',
+      waiting:        'ESPERANDO SEÑAL EN VIVO...',
+      noSignals:      'SIN SEÑALES ACTIVAS',
+      siteAlerts:     'ALERTAS EN SITIO',
+      siteAlertsSub:  'Notificación cuando llegue una nueva señal',
+      telegramAlerts: 'ALERTAS TELEGRAM',
+      telegramSub:    'Recibe señales en tiempo real en tu Telegram',
+      managePlan:     'GESTIONAR PLAN',
+      logout:         'SALIR',
+      entry:          'ENTRADA',
+      stop:           'STOP',
+      confluences:    'CONFLUENCIAS DETECTADAS',
+      howPattern:     'CÓMO FUNCIONA ESTE PATRÓN',
+      configStop:     'CONFIGURAR STOP & TAMAÑO DE LOTE',
+      capital:        'CAPITAL (USD)',
+      risk:           'RIESGO (%)',
+      contract:       'CONTRATO (LOTE)',
+      suggested:      'TAMAÑO SUGERIDO',
+      riskUsd:        'Riesgo',
+      active:         'ACTIVO',
+      addAssets:      'Sin activos añadidos — busca y agrega abajo',
+      scanning:       'ESCANEANDO...',
+      connecting:     'CONECTANDO',
+      upgradePlan:    'MEJORAR PLAN →',
+      risky:          '⚠ SETUP ARRIESGADO',
+      riskyDesc:      'Pocos filtros confirmados. Alto riesgo.',
+      watchlst:       '◈ OBSERVACIÓN',
+      watchDesc:      'Setup en formación. Esperar confirmación.',
+      good:           '✦ BUEN SETUP',
+      goodDesc:       'Múltiples confluencias. Setup válido.',
+      strong:         '★ SEÑAL FUERTE',
+      strongDesc:     'Alta confluencia. Entrada prioritaria.',
+      elite:          '⬡ SEÑAL ÉLITE',
+      eliteDesc:      'Máxima confluencia. Setup institucional.',
+    }
+  };
+
+  function t(key) { return LANG[currentLang]?.[key] || LANG.en[key] || key; }
+
+  const LANG_FLAGS = { en: '🇺🇸 EN', pt: '🇧🇷 PT', es: '🇪🇸 ES' };
+
+  function applyLang() {
+    // Panel titles
+    const titleMap = {
+      'ph-live':     'livePreview',
+      'ph-feed':     'signalsFeed',
+      'ph-chart':    'chartAnalysis',
+      'ph-notif':    'notifications',
+      'ph-news':     'marketNews',
+      'ph-movers':   'topMovers',
+      'ph-insight':  'orionInsight',
+      'ph-ranking':  'signalRanking',
+    };
+    Object.entries(titleMap).forEach(([id, key]) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = t(key);
+    });
+    // Buttons
+    const manageBtn = document.getElementById('manageBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (manageBtn) manageBtn.textContent = t('managePlan');
+    if (logoutBtn) logoutBtn.textContent = t('logout');
+    // Feed status
+    const feedStatus = document.getElementById('feedStatus');
+    if (feedStatus && feedStatus.textContent.includes('CONNECT')) {
+      feedStatus.textContent = t('connecting');
+    }
+    // Watchlist empty
+    const wlEmpty = document.getElementById('wlEmpty');
+    if (wlEmpty) wlEmpty.textContent = t('addAssets');
+    // Expand panel labels
+    const confTitle = document.getElementById('expandConfTitle');
+    const pattTitle = document.getElementById('expandPattTitle');
+    const stopTitle = document.getElementById('expandStopTitle');
+    if (confTitle) confTitle.textContent = t('confluences');
+    if (pattTitle) pattTitle.textContent = t('howPattern');
+    if (stopTitle) stopTitle.textContent = t('configStop');
+    // Score cells
+    ['liveEntry','liveSl'].forEach((id,i) => {
+      const lbl = document.querySelector(`#${id}`);
+      if (lbl) {
+        const parent = lbl.closest('.sc');
+        if (parent) { const l = parent.querySelector('.sc-l'); if(l) l.textContent = i===0?t('entry'):t('stop'); }
+      }
+    });
+    // Ranking labels
+    const rankLabels = [
+      ['rank-risky-lbl','risky'],['rank-risky-desc','riskyDesc'],
+      ['rank-watch-lbl','watchlst'],['rank-watch-desc','watchDesc'],
+      ['rank-good-lbl','good'],['rank-good-desc','goodDesc'],
+      ['rank-strong-lbl','strong'],['rank-strong-desc','strongDesc'],
+      ['rank-elite-lbl','elite'],['rank-elite-desc','eliteDesc'],
+    ];
+    rankLabels.forEach(([id,key]) => { const el=document.getElementById(id); if(el) el.textContent=t(key); });
+    // Update lang btn
+    const langBtn = document.getElementById('langBtn');
+    if (langBtn) langBtn.textContent = LANG_FLAGS[currentLang] || '🇧🇷 PT';
+  }
+
+  function switchLang() {
+    const langs = ['en','pt','es'];
+    const idx = langs.indexOf(currentLang);
+    currentLang = langs[(idx + 1) % langs.length];
+    localStorage.setItem('orion_lang', currentLang);
+    applyLang();
+  }
+
+document.addEventListener('DOMContentLoaded', async function(){
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  setLoad('AUTHENTICATING...');
+  const {data:{session:s}} = await sb.auth.getSession();
+  if (!s) { window.location.href='/'; return; }
+  session = s;
+
+  setLoad('VERIFYING CLEARANCE...');
+  try{
+    const r = await fetch(BACKEND_URL+'/subscription-status/'+s.user.id,{cache:'no-store'});
+    const d = await r.json();
+    const sub = d.subscription || {};
+    if (!sub.plan || !['active','trialing'].includes(sub.status)) {
+      window.location.href='/plans.html'; return;
+    }
+    currentPlan = (sub.plan||'bronze').toLowerCase();
+    document.getElementById('userName').textContent = s.user.user_metadata?.full_name || s.user.email || '';
+    const pb = document.getElementById('planBadge');
+    pb.textContent = currentPlan.toUpperCase();
+    pb.className = 'plan-chip ' + currentPlan;
+  }catch(_){
+    currentPlan = 'bronze';
+    document.getElementById('userName').textContent = s.user.email || '';
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('checkout')==='success') window.history.replaceState({},'','/dashboard.html');
+  if (params.get('checkout')==='cancelled') { window.location.href='/plans.html'; return; }
+
+  setLoad('LOADING DASHBOARD...');
+
+  // Apply plan gates (lock overlays)
+  applyPlanGates();
+
+  // Init chart
+  buildIndicatorButtons();
+  initTvSearch();
+  initTfButtons();
+  loadTv();
+
+  // Load watchlist from Supabase
+  await loadWatchlist();
+
+  // Init notifications
+  initNotifications();
+  if (canUse('platinum')) initTgButtons();
+
+  showDash();
+
+  await loadUserConfig();
+  initOnboarding();
+
+  await loadUserConfig();
+  initOnboarding();
+
+  loadSignals(); signalsPoller = setInterval(loadSignals, 15000);
+  loadMarket();  marketPoller  = setInterval(loadMarket,  30000);
+
+  sb.auth.onAuthStateChange(ev => {
+    if (ev === 'SIGNED_OUT') {
+      clearInterval(signalsPoller); clearInterval(marketPoller);
+      window.location.href = '/';
+    }
+  });
+
+  document.getElementById('logoutBtn').onclick = async () => {
+    await sb.auth.signOut();
+    window.location.href = '/';
+  };
+
+  document.getElementById('manageBtn').onclick = async function() {
+    this.textContent = 'LOADING...';
+    try{
+      const r = await fetch(BACKEND_URL+'/create-customer-portal-session',{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({userId: session.user.id})
+      });
+      const d = await r.json();
+      this.textContent = 'MANAGE PLAN';
+      if (d.url) { window.location.href = d.url; return; }
+    }catch(_){}
+    this.textContent = 'MANAGE PLAN';
+    window.location.href = '/plans.html';
+  };
+});
+</script>
+
+  <!-- LEGAL FOOTER -->
+  <footer style="margin-top:40px;padding:24px 20px;border-top:1px solid rgba(0,210,110,0.08);
+    background:rgba(2,8,16,0.6);text-align:center;">
+    <div style="max-width:1540px;margin:0 auto;">
+      <div style="font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;
+        letter-spacing:4px;color:#00e87a;margin-bottom:8px;text-shadow:0 0 10px rgba(0,232,122,0.2)">
+        ORION RADAR™
+      </div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:#3d6b52;
+        letter-spacing:1.5px;line-height:1.8;margin-bottom:10px;">
+        © 2026 ORION RADAR™. All rights reserved. &nbsp;|&nbsp;
+        <a href="/legal.html" style="color:#6b9a78;text-decoration:none;transition:color .13s"
+          onmouseover="this.style.color='#00e87a'" onmouseout="this.style.color='#6b9a78'">Terms of Service</a>
+        &nbsp;|&nbsp;
+        <a href="/legal.html#privacy" style="color:#6b9a78;text-decoration:none;transition:color .13s"
+          onmouseover="this.style.color='#00e87a'" onmouseout="this.style.color='#6b9a78'">Privacy Policy</a>
+      </div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:#2a4a38;letter-spacing:1px;line-height:1.6;">
+        ORION RADAR™ is not a registered investment advisor. All signals are for informational purposes only.<br>
+        Trading financial instruments involves substantial risk. Past performance does not guarantee future results.<br>
+        ORION RADAR™ does not execute orders and has no access to your brokerage account.
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
