@@ -360,6 +360,34 @@
       color:var(--muted2);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
     .ranking-title::before{content:'//';color:var(--green);font-family:var(--mono);}
 
+
+    /* ── PERFORMANCE DASHBOARD ── */
+    .perf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+    .perf-stat{background:rgba(0,0,0,0.2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;text-align:center;}
+    .perf-stat-val{font-family:var(--display);font-size:22px;font-weight:900;color:var(--green);margin-bottom:2px;}
+    .perf-stat-lbl{font-family:var(--mono);font-size:9px;color:var(--muted2);letter-spacing:1.5px;}
+    .perf-stat.win .perf-stat-val{color:var(--green);}
+    .perf-stat.loss .perf-stat-val{color:var(--red);}
+    .perf-stat.score .perf-stat-val{color:var(--amber);}
+    .asset-row{display:flex;align-items:center;gap:10px;padding:8px 12px;
+      border-bottom:1px solid var(--line);transition:background .13s;}
+    .asset-row:hover{background:rgba(0,232,122,0.03);}
+    .asset-sym{font-family:var(--display);font-size:11px;font-weight:700;color:var(--text);min-width:80px;}
+    .asset-bar-wrap{flex:1;height:5px;background:rgba(0,0,0,0.3);border-radius:3px;overflow:hidden;}
+    .asset-bar-fill{height:100%;border-radius:3px;transition:width .6s ease;}
+    .asset-stats{font-family:var(--mono);font-size:9px;color:var(--muted2);min-width:120px;text-align:right;}
+    .perf-filter{display:flex;gap:6px;margin-bottom:12px;}
+    .perf-day-btn{font-family:var(--mono);font-size:9px;padding:4px 10px;border-radius:3px;
+      background:rgba(0,0,0,0.3);border:1px solid var(--line);color:var(--muted3);cursor:pointer;transition:all .13s;}
+    .perf-day-btn.active{background:rgba(0,232,122,0.09);border-color:rgba(0,232,122,0.3);color:var(--green);}
+    .search-bar{display:flex;gap:8px;margin-bottom:10px;align-items:center;}
+    .search-input{flex:1;background:rgba(0,0,0,0.3);border:1px solid var(--line2);border-radius:5px;
+      padding:7px 12px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;transition:border-color .14s;}
+    .search-input:focus{border-color:var(--green3);}
+    .search-filter-btn{font-family:var(--mono);font-size:9px;padding:6px 10px;border-radius:4px;
+      background:rgba(0,0,0,0.3);border:1px solid var(--line);color:var(--muted3);cursor:pointer;transition:all .13s;}
+    .search-filter-btn.active{background:rgba(0,232,122,0.09);border-color:rgba(0,232,122,0.3);color:var(--green);}
+
     @media(max-width:1100px){.row1,.row3{grid-template-columns:1fr}}
     @media(max-width:640px){.sig-grid{grid-template-columns:repeat(2,1fr)}.topbar{flex-wrap:wrap}}
   </style>
@@ -1249,7 +1277,10 @@ async function loadSignals(){
     renderFeed(allSignals);
     checkNewSignal(allSignals);
     setFeed(filtered.length ? 'LIVE · '+filtered.length+' SIGNALS' : 'SCANNING...', filtered.length ? 'ok' : 'waiting');
-  }catch(_){ setFeed('CONNECTION ERROR','err'); }
+  }catch(err){ 
+    console.error('[ORION] loadSignals error:', err.message || err);
+    setFeed('CONNECTION ERROR','err'); 
+  }
 }
 
 async function loadMarket(){
@@ -1711,6 +1742,110 @@ async function loadMarket(){
     currentLang = langs[(idx + 1) % langs.length];
     localStorage.setItem('orion_lang', currentLang);
     applyLang();
+    // Save lang preference to Supabase
+    if (sb && session) {
+      sb.from('profiles').update({ lang: currentLang }).eq('id', session.user.id).then(() => {});
+    }
+  }
+
+
+  // ── PERFORMANCE DASHBOARD ──────────────────────────────────
+  let perfDays = 7;
+
+  async function loadPerf(days, btn) {
+    perfDays = days;
+    document.querySelectorAll('.perf-day-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    try {
+      const r = await fetch(`${BACKEND_URL}/performance?days=${days}`);
+      const data = await r.json();
+      if (!data.ok) return;
+
+      const wEl = document.getElementById('perfWinRate');
+      const tEl = document.getElementById('perfTotal');
+      const winsEl = document.getElementById('perfWins');
+      const lossEl = document.getElementById('perfLosses');
+      if (wEl) wEl.textContent = (data.winRate||0) + '%';
+      if (tEl) tEl.textContent = data.total || 0;
+      if (winsEl) winsEl.textContent = data.wins || 0;
+      if (lossEl) lossEl.textContent = data.losses || 0;
+
+      const assetsEl = document.getElementById('perfAssets');
+      if (assetsEl && Array.isArray(data.assets) && data.assets.length) {
+        assetsEl.innerHTML = data.assets.map(a => {
+          let color = a.winRate >= 70 ? 'var(--green)' : a.winRate >= 50 ? 'var(--amber)' : 'var(--red)';
+          return `<div class="asset-row">
+            <div class="asset-sym">${a.symbol}</div>
+            <div class="asset-bar-wrap">
+              <div class="asset-bar-fill" style="width:${a.winRate}%;background:${color}"></div>
+            </div>
+            <div class="asset-stats">
+              <span style="color:${color};font-weight:700">${a.winRate}%</span>
+              &nbsp;✅${a.wins} ❌${a.losses} | ${a.total} total
+            </div>
+          </div>`;
+        }).join('');
+      } else if (assetsEl) {
+        assetsEl.innerHTML = '<div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-align:center;padding:20px">No data yet — signals will appear after first tracked result.</div>';
+      }
+    } catch(e) { console.error('perf err:', e); }
+  }
+
+  // ── SIGNAL SEARCH/HISTORY ──────────────────────────────────
+  let allSignalsCache = [];
+  let activeFilter = 'all';
+
+  function setFilter(f, btn) {
+    activeFilter = f;
+    document.querySelectorAll('.search-filter-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    filterSignals();
+  }
+
+  function filterSignals() {
+    const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+    let filtered = allSignalsCache.slice(0, 10);
+    if (activeFilter !== 'all') filtered = filtered.filter(s => String(s.side||'').toLowerCase() === activeFilter);
+    if (q) filtered = filtered.filter(s =>
+      String(s.symbol||'').toLowerCase().includes(q) ||
+      String(s.setup||'').toLowerCase().includes(q)
+    );
+    renderHistory(filtered);
+  }
+
+  function renderHistory(signals) {
+    const el = document.getElementById('signalHistory');
+    if (!el) return;
+    if (!signals.length) {
+      el.innerHTML = '<div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-align:center;padding:16px">No signals found.</div>';
+      return;
+    }
+    el.innerHTML = signals.map(s => {
+      const sell = String(s.side||'').toUpperCase() === 'SELL';
+      const sc = parseInt(s.score)||0;
+      const scColor = sc>=90?'#c084fc':sc>=80?'var(--green)':sc>=70?'#00c8a0':sc>=60?'var(--amber)':'#ff8c5a';
+      return `<div class="asset-row" onclick="selectSignalById('${s.id}')" style="cursor:pointer">
+        <div style="min-width:70px">
+          <div style="font-family:var(--display);font-size:10px;font-weight:700;color:var(--text)">${s.symbol||'—'}</div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted2)">${s.setup||'—'}</div>
+        </div>
+        <span style="font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:3px;
+          background:${sell?'rgba(255,53,88,0.1)':'rgba(0,232,122,0.1)'};
+          color:${sell?'var(--red)':'var(--green)'};border:1px solid ${sell?'rgba(255,53,88,0.2)':'rgba(0,232,122,0.2)'}">
+          ${s.side||'—'}
+        </span>
+        <div style="flex:1"></div>
+        <div style="text-align:right">
+          <div style="font-family:var(--mono);font-size:9px;color:${scColor}">${sc}/100</div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">${s.created_at ? new Date(s.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '—'}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function selectSignalById(id) {
+    const idx = allSignalsCache.findIndex(s => s.id === id);
+    if (idx >= 0) selectSignal(idx);
   }
 
 document.addEventListener('DOMContentLoaded', async function(){
@@ -1800,6 +1935,64 @@ document.addEventListener('DOMContentLoaded', async function(){
   };
 });
 </script>
+
+
+  <!-- PERFORMANCE DASHBOARD — Gold/Platinum -->
+  <div class="panel" id="perfPanel" style="margin-bottom:12px;display:none">
+    <div class="ph">
+      <div class="ph-title">📊 SIGNAL PERFORMANCE</div>
+      <div class="ph-right" style="display:flex;gap:6px">
+        <button class="perf-day-btn active" onclick="loadPerf(7,this)">7D</button>
+        <button class="perf-day-btn" onclick="loadPerf(30,this)">30D</button>
+        <button class="perf-day-btn" onclick="loadPerf(90,this)">90D</button>
+      </div>
+    </div>
+    <div style="padding:13px 14px">
+      <!-- Stats -->
+      <div class="perf-grid">
+        <div class="perf-stat win">
+          <div class="perf-stat-val" id="perfWinRate">—</div>
+          <div class="perf-stat-lbl">WIN RATE</div>
+        </div>
+        <div class="perf-stat">
+          <div class="perf-stat-val" id="perfTotal" style="color:var(--blue)">—</div>
+          <div class="perf-stat-lbl">TOTAL SIGNALS</div>
+        </div>
+        <div class="perf-stat win">
+          <div class="perf-stat-val" id="perfWins">—</div>
+          <div class="perf-stat-lbl">WINS</div>
+        </div>
+        <div class="perf-stat loss">
+          <div class="perf-stat-val" id="perfLosses">—</div>
+          <div class="perf-stat-lbl">LOSSES</div>
+        </div>
+      </div>
+      <!-- Asset breakdown -->
+      <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);letter-spacing:2px;margin-bottom:8px">PERFORMANCE BY ASSET</div>
+      <div id="perfAssets">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-align:center;padding:20px">
+          Loading performance data...
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIGNAL SEARCH — Gold/Platinum -->
+  <div class="panel" id="searchPanel" style="margin-bottom:12px;display:none">
+    <div class="ph">
+      <div class="ph-title">🔍 SIGNAL HISTORY</div>
+      <div class="ph-right">LAST 10 SIGNALS</div>
+    </div>
+    <div style="padding:13px 14px">
+      <div class="search-bar">
+        <input class="search-input" id="searchInput" placeholder="Search symbol, setup..." oninput="filterSignals()"/>
+        <button class="search-filter-btn active" id="filterAll" onclick="setFilter('all',this)">ALL</button>
+        <button class="search-filter-btn" id="filterBuy" onclick="setFilter('buy',this)">BUY</button>
+        <button class="search-filter-btn" id="filterSell" onclick="setFilter('sell',this)">SELL</button>
+      </div>
+      <div id="signalHistory"></div>
+    </div>
+  </div>
 
   <!-- LEGAL FOOTER -->
   <footer style="margin-top:40px;padding:24px 20px;border-top:1px solid rgba(0,210,110,0.08);
