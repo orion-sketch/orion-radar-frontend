@@ -210,24 +210,21 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://js.stripe.com/v3/"></script>
+  <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script>
 const SUPABASE_URL='https://eyawmevqfeaeioistrqk.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5YXdtZXZxZmVhZWlvaXN0cnFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNjE3MDMsImV4cCI6MjA4OTYzNzcwM30.zFT0i5XKwYEbtF6oWKdBtSNvDI8mo48zy-ucsVTWOoQ';
 const BACKEND_URL='https://orion-radar-backend.onrender.com';
-const STRIPE_PK='pk_test_51TDFnOJFpSiDhOGAEP4jHTcwpF7uwPRc2CzM9TRQ751KGY4hr57tly45TVWu2vUikaIVOHsBaNvlYUFRzL0nIgEM00dlKtnF94';
-const STRIPE_LINKS={
-  bronze:'https://buy.stripe.com/test_9B6eVe6Dn37m39MdptcMM03',
-  silver:'https://buy.stripe.com/test_fZuaEY0eZ7nCh0C859cMM02',
-  gold:'https://buy.stripe.com/test_7sY14of9T0ZecKmbhlcMM01',
-  platinum:'https://buy.stripe.com/test_eVq7sMf9T0ZeaCe4SXcMM00'
+const PADDLE_PRICES={
+  bronze:'pri_01ks66newf5g6n9kns4mqe8w41',
+  silver:'pri_01ks66pge7jn23y5frna5s0xfs',
+  gold:'pri_01ks66q9px6vdc26e5sv2ht44n',
+  platinum:'pri_01ks66k2r3te49h2qn0x3bvj7j'
 };
-const STRIPE_PRICES={
-  bronze:'price_1TDGeGJFpSiDhOGAiKZheg1D',
-  silver:'price_1TDGfPJFpSiDhOGAmGjcxmfp',
-  gold:'price_1TDGfxJFpSiDhOGAV5Ndaz1X',
-  platinum:'price_1TDGgGJFpSiDhOGA1xLiee9y'
-};
+
+// Initialize Paddle
+Paddle.Environment.set('production');
+Paddle.Initialize({ token: 'live_774fb6fe9fcb3665327e9d2a464' });
 
 let sb,currentSession,selectedPlan='platinum',liveSignals=[],selSigIdx=0,tvSymbol='FX:EURUSD';
 let selAssets=new Set(['EURUSD','XAUUSD','GBPUSD']),selInds=new Set(['BOS','FVG','LSR']);
@@ -394,7 +391,7 @@ function renderPreview(p){
   }
 }
 
-function selectPlan(p){
+window.selectPlan=function selectPlan(p){
   selectedPlan=p;selSigIdx=0;
   document.querySelectorAll('.plan-tab').forEach(t=>t.classList.toggle('active',t.dataset.plan===p));
   document.getElementById('selValue').textContent=PLANS[p].label;
@@ -423,7 +420,8 @@ window.selTvSig=function(i,sym){
 
 async function loadSignals(){
   try{
-    const r=await fetch(BACKEND_URL+'/signals',{cache:'no-store'});
+    const tok = (typeof currentSession!=='undefined'&&currentSession?.access_token)||'';
+    const r=await fetch(BACKEND_URL+'/signals',{cache:'no-store',headers:tok?{'Authorization':'Bearer '+tok}:{}});
     const d=await r.json();
     liveSignals=Array.isArray(d.signals)?d.signals:[];
     if(['gold','platinum'].includes(selectedPlan)) renderPreview(selectedPlan);
@@ -506,7 +504,7 @@ document.addEventListener('DOMContentLoaded',async function(){
         return;
       }
       // Fallback to Payment Link if backend checkout fails
-      const link = STRIPE_LINKS[selectedPlan];
+      const link = PADDLE_PRICES[selectedPlan];
       if(link){
         const url = new URL(link);
         url.searchParams.set('prefilled_email', currentSession.user.email);
@@ -517,7 +515,7 @@ document.addEventListener('DOMContentLoaded',async function(){
       showMsg(data.error||'Could not start checkout. Try again.','err');
     }catch(e){
       // Fallback to Payment Link
-      const link = STRIPE_LINKS[selectedPlan];
+      const link = PADDLE_PRICES[selectedPlan];
       if(link){
         const url = new URL(link);
         url.searchParams.set('prefilled_email', currentSession.user.email);
