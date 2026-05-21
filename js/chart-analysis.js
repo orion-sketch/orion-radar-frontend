@@ -137,17 +137,30 @@ async function fetchOHLCV(symbol, tf) {
 function buildFake(symbol, tf) {
   const sig  = state.signals[symbol]?.tfs[tf];
   const base = sig?.entry || 1.0;
-  const vol  = base * 0.002;
+
+  // vol baseado no range real do sinal para escala correta
+  const sl   = sig?.sl  || 0;
+  const tp   = sig?.tp  || 0;
+  const rangeTP = tp  ? Math.abs(tp  - base) : 0;
+  const rangeSL = sl  ? Math.abs(sl  - base) : 0;
+  const range   = Math.max(rangeTP, rangeSL, base * 0.0005);
+  const vol  = range * 0.6;
+
   const step = {M5:300,M15:900,H1:3600,H4:14400,D:86400,W:604800}[tf]||3600;
   const now  = Math.floor(Date.now()/1000);
-  let p = base * 0.994;
+
+  // Começa fora do range do sinal para dar contexto visual
+  const isUp = sig?.dir !== 'sell';
+  let p = isUp ? base - range * 1.5 : base + range * 1.5;
+
   return Array.from({length:80},(_,i)=>{
     const time  = now-(79-i)*step;
     const open  = p;
-    const move  = (Math.random()-0.47)*vol;
+    const bias  = isUp ? 0.52 : 0.48; // leve tendência na direção do sinal
+    const move  = (Math.random()-( 1 - bias))*vol;
     const close = open+move;
-    const high  = Math.max(open,close)+Math.random()*vol*0.4;
-    const low   = Math.min(open,close)-Math.random()*vol*0.4;
+    const high  = Math.max(open,close)+Math.random()*vol*0.3;
+    const low   = Math.min(open,close)-Math.random()*vol*0.3;
     p = close;
     return {time,open,high,low,close};
   });
@@ -204,16 +217,46 @@ function plotMarkers(sym,tf,candles){
   if(!sig||!candles.length)return;
   const c=cc();
   const last=candles[candles.length-1].time;
-  const isUp=sig.dir!=='sell';
+  const isBuy=sig.dir!=='sell';
   const mkrs=[];
-  if(sig.entry)mkrs.push({time:last,position:isUp?'belowBar':'aboveBar',color:c.text,shape:'circle',text:`ENTRY ${fmtPrice(sig.entry)}`,size:1});
-  if(sig.tp)   mkrs.push({time:last,position:'aboveBar',color:c.up,shape:'arrowUp',text:`TP ${fmtPrice(sig.tp)}`,size:1});
-  if(sig.tp2&&sig.tp2!==sig.tp)mkrs.push({time:last,position:'aboveBar',color:c.up,shape:'arrowUp',text:`TP2 ${fmtPrice(sig.tp2)}`,size:1});
-  if(sig.sl)   mkrs.push({time:last,position:'belowBar',color:c.dn,shape:'arrowDown',text:`SL ${fmtPrice(sig.sl)}`,size:1});
+
+  // ENTRY: abaixo da barra em BUY, acima em SELL
+  if(sig.entry)mkrs.push({
+    time:last,
+    position:isBuy?'belowBar':'aboveBar',
+    color:c.text,shape:'circle',
+    text:`ENTRY ${fmtPrice(sig.entry)}`,size:1
+  });
+
+  // TP: acima em BUY (preço maior), abaixo em SELL (preço menor)
+  if(sig.tp)mkrs.push({
+    time:last,
+    position:isBuy?'aboveBar':'belowBar',
+    color:c.up,
+    shape:isBuy?'arrowUp':'arrowDown',
+    text:`TP1 ${fmtPrice(sig.tp)}`,size:1
+  });
+  if(sig.tp2&&sig.tp2!==sig.tp)mkrs.push({
+    time:last,
+    position:isBuy?'aboveBar':'belowBar',
+    color:c.up,
+    shape:isBuy?'arrowUp':'arrowDown',
+    text:`TP2 ${fmtPrice(sig.tp2)}`,size:1
+  });
+
+  // SL: abaixo em BUY, acima em SELL
+  if(sig.sl)mkrs.push({
+    time:last,
+    position:isBuy?'belowBar':'aboveBar',
+    color:c.dn,
+    shape:isBuy?'arrowDown':'arrowUp',
+    text:`SL ${fmtPrice(sig.sl)}`,size:1
+  });
+
   state.candleSeries.setMarkers(mkrs);
   clearPL();
   addPL(sig.entry,'ENTRADA',c.text,true);
-  addPL(sig.tp,'TP',c.up,false);
+  addPL(sig.tp,'TP1',c.up,false);
   if(sig.tp2&&sig.tp2!==sig.tp)addPL(sig.tp2,'TP2',c.up,true);
   addPL(sig.sl,'SL',c.dn,false);
 }
@@ -222,7 +265,28 @@ async function loadChart(sym,tf){
   if(!state.chart||!state.candleSeries)return;
   showLoading(true);
   const candles=await fetchOHLCV(sym,tf);
-  if(candles.length){state.candleSeries.setData(candles);plotMarkers(sym,tf,candles);state.chart.timeScale().fitContent();}
+  if(candles.length){
+    state.candleSeries.setData(candles);
+    plotMarkers(sym,tf,candles);
+    state.chart.timeScale().fitContent();
+
+    // Auto-escala Y para incluir Entry, TP e SL nas linhas de preço
+    const sig=state.signals[sym]?.tfs[tf];
+    if(sig){
+      const prices=[sig.entry,sig.tp,sig.tp2,sig.sl].filter(Boolean);
+      const candlePrices=candles.flatMap(c=>[c.high,c.low]);
+      const allPrices=[...prices,...candlePrices];
+      const minP=Math.min(...allPrices);
+      const maxP=Math.max(...allPrices);
+      const pad=(maxP-minP)*0.15;
+      state.candleSeries.applyOptions({
+        autoscaleInfoProvider:()=>({
+          priceRange:{minValue:minP-pad,maxValue:maxP+pad},
+          margins:{above:15,below:15}
+        })
+      });
+    }
+  }
   showLoading(false);
 }
 
