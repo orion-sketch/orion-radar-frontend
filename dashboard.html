@@ -17,6 +17,34 @@
       --text:#dff2ea;--muted:#3d6b52;--muted2:#6b9a78;--muted3:#9bbfa8;
       --mono:'Share Tech Mono',monospace;--display:'Orbitron',sans-serif;
     }
+    /* ── THEMES ── */
+    body.theme-light{
+      --bg:#eef2f6;--bg2:#ffffff;--panel:rgba(240,244,250,0.98);
+      --line:rgba(0,120,80,0.10);--line2:rgba(0,120,80,0.22);--line3:rgba(0,120,80,0.38);
+      --green:#0a7a48;--green2:#0a9a58;--green3:#0a6a40;
+      --glow:rgba(0,150,90,0.10);--glow2:rgba(0,150,90,0.22);
+      --red:#aa2a10;--amber:#8a6000;--blue:#0a5a8a;--purple:#6a30b0;
+      --text:#1a2a3a;--muted:#5a8aaa;--muted2:#3a6080;--muted3:#2a4a60;
+    }
+    body.theme-sepia{
+      --bg:#120e08;--bg2:#1c160e;--panel:rgba(20,16,10,0.98);
+      --line:rgba(180,140,60,0.09);--line2:rgba(180,140,60,0.20);--line3:rgba(180,140,60,0.38);
+      --green:#60d888;--green2:#70e898;--green3:#50c878;
+      --glow:rgba(100,200,130,0.10);--glow2:rgba(100,200,130,0.22);
+      --red:#d86040;--amber:#d0a040;--blue:#60a0d0;--purple:#9070d0;
+      --text:#d8c8a0;--muted:#806040;--muted2:#a08060;--muted3:#c0a080;
+    }
+    /* theme toggle buttons */
+    .theme-toggle-group{display:flex;gap:4px;}
+    .theme-toggle-btn{height:28px;padding:0 10px;background:transparent;border:1px solid rgba(0,232,122,0.18);
+      color:var(--muted2);font-family:var(--mono);font-size:9px;letter-spacing:1px;border-radius:3px;cursor:pointer;transition:all .15s;}
+    .theme-toggle-btn:hover{border-color:rgba(0,232,122,0.35);color:var(--text);}
+    .theme-toggle-btn.active{background:rgba(0,232,122,0.09);border-color:rgba(0,232,122,0.35);color:var(--green);}
+    /* Lightweight chart container inside dashboard */
+    #orion-mini-chart{width:100%;height:100%;position:relative;}
+    #orion-mini-chart-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+      font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);gap:8px;z-index:5;}
+    .orion-chart-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1s infinite;}
     html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden}
     body{
       background-image:
@@ -70,6 +98,16 @@
     .plan-chip.gold{background:rgba(255,184,0,0.08);color:var(--amber);border:1px solid rgba(255,184,0,0.22);}
     .plan-chip.silver{background:rgba(160,185,200,0.08);color:#a8ccd8;border:1px solid rgba(160,185,200,0.20);}
     .plan-chip.bronze{background:rgba(190,110,40,0.08);color:#d4905a;border:1px solid rgba(190,110,40,0.20);}
+    .plan-chip.free{background:rgba(120,120,120,0.08);color:#888;border:1px solid rgba(120,120,120,0.20);}
+    /* Free plan masks */
+    .plan-free .score-val { filter: blur(4px); pointer-events:none; user-select:none; }
+    .plan-free .fi-tp, .plan-free .fi-sl { filter: blur(4px); pointer-events:none; }
+    /* Symbol selector panel */
+    #symbolSelectorWrap { margin-bottom:12px; }
+    .sym-chip { display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:3px;border:1px solid var(--line);color:var(--muted2);background:var(--card);cursor:pointer;margin:2px; }
+    .sym-chip.active { border-color:var(--green);color:var(--green);background:rgba(0,232,122,0.07); }
+    .sym-chip .sym-remove { color:var(--red);font-size:10px;margin-left:2px; }
+    .cooldown-bar { font-family:var(--mono);font-size:8px;color:var(--amber);letter-spacing:1px;margin-top:6px; }
     .feed-pill{font-family:var(--mono);font-size:9px;padding:3px 9px;border-radius:3px;display:flex;align-items:center;gap:5px;}
     .feed-pill::before{content:'';width:5px;height:5px;border-radius:50%;}
     .feed-pill.ok{background:rgba(0,232,122,0.07);color:var(--green);border:1px solid rgba(0,232,122,0.16);}
@@ -88,7 +126,7 @@
     .btn-danger:hover{background:rgba(255,53,88,0.16);}
 
     /* LAYOUT */
-    .row1{display:grid;grid-template-columns:1fr 290px;gap:12px;margin-bottom:12px;}
+    .row1{display:grid;grid-template-columns:1fr 260px 380px;gap:12px;margin-bottom:12px;}
     .row3{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:12px;}
 
     /* PANEL */
@@ -172,6 +210,7 @@
     .feed-empty span{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;}
 
     /* WATCHLIST PANEL */
+    .wl-chip-locked{opacity:0.7;cursor:not-allowed;border-color:rgba(255,184,0,0.3)!important;color:var(--amber)!important;}
     .wl-section{padding:10px 14px;border-bottom:1px solid var(--line);background:rgba(0,0,0,0.15);}
     .wl-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1.5px;margin-bottom:7px;
       display:flex;align-items:center;justify-content:space-between;}
@@ -388,6 +427,37 @@
       background:rgba(0,0,0,0.3);border:1px solid var(--line);color:var(--muted3);cursor:pointer;transition:all .13s;}
     .search-filter-btn.active{background:rgba(0,232,122,0.09);border-color:rgba(0,232,122,0.3);color:var(--green);}
 
+
+    /* ── TF FILTER & BADGES ── */
+    .tf-filter-row{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
+    .tf-btn{font-family:var(--mono);font-size:9px;padding:4px 10px;border-radius:3px;
+      cursor:pointer;border:1px solid var(--line);background:rgba(0,0,0,0.3);
+      color:var(--muted3);transition:all .13s;letter-spacing:.5px;}
+    .tf-btn:hover{opacity:.85;}
+    .tf-btn.active{font-weight:700;}
+    .tf-btn[data-tf="ALL"]  {color:var(--text);}
+    .tf-btn[data-tf="H1"]   {color:#a855f7;border-color:rgba(168,85,247,0.3);}
+    .tf-btn[data-tf="M30"]  {color:#00c8a0;border-color:rgba(0,200,160,0.3);}
+    .tf-btn[data-tf="M15"]  {color:#ffb800;border-color:rgba(255,184,0,0.3);}
+    .tf-btn[data-tf="M5"]   {color:#00e87a;border-color:rgba(0,232,122,0.3);}
+    .tf-btn[data-tf="M2"]   {color:#22d3ee;border-color:rgba(34,211,238,0.3);}
+    .tf-btn.active[data-tf="ALL"]  {background:rgba(255,255,255,0.08);}
+    .tf-btn.active[data-tf="H1"]   {background:rgba(168,85,247,0.12);}
+    .tf-btn.active[data-tf="M30"]  {background:rgba(0,200,160,0.12);}
+    .tf-btn.active[data-tf="M15"]  {background:rgba(255,184,0,0.12);}
+    .tf-btn.active[data-tf="M5"]   {background:rgba(0,232,122,0.12);}
+    .tf-btn.active[data-tf="M2"]   {background:rgba(34,211,238,0.12);}
+    .tf-badge{font-family:var(--mono);font-size:8px;padding:1px 5px;border-radius:2px;
+      font-weight:700;letter-spacing:.5px;display:inline-block;}
+    .tf-badge.H1  {color:#a855f7;background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.25);}
+    .tf-badge.M30 {color:#00c8a0;background:rgba(0,200,160,0.12);border:1px solid rgba(0,200,160,0.25);}
+    .tf-badge.M15 {color:#ffb800;background:rgba(255,184,0,0.12);border:1px solid rgba(255,184,0,0.25);}
+    .tf-badge.M5  {color:#00e87a;background:rgba(0,232,122,0.09);border:1px solid rgba(0,232,122,0.2);}
+    .tf-badge.M2  {color:#22d3ee;background:rgba(34,211,238,0.09);border:1px solid rgba(34,211,238,0.2);}
+    .aligned-chips{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px;}
+    .aligned-chip{font-family:var(--mono);font-size:7px;padding:1px 4px;border-radius:2px;
+      background:rgba(0,0,0,0.3);border:1px solid var(--line);color:var(--muted2);}
+
     @media(max-width:1100px){.row1,.row3{grid-template-columns:1fr}}
     @media(max-width:640px){.sig-grid{grid-template-columns:repeat(2,1fr)}.topbar{flex-wrap:wrap}}
   </style>
@@ -460,6 +530,11 @@
       </div>
     </div>
     <div class="tb-right">
+      <div class="theme-toggle-group">
+        <button class="theme-toggle-btn active" onclick="setTheme('dark',this)">DARK</button>
+        <button class="theme-toggle-btn" onclick="setTheme('light',this)">LIGHT</button>
+        <button class="theme-toggle-btn" onclick="setTheme('sepia',this)">SEPIA</button>
+      </div>
       <button class="btn btn-outline" id="langBtn" onclick="switchLang()" style="font-size:11px;letter-spacing:0">🇧🇷 PT</button>
       <button class="btn btn-outline" id="manageBtn">MANAGE PLAN</button>
       <button class="btn btn-danger" id="logoutBtn">LOGOUT</button>
@@ -577,6 +652,29 @@
         <div class="ph-title"><span id="ph-feed">SIGNALS FEED</span></div>
         <div class="ph-right" id="feedCount">0 ACTIVE</div>
       </div>
+      <!-- SYMBOL SELECTOR (Bronze/Silver/Gold) -->
+      <div id="symbolSelectorWrap" style="display:none;padding:8px 12px;border-bottom:1px solid var(--line);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:1px;">MY ASSETS</span>
+          <span style="font-family:var(--mono);font-size:8px;color:var(--muted2);" id="symSlotsLabel"></span>
+        </div>
+        <div id="symSelectedChips" style="margin-bottom:6px;min-height:20px;"></div>
+        <div style="display:flex;gap:5px;align-items:center;">
+          <input id="symSearchInput" type="text" placeholder="Add asset: EURUSD, XAUUSD..." style="flex:1;font-family:var(--mono);font-size:9px;padding:4px 8px;border-radius:3px;border:1px solid var(--line);background:var(--bg);color:var(--text);outline:none;" />
+          <button onclick="symAdd()" style="font-family:var(--mono);font-size:8px;padding:4px 10px;border-radius:3px;border:1px solid var(--green);color:var(--green);background:transparent;cursor:pointer;letter-spacing:1px;white-space:nowrap;">+ ADD</button>
+        </div>
+        <div class="cooldown-bar" id="symCooldownBar" style="margin-top:4px;"></div>
+      </div>
+
+      <!-- TF Filter -->
+      <div class="tf-filter-row" style="padding:8px 10px 0;display:flex;gap:5px;flex-wrap:wrap">
+        <button class="tf-btn active" data-tf="ALL" onclick="setTfFilter('ALL',this)">ALL</button>
+        <button class="tf-btn" data-tf="H1"  onclick="setTfFilter('H1',this)" title="Tendência">H1 📊</button>
+        <button class="tf-btn" data-tf="M30" onclick="setTfFilter('M30',this)" title="Continuidade">M30 ↗</button>
+        <button class="tf-btn" data-tf="M15" onclick="setTfFilter('M15',this)" title="Engatilhar">M15 ⚡</button>
+        <button class="tf-btn" data-tf="M5"  onclick="setTfFilter('M5',this)" title="Entrada">M5 🎯</button>
+        <button class="tf-btn" data-tf="M2"  onclick="setTfFilter('M2',this)" title="Agressivo">M2 🔥</button>
+      </div>
       <div class="locked-overlay" id="signalFeedWrap">
         <div class="pb" id="signalsFeed">
           <div class="feed-empty">
@@ -586,7 +684,51 @@
         </div>
       </div>
     </div>
-  </div>
+
+    <!-- ORION CHART — Lightweight Charts with signal markers -->
+    <div class="panel" id="orionChartPanel" style="display:flex;flex-direction:column;min-height:420px;">
+      <div class="ph" style="flex-shrink:0">
+        <div class="ph-title">ORION CHART</div>
+        <div class="ph-right" style="display:flex;align-items:center;gap:8px;">
+          <span id="orionChartLabel" style="font-family:var(--mono);font-size:9px;color:var(--muted2)">— / —</span>
+          <span id="orionChartTime" style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.5px;"></span>
+          <div style="display:flex;gap:3px;">
+            <button class="tf-btn" data-tf="M5"  onclick="orionSetTf('M5',this)">M5</button>
+            <button class="tf-btn" data-tf="M15" onclick="orionSetTf('M15',this)">M15</button>
+            <button class="tf-btn active" data-tf="H1" onclick="orionSetTf('H1',this)">H1</button>
+            <button class="tf-btn" data-tf="H4"  onclick="orionSetTf('H4',this)">H4</button>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;border-bottom:1px solid var(--line);flex-shrink:0;">
+        <div style="flex:1;padding:7px 12px;border-right:1px solid var(--line);">
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:1px;margin-bottom:3px;">ENTRY</div>
+          <div style="font-family:var(--mono);font-size:12px;color:var(--text);" id="oc-entry">—</div>
+        </div>
+        <div style="flex:1;padding:7px 12px;border-right:1px solid var(--line);">
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:1px;margin-bottom:3px;">TP1</div>
+          <div style="font-family:var(--mono);font-size:12px;color:var(--green);" id="oc-tp1">—</div>
+        </div>
+        <div style="flex:1;padding:7px 12px;border-right:1px solid var(--line);">
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:1px;margin-bottom:3px;">TP2</div>
+          <div style="font-family:var(--mono);font-size:12px;color:var(--green);" id="oc-tp2">—</div>
+        </div>
+        <div style="flex:1;padding:7px 12px;">
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:1px;margin-bottom:3px;">SL</div>
+          <div style="font-family:var(--mono);font-size:12px;color:var(--red);" id="oc-sl">—</div>
+        </div>
+      </div>
+      <div style="flex:1;position:relative;min-height:300px;" id="orion-mini-chart">
+        <div id="orion-mini-chart-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);gap:8px;z-index:5;">
+          <div class="orion-chart-dot" style="width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1s infinite;"></div>
+          SELECIONE UM SINAL
+        </div>
+      </div>
+      <div style="padding:6px 12px;border-top:1px solid var(--line);display:flex;gap:14px;flex-shrink:0;">
+        <span style="font-family:var(--mono);font-size:9px;color:var(--muted2);">◉ ENTRADA &nbsp; ▲ TP &nbsp; ▼ SL</span>
+      </div>
+    </div>
+  </div><!-- /row1 -->
 
 
   <!-- SCORE RANKING -->
@@ -799,14 +941,15 @@ let lastSignalId = null;
 let notifTimeout = null;
 
 // ── Plan config ──────────────────────────────────────────────────
-const PLAN_ORDER = ['bronze','silver','gold','platinum'];
-const planRank   = p => PLAN_ORDER.indexOf(p || 'bronze');
+const PLAN_ORDER = ['free','bronze','silver','gold','platinum'];
+const planRank   = p => { const i = PLAN_ORDER.indexOf((p||'free').toLowerCase()); return i < 0 ? 0 : i; };
 const canUse     = min => planRank(currentPlan) >= planRank(min);
 
 const PLAN_LIMITS = {
-  bronze:   { assets: 3  },
-  silver:   { assets: 5  },
-  gold:     { assets: 10 },
+  free:     { assets: 0   },
+  bronze:   { assets: 3   },
+  silver:   { assets: 5   },
+  gold:     { assets: 10  },
   platinum: { assets: 999 },
 };
 
@@ -868,26 +1011,85 @@ function lockPanel(wrapperId, minPlan, msg) {
 
 // ── Plan gates ────────────────────────────────────────────────────
 function applyPlanGates() {
-  // Live preview — Gold+
-  lockPanel('livePreviewWrap', 'gold', 'AVAILABLE FROM GOLD PLAN');
-  // Signals feed — Gold+
-  lockPanel('signalFeedWrap', 'gold', 'LIVE SIGNALS FROM GOLD PLAN');
-  // Market news — Silver+
-  lockPanel('newsWrap', 'silver', 'MARKET NEWS FROM SILVER PLAN');
-  // Top movers — Silver+
-  lockPanel('moversWrap', 'silver', 'TOP MOVERS FROM SILVER PLAN');
-  // Insight — Gold+
-  lockPanel('insightWrap', 'gold', 'ORION INSIGHT FROM GOLD PLAN');
+  // Live preview — Bronze+
+  lockPanel('livePreviewWrap', 'bronze', 'LIVE PREVIEW FROM BRONZE PLAN');
+  // Signals feed — always visible, but content filtered by backend
+  // Market news — Gold+
+  lockPanel('newsWrap', 'gold', 'MARKET NEWS FROM GOLD PLAN');
+  // Top movers — Gold+
+  lockPanel('moversWrap', 'gold', 'TOP MOVERS FROM GOLD PLAN');
+  // Insight — Platinum only
+  lockPanel('insightWrap', 'platinum', 'ORION INSIGHT — PLATINUM EXCLUSIVE');
+
+  // Free plan: mask score and TP/SL in signal cards
+  if (currentPlan === 'free') {
+    document.documentElement.classList.add('plan-free');
+  }
+
+  // Show/hide symbol selector based on plan
+  const symSelector = document.getElementById('symbolSelectorWrap');
+  if (symSelector) symSelector.style.display = canUse('bronze') ? 'block' : 'none';
+
+  // Show perf panel for Gold+
+  const perfPanel = document.getElementById('perfPanel');
+  if (perfPanel) perfPanel.style.display = canUse('gold') ? 'block' : 'none';
+}
+
+// Upgrade modal
+function showUpgradeModal(feature, minPlan) {
+  let modal = document.getElementById('upgradeModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'upgradeModal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;display:flex;align-items:center;justify-content:center;';
+    modal.innerHTML = `
+      <div style="background:var(--card);border:1px solid var(--line);border-radius:10px;padding:36px;max-width:400px;width:90%;text-align:center;position:relative;">
+        <button onclick="document.getElementById('upgradeModal').remove()" style="position:absolute;top:12px;right:16px;background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;">✕</button>
+        <div style="font-family:var(--display);font-size:10px;letter-spacing:3px;color:var(--green);margin-bottom:12px;">ORION RADAR PRO</div>
+        <div id="upgradeModalIcon" style="font-size:36px;margin-bottom:12px;">🔒</div>
+        <div id="upgradeModalTitle" style="font-family:var(--mono);font-size:14px;color:var(--text);margin-bottom:8px;"></div>
+        <div id="upgradeModalMsg" style="font-family:var(--mono);font-size:10px;color:var(--muted2);margin-bottom:24px;line-height:1.6;"></div>
+        <a href="/plans.html" style="display:inline-block;background:var(--green);color:#000;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:2px;padding:12px 28px;border-radius:5px;text-decoration:none;">UPGRADE NOW →</a>
+      </div>`;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', e => { if(e.target===modal) modal.remove(); });
+  }
+  const titles = { bronze:'Bronze', silver:'Silver', gold:'Gold', platinum:'Platinum' };
+  document.getElementById('upgradeModalTitle').textContent = feature + ' — ' + (titles[minPlan]||minPlan).toUpperCase() + ' PLAN';
+  document.getElementById('upgradeModalMsg').textContent = 'This feature is available from the ' + (titles[minPlan]||minPlan) + ' plan. Upgrade to unlock full access to ORION RADAR PRO.';
 }
 
 // ── Watchlist ─────────────────────────────────────────────────────
-function wlLimit(){ return PLAN_LIMITS[currentPlan]?.assets || 3; }
+function wlLimit(){ return PLAN_LIMITS[currentPlan]?.assets || 1; }
+
+let wlCooldownDays = 0;
+let wlUpdatedAt    = null;
+
+function wlDaysLeft() {
+  if (!wlCooldownDays || !wlUpdatedAt) return 0;
+  const daysSince = (Date.now() - new Date(wlUpdatedAt).getTime()) / (1000*60*60*24);
+  return Math.max(0, Math.ceil(wlCooldownDays - daysSince));
+}
 
 function renderWatchlist() {
   const chips = document.getElementById('wlChips');
   const empty = document.getElementById('wlEmpty');
   const count = document.getElementById('wlCount');
+  const daysLeft = wlDaysLeft();
+
   count.textContent = watchlist.length + '/' + wlLimit();
+
+  // Mostra cooldown badge se aplicável
+  let cooldownBadge = document.getElementById('wlCooldownBadge');
+  if (!cooldownBadge) {
+    cooldownBadge = document.createElement('span');
+    cooldownBadge.id = 'wlCooldownBadge';
+    cooldownBadge.style.cssText = 'font-family:var(--mono);font-size:9px;color:var(--amber);background:rgba(255,184,0,0.07);border:1px solid rgba(255,184,0,0.18);border-radius:2px;padding:2px 8px;margin-left:8px;';
+    count.parentNode.appendChild(cooldownBadge);
+  }
+  cooldownBadge.style.display = daysLeft > 0 ? 'inline' : 'none';
+  cooldownBadge.textContent = daysLeft > 0 ? `🔒 ALTERAR EM ${daysLeft}d` : '';
+
   if (!watchlist.length) {
     chips.innerHTML = '';
     chips.appendChild(empty);
@@ -897,31 +1099,88 @@ function renderWatchlist() {
   empty.style.display = 'none';
   chips.innerHTML = watchlist.map(sym => {
     const a = ASSETS_ALL.find(x => x.lbl === sym) || { lbl: sym };
-    return `<div class="wl-chip" onclick="removeFromWatchlist('${sym}')" title="Click to remove">${a.lbl}</div>`;
+    const locked = daysLeft > 0;
+    return `<div class="wl-chip${locked?' wl-chip-locked':''}" onclick="${locked?'showCooldownMsg()':'removeFromWatchlist(\''+sym+'\')'}" title="${locked?'Disponível em '+daysLeft+'d — Faça upgrade para alterar livremente':'Clique para remover'}">${a.lbl}${locked?' 🔒':' ×'}</div>`;
   }).join('');
 }
 
+window.showCooldownMsg = function() {
+  const d = wlDaysLeft();
+  showToast(`🔒 Você pode alterar sua watchlist em ${d} dia(s). Faça upgrade para Gold e altere livremente.`, 'warn');
+};
+
 window.removeFromWatchlist = async function(sym) {
-  watchlist = watchlist.filter(s => s !== sym);
-  renderWatchlist();
-  renderFeed(allSignals);
-  await saveWatchlist();
+  if (!session) return;
+  const daysLeft = wlDaysLeft();
+  if (daysLeft > 0) { showCooldownMsg(); return; }
+
+  try {
+    const res = await fetch(BACKEND_URL + '/watchlist/remove', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+      body: JSON.stringify({ symbol: sym })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      watchlist = data.watchlist;
+      wlUpdatedAt = new Date().toISOString();
+      renderWatchlist();
+      renderFeed(allSignals);
+    } else {
+      showToast(data.error || 'Erro ao remover ativo.', 'warn');
+    }
+  } catch(e) {
+    // fallback local
+    watchlist = watchlist.filter(s => s !== sym);
+    renderWatchlist();
+    renderFeed(allSignals);
+  }
 };
 
 async function addToWatchlist(sym, lbl) {
   if (watchlist.includes(lbl)) { setSymbol(sym, lbl); return; }
+
+  const daysLeft = wlDaysLeft();
+  if (daysLeft > 0) { showCooldownMsg(); return; }
+
   if (watchlist.length >= wlLimit()) {
-    alert(`Your ${currentPlan} plan allows up to ${wlLimit()} assets. Remove one or upgrade.`);
+    showToast(`Seu plano ${currentPlan.toUpperCase()} permite até ${wlLimit()} ativo(s). Remova um ou faça upgrade.`, 'warn');
     return;
   }
-  watchlist.push(lbl);
-  renderWatchlist();
-  renderFeed(allSignals);
-  setSymbol(sym, lbl);
-  await saveWatchlist();
+
+  try {
+    const res = await fetch(BACKEND_URL + '/watchlist/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+      body: JSON.stringify({ symbol: lbl })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      watchlist = data.watchlist;
+      wlUpdatedAt = new Date().toISOString();
+      renderWatchlist();
+      renderFeed(allSignals);
+      setSymbol(sym, lbl);
+    } else if (data.upgrade_required) {
+      showToast(data.error, 'warn');
+      setTimeout(() => { window.location.href = '/plans.html'; }, 2000);
+    } else if (data.cooldown) {
+      showToast(data.error, 'warn');
+    } else {
+      showToast(data.error || 'Erro ao adicionar ativo.', 'warn');
+    }
+  } catch(e) {
+    // fallback local
+    if (watchlist.length >= wlLimit()) { showToast('Limite atingido.', 'warn'); return; }
+    watchlist.push(lbl);
+    renderWatchlist();
+    renderFeed(allSignals);
+    setSymbol(sym, lbl);
+  }
 }
 
 async function saveWatchlist() {
+  // Agora gerenciado pelo backend — mantido para compatibilidade
   if (!sb || !session) return;
   try {
     await sb.from('profiles').update({ watchlist, updated_at: new Date().toISOString() }).eq('id', session.user.id);
@@ -929,13 +1188,27 @@ async function saveWatchlist() {
 }
 
 async function loadWatchlist() {
-  if (!sb || !session) return;
+  if (!session) return;
   try {
-    const { data } = await sb.from('profiles').select('watchlist').eq('id', session.user.id).maybeSingle();
-    if (data?.watchlist && Array.isArray(data.watchlist)) {
-      watchlist = data.watchlist.slice(0, wlLimit());
+    const res = await fetch(BACKEND_URL + '/watchlist', {
+      headers: { 'Authorization': 'Bearer ' + session.access_token }
+    });
+    const data = await res.json();
+    if (data.ok) {
+      watchlist        = data.watchlist || [];
+      wlCooldownDays   = data.cooldown_days || 0;
+      wlUpdatedAt      = data.watchlist_updated_at || null;
     }
-  } catch(_) {}
+  } catch(e) {
+    // fallback Supabase direto
+    if (!sb) return;
+    try {
+      const { data } = await sb.from('profiles').select('watchlist').eq('id', session.user.id).maybeSingle();
+      if (data?.watchlist && Array.isArray(data.watchlist)) {
+        watchlist = data.watchlist.slice(0, wlLimit());
+      }
+    } catch(_) {}
+  }
   renderWatchlist();
 }
 
@@ -1113,7 +1386,12 @@ function renderFeed(signals){
     el.innerHTML = `<div class="feed-empty"><div class="radar" style="width:34px;height:34px"><div class="sweep"></div></div><span>${msg}</span></div>`;
     return;
   }
-  el.innerHTML = filtered.slice(0, 12).map((s, i) => {
+  // Apply TF filter
+  let tfFilt = currentTfFilter || 'ALL';
+  let toShow = filtered;
+  if (tfFilt !== 'ALL') toShow = filtered.filter(s => (s.tf||'M5') === tfFilt);
+
+  el.innerHTML = toShow.slice(0, 12).map((s, i) => {
     const sell = String(s.side||'').toUpperCase() === 'SELL';
     const sc = parseInt(s.score)||0;
     let scoreColor, scoreBg, scoreBorder;
@@ -1123,10 +1401,24 @@ function renderFeed(signals){
     else if (sc >= 60) { scoreColor='var(--amber)'; scoreBg='rgba(255,184,0,0.08)'; scoreBorder='rgba(255,184,0,0.25)'; }
     else { scoreColor='#ff8c5a'; scoreBg='rgba(255,100,50,0.08)'; scoreBorder='rgba(255,100,50,0.25)'; }
     const rank = sc>=90?'ELITE':sc>=80?'STRONG':sc>=70?'GOOD':sc>=60?'WATCH':'RISKY';
-    return `<div class="fi ${i===0?'on':''}" onclick="selectSignal(${i})">
+    // TF badge
+    const tf = s.tf || 'M5';
+    const tfColors = {H1:'#a855f7',M30:'#00c8a0',M15:'#ffb800',M5:'#00e87a',M2:'#22d3ee'};
+    const tfColor = tfColors[tf] || '#00e87a';
+    // Aligned TFs chips
+    const alignedHtml = Array.isArray(s.aligned_tfs) && s.aligned_tfs.length
+      ? s.aligned_tfs.map(t => `<span class="aligned-chip">${t}</span>`).join('')
+      : '';
+    const realIdx = filtered.indexOf(s);
+    return `<div class="fi ${i===0?'on':''}" data-sym="${fv(s.symbol)}" data-tf="${s.tf||s.timeframe||'M5'}" onclick="selectSignal(${realIdx});orionLoadChartWithSig('${(s.symbol||'').toUpperCase()}','${(s.tf||s.timeframe||'M5').toUpperCase()}',window._filteredSignals[${realIdx}])">
       <div class="fi-l">
-        <div class="fi-sym">${fv(s.symbol)}</div>
-        <div class="fi-setup">${fv(s.setup||s.tf||'—')}</div>
+        <div class="fi-sym" style="display:flex;align-items:center;gap:5px">
+          ${fv(s.symbol)}
+          <span class="tf-badge ${tf}">${tf}</span>
+        </div>
+        <div class="fi-setup">${fv(s.setup||'—')}</div>
+        ${alignedHtml ? `<div class="aligned-chips">${alignedHtml}</div>` : ''}
+        ${s.timestamp ? `<div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:3px;letter-spacing:.5px;">🕐 ${orionFmtTime(s.timestamp)}</div>` : ''}
       </div>
       <div class="fi-r">
         <span class="fi-side ${sell?'sell':'buy'}">${fv(s.side)}</span>
@@ -1137,7 +1429,7 @@ function renderFeed(signals){
         </span>
       </div>
     </div>`;
-  }).join('');
+  }).join('') || '<div style="padding:20px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--muted)">No signals for this timeframe</div>';
   window._filteredSignals = filtered;
 }
 
@@ -1148,6 +1440,23 @@ window.selectSignal = function(i){
 };
 
 // ── Notifications ─────────────────────────────────────────────────
+function showToast(msg, type) {
+  let t = document.getElementById('orionToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'orionToast';
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;font-family:var(--mono);font-size:11px;letter-spacing:1px;padding:10px 20px;border-radius:6px;max-width:420px;text-align:center;transition:opacity 0.3s;pointer-events:none;';
+    document.body.appendChild(t);
+  }
+  t.style.background = type === 'warn' ? 'rgba(255,184,0,0.15)' : 'rgba(0,232,122,0.12)';
+  t.style.border     = type === 'warn' ? '1px solid rgba(255,184,0,0.4)' : '1px solid rgba(0,232,122,0.3)';
+  t.style.color      = type === 'warn' ? 'var(--amber)' : 'var(--green)';
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._hide);
+  t._hide = setTimeout(() => { t.style.opacity = '0'; }, 4000);
+}
+
 function showNotifBadge(text) {
   const badge = document.getElementById('notifBadge');
   if (!badge) return;
@@ -1269,14 +1578,25 @@ function initTgButtons() {
 // ── Market data ───────────────────────────────────────────────────
 async function loadSignals(){
   try{
-    const r = await fetch(BACKEND_URL+'/signals',{cache:'no-store'});
+    const token = session?.access_token || '';
+    const r = await fetch(BACKEND_URL+'/signals',{
+      cache:'no-store',
+      headers: token ? {'Authorization':'Bearer '+token} : {}
+    });
     const d = await r.json();
-    allSignals = Array.isArray(d.signals) ? d.signals : [];
+    allSignals = Array.isArray(d) ? d : (Array.isArray(d.signals) ? d.signals : []);
     const filtered = filterSignals(allSignals);
     renderSignal(filtered[0]||null, d.updated_at||null);
     renderFeed(allSignals);
     checkNewSignal(allSignals);
     setFeed(filtered.length ? 'LIVE · '+filtered.length+' SIGNALS' : 'SCANNING...', filtered.length ? 'ok' : 'waiting');
+    // Feed _orionSignals for chart
+    if (typeof patchSignalsIntoOrion === 'function') patchSignalsIntoOrion(allSignals);
+    // Auto-load first signal into orion chart
+    if (filtered.length && !window._orionCurrentSym && typeof orionLoadChartWithSig === 'function') {
+      const first = filtered[0];
+      orionLoadChartWithSig((first.symbol||'').toUpperCase(), (first.tf||first.timeframe||'M5').toUpperCase(), first);
+    }
   }catch(err){ 
     console.error('[ORION] loadSignals error:', err.message || err);
     setFeed('CONNECTION ERROR','err'); 
@@ -1304,7 +1624,18 @@ async function loadMarket(){
       : '<div class="empty-s"><span>NO MOVERS DATA</span></div>';
 
     document.getElementById('insightBody').innerHTML = insight.length
-      ? insight.slice(0,5).map(i=>`<div class="ins-item">${fv(i)}</div>`).join('')
+      ? insight.slice(0,5).map(i=>{
+          const title   = typeof i === 'object' ? (i.title   || i.headline || '') : String(i);
+          const summary = typeof i === 'object' ? (i.summary || '') : '';
+          const url     = typeof i === 'object' ? (i.url     || '#') : '#';
+          const src     = typeof i === 'object' ? (i.source  || 'ORION') : 'ORION';
+          const time    = typeof i === 'object' && i.time ? new Date(i.time).toLocaleString() : '';
+          return `<div class="ins-item" style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--line);">
+            <a href="${url}" target="_blank" style="font-family:var(--mono);font-size:10px;color:var(--text);text-decoration:none;line-height:1.4;">${fv(title)}</a>
+            ${summary ? `<div style="font-size:9px;color:var(--muted2);margin-top:3px;line-height:1.4;">${fv(summary.slice(0,150))}...</div>` : ''}
+            <div style="font-size:8px;color:var(--muted);margin-top:3px;">${fv(src)}${time ? ' · '+time : ''}</div>
+          </div>`;
+        }).join('')
       : '<div class="empty-s"><span>AWAITING INTEL...</span></div>';
   }catch(_){}
 }
@@ -1799,10 +2130,10 @@ async function loadMarket(){
     activeFilter = f;
     document.querySelectorAll('.search-filter-btn').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
-    filterSignals();
+    filterHistory();
   }
 
-  function filterSignals() {
+  function filterHistory() {
     const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
     let filtered = allSignalsCache.slice(0, 10);
     if (activeFilter !== 'all') filtered = filtered.filter(s => String(s.side||'').toLowerCase() === activeFilter);
@@ -1848,6 +2179,27 @@ async function loadMarket(){
     if (idx >= 0) selectSignal(idx);
   }
 
+
+  // ── TF FILTER ──────────────────────────────────────────────
+  let currentTfFilter = 'ALL';
+
+  window.setTfFilter = function(tf, btn) {
+    currentTfFilter = tf;
+    // Only update feed TF buttons (not ORION CHART buttons)
+    document.querySelectorAll('.tf-filter-row .tf-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    // Re-render feed with filter
+    renderFeed(allSignals);
+    // Only update chart if there are signals in the filtered list
+    const filtered = filterSignals(allSignals);
+    if (filtered.length && typeof orionLoadChart === 'function') {
+      const first = filtered[0];
+      orionLoadChartWithSig((first.symbol||'').toUpperCase(), (first.tf||first.timeframe||'M5').toUpperCase(), first);
+      document.querySelectorAll('.fi').forEach((el,j) => el.classList.toggle('on', j===0));
+    }
+    // If no signals for this TF — leave chart as is, don't touch it
+  };
+
 document.addEventListener('DOMContentLoaded', async function(){
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -1861,10 +2213,13 @@ document.addEventListener('DOMContentLoaded', async function(){
     const r = await fetch(BACKEND_URL+'/subscription-status/'+s.user.id,{cache:'no-store'});
     const d = await r.json();
     const sub = d.subscription || {};
-    if (!sub.plan || !['active','trialing'].includes(sub.status)) {
-      window.location.href='/plans.html'; return;
+    if (!sub.plan) {
+      currentPlan = 'free';
+    } else if (!['active','trialing'].includes(sub.status)) {
+      currentPlan = 'free'; // expired = downgrade to free, not redirect
+    } else {
+      currentPlan = (sub.plan||'free').toLowerCase();
     }
-    currentPlan = (sub.plan||'bronze').toLowerCase();
     document.getElementById('userName').textContent = s.user.user_metadata?.full_name || s.user.email || '';
     const pb = document.getElementById('planBadge');
     pb.textContent = currentPlan.toUpperCase();
@@ -1914,6 +2269,85 @@ document.addEventListener('DOMContentLoaded', async function(){
     }
   });
 
+  // ── Symbol Selector ──────────────────────────────────────────────
+  let mySymbols    = [];
+  let symCanChange = true;
+  let symNextAt    = null;
+  const maxSymbols = () => PLAN_LIMITS[currentPlan]?.assets || 0;
+
+  async function loadMySymbols() {
+    if (!canUse('bronze')) return;
+    try {
+      const r = await fetch(BACKEND_URL+'/my-symbols', {
+        headers:{'Authorization':'Bearer '+session.access_token}, cache:'no-store'
+      });
+      const d = await r.json();
+      mySymbols    = d.allowedSymbols || [];
+      symCanChange = d.canChange !== false;
+      symNextAt    = d.nextChangeAt || null;
+      renderSymChips();
+    } catch(e) { console.error('[SYM]', e.message); }
+  }
+
+  function renderSymChips() {
+    const wrap = document.getElementById('symSelectedChips');
+    const label = document.getElementById('symSlotsLabel');
+    const coolbar = document.getElementById('symCooldownBar');
+    if (!wrap) return;
+    const max = maxSymbols();
+    label.textContent = mySymbols.length + ' / ' + max + ' ASSETS';
+    wrap.innerHTML = mySymbols.map(s =>
+      `<span class="sym-chip active">${s}<span class="sym-remove" onclick="symRemove('${s}')">✕</span></span>`
+    ).join('') || '<span style="font-family:var(--mono);font-size:9px;color:var(--muted)">No assets selected — add below</span>';
+    if (!symCanChange && symNextAt) {
+      const diff = Math.max(0, new Date(symNextAt) - Date.now());
+      const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000);
+      coolbar.textContent = '⏱ Next change available in ' + h + 'h ' + m + 'm';
+    } else {
+      coolbar.textContent = '';
+    }
+  }
+
+  window.symAdd = async function() {
+    const input = document.getElementById('symSearchInput');
+    const sym = (input.value||'').trim().toUpperCase();
+    if (!sym) return;
+    if (!symCanChange) { showUpgradeModal('Asset Change', currentPlan); return; }
+    if (mySymbols.includes(sym)) { input.value=''; return; }
+    if (mySymbols.length >= maxSymbols()) {
+      showUpgradeModal('More Assets', currentPlan === 'bronze' ? 'silver' : currentPlan === 'silver' ? 'gold' : 'platinum');
+      return;
+    }
+    const newList = [...mySymbols, sym];
+    try {
+      const r = await fetch(BACKEND_URL+'/set-symbols', {
+        method:'POST',
+        headers:{'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json'},
+        body: JSON.stringify({symbols: newList})
+      });
+      const d = await r.json();
+      if (d.ok) { mySymbols = d.allowedSymbols; symCanChange = false; symNextAt = d.nextChangeAt; renderSymChips(); input.value=''; }
+      else if (d.error === 'Cooldown active.') { symCanChange = false; symNextAt = d.nextChangeAt; renderSymChips(); }
+    } catch(e) { console.error('[SYM]', e.message); }
+  };
+
+  window.symRemove = async function(sym) {
+    if (!symCanChange) { showUpgradeModal('Asset Change', currentPlan); return; }
+    const newList = mySymbols.filter(s => s !== sym);
+    try {
+      const r = await fetch(BACKEND_URL+'/set-symbols', {
+        method:'POST',
+        headers:{'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json'},
+        body: JSON.stringify({symbols: newList})
+      });
+      const d = await r.json();
+      if (d.ok) { mySymbols = d.allowedSymbols; symCanChange = false; symNextAt = d.nextChangeAt; renderSymChips(); }
+    } catch(e) { console.error('[SYM]', e.message); }
+  };
+
+  // Load symbols on init
+  if (canUse('bronze')) loadMySymbols();
+
   document.getElementById('logoutBtn').onclick = async () => {
     await sb.auth.signOut();
     window.location.href = '/';
@@ -1941,38 +2375,14 @@ document.addEventListener('DOMContentLoaded', async function(){
   <div class="panel" id="perfPanel" style="margin-bottom:12px;display:none">
     <div class="ph">
       <div class="ph-title">📊 SIGNAL PERFORMANCE</div>
-      <div class="ph-right" style="display:flex;gap:6px">
-        <button class="perf-day-btn active" onclick="loadPerf(7,this)">7D</button>
-        <button class="perf-day-btn" onclick="loadPerf(30,this)">30D</button>
-        <button class="perf-day-btn" onclick="loadPerf(90,this)">90D</button>
-      </div>
     </div>
-    <div style="padding:13px 14px">
-      <!-- Stats -->
-      <div class="perf-grid">
-        <div class="perf-stat win">
-          <div class="perf-stat-val" id="perfWinRate">—</div>
-          <div class="perf-stat-lbl">WIN RATE</div>
-        </div>
-        <div class="perf-stat">
-          <div class="perf-stat-val" id="perfTotal" style="color:var(--blue)">—</div>
-          <div class="perf-stat-lbl">TOTAL SIGNALS</div>
-        </div>
-        <div class="perf-stat win">
-          <div class="perf-stat-val" id="perfWins">—</div>
-          <div class="perf-stat-lbl">WINS</div>
-        </div>
-        <div class="perf-stat loss">
-          <div class="perf-stat-val" id="perfLosses">—</div>
-          <div class="perf-stat-lbl">LOSSES</div>
-        </div>
-      </div>
-      <!-- Asset breakdown -->
-      <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);letter-spacing:2px;margin-bottom:8px">PERFORMANCE BY ASSET</div>
-      <div id="perfAssets">
-        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-align:center;padding:20px">
-          Loading performance data...
-        </div>
+    <div style="padding:24px 14px;text-align:center;">
+      <div style="font-size:28px;margin-bottom:12px;">📈</div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--text);letter-spacing:1px;margin-bottom:8px;">COMING SOON</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);line-height:1.7;max-width:280px;margin:0 auto;">
+        Real performance tracking is being built.<br>
+        Only verified live signal results will be shown here.<br>
+        <span style="color:var(--amber);">No simulated or backtested data.</span>
       </div>
     </div>
   </div>
@@ -1985,7 +2395,7 @@ document.addEventListener('DOMContentLoaded', async function(){
     </div>
     <div style="padding:13px 14px">
       <div class="search-bar">
-        <input class="search-input" id="searchInput" placeholder="Search symbol, setup..." oninput="filterSignals()"/>
+        <input class="search-input" id="searchInput" placeholder="Search symbol, setup..." oninput="filterHistory()"/>
         <button class="search-filter-btn active" id="filterAll" onclick="setFilter('all',this)">ALL</button>
         <button class="search-filter-btn" id="filterBuy" onclick="setFilter('buy',this)">BUY</button>
         <button class="search-filter-btn" id="filterSell" onclick="setFilter('sell',this)">SELL</button>
@@ -2005,11 +2415,14 @@ document.addEventListener('DOMContentLoaded', async function(){
       <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:#3d6b52;
         letter-spacing:1.5px;line-height:1.8;margin-bottom:10px;">
         © 2026 ORION RADAR™. All rights reserved. &nbsp;|&nbsp;
-        <a href="/legal.html" style="color:#6b9a78;text-decoration:none;transition:color .13s"
+        <a href="/terms.html" style="color:#6b9a78;text-decoration:none;transition:color .13s"
           onmouseover="this.style.color='#00e87a'" onmouseout="this.style.color='#6b9a78'">Terms of Service</a>
         &nbsp;|&nbsp;
-        <a href="/legal.html#privacy" style="color:#6b9a78;text-decoration:none;transition:color .13s"
+        <a href="/privacy.html" style="color:#6b9a78;text-decoration:none;transition:color .13s"
           onmouseover="this.style.color='#00e87a'" onmouseout="this.style.color='#6b9a78'">Privacy Policy</a>
+        &nbsp;|&nbsp;
+        <a href="/refund.html" style="color:#6b9a78;text-decoration:none;transition:color .13s"
+          onmouseover="this.style.color='#00e87a'" onmouseout="this.style.color='#6b9a78'">Refund Policy</a>
       </div>
       <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:#2a4a38;letter-spacing:1px;line-height:1.6;">
         ORION RADAR™ is not a registered investment advisor. All signals are for informational purposes only.<br>
@@ -2019,5 +2432,332 @@ document.addEventListener('DOMContentLoaded', async function(){
     </div>
   </footer>
 
+<script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+<script>
+// ── THEME SWITCHER ────────────────────────────────────────────────
+function setTheme(t, btn) {
+  document.body.classList.remove('theme-light','theme-sepia');
+  if (t !== 'dark') document.body.classList.add('theme-' + t);
+  document.querySelectorAll('.theme-toggle-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (window._orionChart) { _orionChart.remove(); window._orionChart = null; window._orionSeries = null; }
+  if (window._orionCurrentSym) orionLoadChart(window._orionCurrentSym, window._orionCurrentTf);
+}
+
+// ── ORION LIGHTWEIGHT CHART ───────────────────────────────────────
+window._orionChart   = null;
+window._orionSeries  = null;
+window._orionCurrentSym = null;
+window._orionCurrentTf  = 'H1';
+window._orionSignals = {};   // populated by loadSignals patch
+const _oc_pl = [];
+
+function orionChartColors() {
+  const b = document.body;
+  if (b.classList.contains('theme-sepia'))
+    return {bg:'#120e08',grid:'#1c1610',text:'#806040',up:'#60d888',dn:'#d86040',border:'#2a2010'};
+  if (b.classList.contains('theme-light'))
+    return {bg:'#ffffff',grid:'#f0f4f8',text:'#5a8aaa',up:'#0a7a48',dn:'#aa2a10',border:'#c8d8e8'};
+  return {bg:'#040f1e',grid:'#071a30',text:'#3d6b52',up:'#00e87a',dn:'#ff3558',border:'rgba(0,210,110,0.15)'};
+}
+
+function orionInitChart() {
+  const el = document.getElementById('orion-mini-chart');
+  if (!el || !window.LightweightCharts) return;
+  if (window._orionChart) { window._orionChart.remove(); window._orionChart = null; }
+  const c = orionChartColors();
+  // Force container to have height if collapsed
+  if (el.clientHeight < 100) el.style.minHeight = '280px';
+  const chartHeight = Math.max(el.clientHeight, 280);
+  window._orionChart = LightweightCharts.createChart(el, {
+    width: el.clientWidth || 400, height: chartHeight,
+    layout: {
+      background:{type:'solid',color:c.bg},
+      textColor:c.text,
+      fontFamily:"'Share Tech Mono',monospace",
+      fontSize:10
+    },
+    grid:   { vertLines:{color:c.grid}, horzLines:{color:c.grid} },
+    crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+    rightPriceScale: { borderColor:c.border, autoScale:true },
+    timeScale: { borderColor:c.border, timeVisible:true, secondsVisible:false },
+    watermark: {
+      visible: true,
+      fontSize: 48,
+      horzAlign: 'center',
+      vertAlign: 'center',
+      color: 'rgba(0,232,122,0.06)',
+      text: window._orionCurrentTf || 'M5',
+      fontFamily: "'Share Tech Mono',monospace",
+      fontStyle: 'bold',
+    },
+  });
+  window._orionSeries = window._orionChart.addCandlestickSeries({
+    upColor:c.up, downColor:c.dn, borderUpColor:c.up, borderDownColor:c.dn, wickUpColor:c.up, wickDownColor:c.dn,
+  });
+  new ResizeObserver(e => {
+    if (!window._orionChart) return;
+    const {width,height} = e[0].contentRect;
+    window._orionChart.applyOptions({width,height});
+  }).observe(el);
+}
+
+function orionClearPL() {
+  _oc_pl.forEach(p => { try { window._orionSeries.removePriceLine(p); } catch(_){} });
+  _oc_pl.length = 0;
+}
+
+function orionAddPL(price, label, color, dashed) {
+  if (!window._orionSeries || !price) return;
+  _oc_pl.push(window._orionSeries.createPriceLine({
+    price, color, lineWidth:1,
+    lineStyle: dashed ? LightweightCharts.LineStyle.Dashed : LightweightCharts.LineStyle.Solid,
+    axisLabelVisible:true, title:label,
+  }));
+}
+
+function orionFmtTime(ts) {
+  if (!ts) return '';
+  try {
+    const d = new Date(ts);
+    if (isNaN(d)) return ts;
+    const hh = String(d.getUTCHours()).padStart(2,'0');
+    const mm = String(d.getUTCMinutes()).padStart(2,'0');
+    const dd = String(d.getUTCDate()).padStart(2,'0');
+    const mo = String(d.getUTCMonth()+1).padStart(2,'0');
+    return dd+'/'+mo+' '+hh+':'+mm+' UTC';
+  } catch(e) { return ts; }
+}
+
+function orionFmtPrice(n) {
+  if (!n) return '—';
+  return n < 100
+    ? n.toFixed(5).replace(/0+$/,'').replace(/\.$/,'')
+    : n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function orionBuildFakeCandles(sig) {
+  const entry  = parseFloat(sig.entry) || 1.0;
+  const sl     = parseFloat(sig.sl)    || entry;
+  const tp1    = parseFloat(sig.tp1 || sig.tp) || entry;
+  const tp2    = parseFloat(sig.tp2) || tp1;
+  const isBuy  = (sig.direction||'buy').toLowerCase() !== 'sell';
+
+  const allLvl     = [entry, sl, tp1, tp2];
+  const minLvl     = Math.min(...allLvl);
+  const maxLvl     = Math.max(...allLvl);
+  const totalRange = (maxLvl - minLvl) || entry * 0.002;
+
+  // Candle noise = 15% of signal range max
+  const vol  = totalRange * 0.15;
+  const wick = vol * 0.3;
+
+  const steps = {M2:120,M5:300,M15:900,M30:1800,H1:3600,H4:14400};
+  const step  = steps[window._orionCurrentTf] || 300;
+  const now   = Math.floor(Date.now()/1000);
+  const total = 60;
+
+  // Start near SL for BUY (price comes from below), near SL for SELL (from above)
+  // Use only 20% offset from SL — candles stay close to the signal range
+  const slOffset = totalRange * 0.2;
+  let p = isBuy ? sl - slOffset : sl + slOffset;
+
+  const candles = [];
+  for (let i = 0; i < total; i++) {
+    const time     = now - (total - 1 - i) * step;
+    const open     = p;
+    const progress = i / (total - 1);
+    // Strong drift toward entry in last 40% of candles
+    const driftStr = progress < 0.6 ? 0.04 : 0.12;
+    const drift    = (entry - p) * driftStr;
+    const noise    = (Math.random() - 0.48) * vol;
+    let close      = open + drift + noise;
+    // Last candle always closes at entry
+    if (i === total - 1) close = entry;
+    // Clamp within signal range + small buffer
+    const buf = totalRange * 0.15;
+    close = Math.max(minLvl - buf, Math.min(maxLvl + buf, close));
+    const high = Math.max(open, close) + Math.random() * wick;
+    const low  = Math.min(open, close) - Math.random() * wick;
+    p = close;
+    candles.push({time, open, high, low, close});
+  }
+  return candles;
+}
+
+// Load chart with explicit signal object (avoids _orionSignals timing issues)
+function orionLoadChartWithSig(sym, tf, sig) {
+  if (sig) {
+    if (!window._orionSignals) window._orionSignals = {};
+    if (!window._orionSignals[sym]) window._orionSignals[sym] = {};
+    window._orionSignals[sym][tf] = sig;
+  }
+  orionLoadChart(sym, tf);
+}
+
+async function orionLoadChart(sym, tf) {
+  // Set TF before init so watermark is correct
+  if (tf) window._orionCurrentTf = tf;
+  if (!window._orionChart || !window._orionSeries) orionInitChart();
+  if (!window._orionChart) return;
+
+  window._orionCurrentSym = sym;
+  window._orionCurrentTf = tf || 'H1';
+  // Update watermark with current TF
+  window._orionChart.applyOptions({ watermark: { text: window._orionCurrentTf } });
+
+  const loadEl = document.getElementById('orion-mini-chart-loading');
+  if (loadEl) { loadEl.style.display='flex'; loadEl.innerHTML='<div class="orion-chart-dot" style="width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1s infinite;"></div> CARREGANDO...'; }
+
+  // Get signal data — try direct lookup first, then fallback
+  const symData = window._orionSignals?.[sym] || {};
+  const sig = symData[tf] || symData['M5'] || symData['M2'] || symData['H1'] || Object.values(symData)[0] || null;
+
+  // Update label
+  const lbl = document.getElementById('orionChartLabel');
+  if (lbl) lbl.textContent = sym + ' / ' + tf;
+  const timeEl = document.getElementById('orionChartTime');
+  if (timeEl) timeEl.textContent = '';
+
+  // Update levels
+  if (sig) {
+    document.getElementById('oc-entry').textContent = orionFmtPrice(sig.entry);
+    document.getElementById('oc-tp1').textContent   = orionFmtPrice(sig.tp1 || sig.tp);
+    document.getElementById('oc-tp2').textContent   = sig.tp2 ? orionFmtPrice(sig.tp2) : '—';
+    document.getElementById('oc-sl').textContent    = orionFmtPrice(sig.sl);
+    const timeEl = document.getElementById('orionChartTime');
+    if (timeEl && sig.timestamp) timeEl.textContent = '🕐 ' + orionFmtTime(sig.timestamp);
+  }
+
+  // Build fake candles anchored to entry price
+  const candles = sig ? orionBuildFakeCandles(sig) : [];
+  if (candles.length) {
+    // Ensure unique timestamps (LightweightCharts requires strictly ascending)
+    const seen = new Set();
+    const uniqueCandles = candles
+      .sort((a,b) => a.time - b.time)
+      .filter(c => {
+        if (seen.has(c.time)) return false;
+        seen.add(c.time);
+        return true;
+      });
+    try {
+      window._orionSeries.setData(uniqueCandles);
+    } catch(e) {
+      console.error('[ORION CHART] setData error:', e.message);
+      try {
+        orionInitChart();
+        window._orionChart.applyOptions({ watermark: { text: window._orionCurrentTf } });
+        window._orionSeries.setData(uniqueCandles);
+        console.log('[ORION CHART] retry OK');
+      } catch(e2) {
+        console.error('[ORION CHART] retry failed:', e2.message);
+        return;
+      }
+    }
+
+    // Markers
+    if (sig) {
+      const c = orionChartColors();
+      const last = candles[candles.length-1].time;
+      const isUp = (sig.direction||'buy') !== 'sell';
+      const mkrs = [];
+      // Para BUY: SL abaixo, TP acima. Para SELL: SL acima, TP abaixo.
+      if (sig.entry) mkrs.push({time:last, position:isUp?'belowBar':'aboveBar', color:c.text, shape:'circle', text:'ENTRY '+orionFmtPrice(sig.entry), size:1});
+      if (sig.tp1||sig.tp) mkrs.push({time:last, position:isUp?'aboveBar':'belowBar', color:c.up, shape:isUp?'arrowUp':'arrowDown', text:'TP1 '+orionFmtPrice(sig.tp1||sig.tp), size:1});
+      if (sig.tp2) mkrs.push({time:last, position:isUp?'aboveBar':'belowBar', color:c.up, shape:isUp?'arrowUp':'arrowDown', text:'TP2 '+orionFmtPrice(sig.tp2), size:1});
+      if (sig.sl)  mkrs.push({time:last, position:isUp?'belowBar':'aboveBar', color:c.dn, shape:isUp?'arrowDown':'arrowUp', text:'SL '+orionFmtPrice(sig.sl), size:1});
+      window._orionSeries.setMarkers(mkrs);
+
+      orionClearPL();
+      orionAddPL(sig.entry,      'ENTRY', c.text, true);
+      orionAddPL(sig.tp1||sig.tp,'TP1',   c.up,   false);
+      if (sig.tp2) orionAddPL(sig.tp2,'TP2', c.up, true);
+      orionAddPL(sig.sl,         'SL',    c.dn,   false);
+
+      // Let LightweightCharts autoscale naturally after fitContent
+    }
+    setTimeout(() => {
+      try {
+        // Set time range
+        const last  = uniqueCandles[uniqueCandles.length - 1];
+        const first = uniqueCandles[0];
+        window._orionChart.timeScale().setVisibleRange({
+          from: first.time,
+          to: last.time + (last.time - first.time) * 0.12
+        });
+        // Set price range explicitly with generous padding
+        if (sig) {
+          const lvls   = [sig.entry, sig.sl, sig.tp1||sig.tp, sig.tp2].filter(Boolean).map(Number);
+          const minL   = Math.min(...lvls);
+          const maxL   = Math.max(...lvls);
+          const range  = maxL - minL;
+          const pad    = range * 1.2; // 120% padding each side
+          window._orionChart.priceScale('right').applyOptions({
+            autoScale: false,
+            scaleMargins: { top: 0.15, bottom: 0.15 }
+          });
+          window._orionSeries.applyOptions({
+            autoscaleInfoProvider: () => ({
+              priceRange: {
+                minValue: minL - pad,
+                maxValue: maxL + pad
+              }
+            })
+          });
+        }
+      } catch(e) { /* silent */ }
+    }, 100);
+  }
+
+  // Aguarda o próximo frame antes de esconder o loading
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    if (loadEl) loadEl.style.display = 'none';
+  }));
+}
+
+function orionSetTf(tf, btn) {
+  window._orionCurrentTf = tf;
+  if (window._orionChart) window._orionChart.applyOptions({ watermark: { text: tf } });
+  document.querySelectorAll('#orionChartPanel .tf-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (window._orionCurrentSym) orionLoadChart(window._orionCurrentSym, tf);
+}
+
+// Hook into existing loadSignals to populate _orionSignals
+const _origLoadSignals = typeof loadSignals === 'function' ? loadSignals : null;
+function patchSignalsIntoOrion(signals) {
+  const grouped = {};
+  (signals||[]).forEach(s => {
+    const sym = (s.symbol||'').toUpperCase();
+    const tf  = (s.timeframe||s.tf||'H1').toUpperCase();
+    if (!sym) return;
+    if (!grouped[sym]) grouped[sym] = {};
+    grouped[sym][tf] = s;
+  });
+  window._orionSignals = grouped;
+}
+
+// Make feed items clickable to load orion chart
+function orionBindFeedClicks() {
+  document.querySelectorAll('.fi').forEach(el => {
+    el.addEventListener('click', function() {
+      const sym = (this.dataset.sym || '').toUpperCase();
+      const tf  = (this.dataset.tf  || 'H1').toUpperCase();
+      if (sym) orionLoadChart(sym, tf);
+    }, {once:false});
+  });
+}
+
+// Init chart on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  orionInitChart();
+  // Observe feed mutations to re-bind clicks when signals load
+  const feed = document.getElementById('signalsFeed');
+  if (feed) {
+    new MutationObserver(() => orionBindFeedClicks()).observe(feed, {childList:true, subtree:true});
+  }
+});
+</script>
 </body>
 </html>

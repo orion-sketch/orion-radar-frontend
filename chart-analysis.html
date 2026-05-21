@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ORION RADAR PRO — Chart Analysis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/chart-analysis.css">
+</head>
+<body class="theme-dark">
+
+  <!-- ═══════════════════════════════════════════════
+       MARKET SESSIONS BAR (topo fixo)
+  ═══════════════════════════════════════════════ -->
+  <header class="sessions-header">
+    <div class="sessions-inner">
+      <div class="sessions-left">
+        <span class="orion-tag">// ORION RADAR PRO</span>
+        <span class="clock" id="clock">--:--:-- BRT</span>
+      </div>
+
+      <div class="sessions-timeline-wrap">
+        <div class="sessions-timeline" id="sessions-timeline">
+          <!-- blocos injetados via JS -->
+        </div>
+        <div class="sessions-ticks" id="sessions-ticks"></div>
+      </div>
+
+      <div class="sessions-right">
+        <div class="theme-toggle">
+          <button class="theme-btn active" data-theme="theme-dark">DARK</button>
+          <button class="theme-btn" data-theme="theme-light">LIGHT</button>
+          <button class="theme-btn" data-theme="theme-sepia">SEPIA</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sessions-legend">
+      <span class="leg-item tokyo">TÓQUIO 21h–06h</span>
+      <span class="leg-item london">LONDRE 05h–14h</span>
+      <span class="leg-item ny">NEW YORK 10h–19h</span>
+      <span class="leg-item overlap">OVERLAP ★ MAIOR VOLUME 13h–14h</span>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════
+       MAIN LAYOUT
+  ═══════════════════════════════════════════════ -->
+  <main class="main-layout">
+
+    <!-- SIDEBAR ESQUERDA -->
+    <aside class="sidebar">
+
+      <!-- Signal Quality Ranking -->
+      <section class="sidebar-section">
+        <div class="section-label">// SIGNAL QUALITY RANKING</div>
+        <div class="rank-control">
+          <div class="rank-display">
+            <span class="rank-num" id="rank-num">0</span>
+            <span class="rank-suffix">+ SCORE</span>
+          </div>
+          <input type="range" min="0" max="95" value="0" step="5" id="rank-slider" class="rank-slider">
+          <div class="rank-labels">
+            <span>TODOS</span><span>ALTO</span><span>ELITE</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Watchlist -->
+      <section class="sidebar-section">
+        <div class="section-label-row">
+          <span class="section-label">// WATCHLIST</span>
+          <span class="wl-count" id="wl-count">0/999</span>
+        </div>
+
+        <div class="search-wrap">
+          <span class="search-icon">⌕</span>
+          <input type="text" id="search-input" class="search-input" placeholder="Adicionar ativo...">
+        </div>
+
+        <div class="wl-list" id="wl-list">
+          <!-- cards injetados via JS -->
+        </div>
+      </section>
+
+    </aside>
+
+    <!-- PAINEL PRINCIPAL -->
+    <section class="main-panel">
+
+      <!-- Toolbar -->
+      <div class="panel-toolbar">
+        <div class="panel-asset-ctx">
+          <span class="panel-sym" id="panel-sym">—</span>
+          <span class="panel-sep">/</span>
+          <span class="panel-tf" id="panel-tf">—</span>
+        </div>
+
+        <div class="tf-selector" id="tf-selector">
+          <button class="tf-btn active" data-tf="M5">M5</button>
+          <button class="tf-btn" data-tf="M15">M15</button>
+          <button class="tf-btn" data-tf="H1">H1</button>
+          <button class="tf-btn" data-tf="H4">H4</button>
+          <button class="tf-btn" data-tf="D">D</button>
+          <button class="tf-btn" data-tf="W">W</button>
+        </div>
+      </div>
+
+      <!-- Score + Multi-TF Row -->
+      <div class="score-row">
+        <div class="score-card">
+          <div class="score-label">SCORE CONFLUÊNCIA</div>
+          <div class="score-value" id="score-value">—</div>
+          <div class="score-bar-track">
+            <div class="score-bar-fill" id="score-bar-fill"></div>
+          </div>
+        </div>
+
+        <div class="direction-card">
+          <div class="score-label">DIREÇÃO</div>
+          <div class="direction-badge" id="direction-badge">—</div>
+          <div class="confluences-count" id="conf-count">— / 5 indicadores</div>
+        </div>
+
+        <div class="mtf-grid" id="mtf-grid">
+          <!-- M5 M15 H1 H4 injetados via JS -->
+        </div>
+      </div>
+
+      <!-- Chart Area -->
+      <div class="chart-area">
+        <div class="chart-header">
+          <span class="chart-label">// GRÁFICO — <span id="chart-asset-label">—</span></span>
+          <div class="chart-markers-legend">
+            <span class="ml-entry">◉ ENTRADA</span>
+            <span class="ml-tp">▲ TP</span>
+            <span class="ml-sl">▼ SL</span>
+          </div>
+        </div>
+        <div id="chart-container" class="chart-container">
+          <div class="chart-loading" id="chart-loading">
+            <span class="loading-dot"></span>
+            CARREGANDO DADOS...
+          </div>
+        </div>
+      </div>
+
+      <!-- Levels Row -->
+      <div class="levels-row">
+        <div class="level-box entry-box">
+          <div class="level-label">ENTRADA</div>
+          <div class="level-value" id="lvl-entry">—</div>
+        </div>
+        <div class="level-box tp-box">
+          <div class="level-label">TAKE PROFIT</div>
+          <div class="level-value" id="lvl-tp">—</div>
+          <div class="level-delta" id="lvl-tp-delta"></div>
+        </div>
+        <div class="level-box sl-box">
+          <div class="level-label">STOP LOSS</div>
+          <div class="level-value" id="lvl-sl">—</div>
+          <div class="level-delta" id="lvl-sl-delta"></div>
+        </div>
+        <div class="level-box rr-box">
+          <div class="level-label">RISCO / RETORNO</div>
+          <div class="level-value" id="lvl-rr">—</div>
+        </div>
+      </div>
+
+      <!-- Indicators Row -->
+      <div class="indicators-row" id="indicators-row">
+        <!-- badges injetados via JS -->
+      </div>
+
+      <p class="disclaimer">
+        O ORION RADAR informa. O usuário decide. O MT5 executa. — Sinais de consulta apenas. Não constitui recomendação de investimento.
+      </p>
+
+    </section>
+  </main>
+
+  <!-- TradingView Lightweight Charts -->
+  <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+  <script src="js/sessions.js"></script>
+  <script src="js/chart-analysis.js"></script>
+</body>
+</html>
