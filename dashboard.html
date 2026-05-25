@@ -2561,14 +2561,21 @@ function orionInitTVChart(sym, tf, sig) {
   const tvTF  = ORION_TV_TF[tf] || '5';
 
   // Store sig for after chart loads
-  _tvSig = sig;
+  _tvSig = sig || null;
+  // Draw immediately if overlay already exists (re-click same asset)
+  if (_tvSig) setTimeout(() => orionDrawSignalLines(_tvSig), 500);
 
-  // Remove existing widget
+  // Remove existing widget but preserve overlay
   if (_tvWidget) {
     try { _tvWidget.remove(); } catch(e) {}
     _tvWidget = null;
   }
-  el.innerHTML = '';
+  // Clear only TV chart divs, not our overlay
+  Array.from(el.children).forEach(child => {
+    if (child.id !== 'orion-sig-overlay' && child.id !== 'orion-mini-chart-loading') {
+      child.remove();
+    }
+  });
 
   // Show loading
   const loadEl = document.getElementById('orion-mini-chart-loading');
