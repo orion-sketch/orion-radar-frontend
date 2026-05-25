@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ORION RADAR™ — Founders Program</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --panel:rgba(8,20,40,0.97);
+    --panel2:rgba(4,13,26,0.95);
+    --line:rgba(24,50,77,0.8);
+    --line2:rgba(24,50,77,0.4);
+    --muted:#8fa8c4;
+    --green:#27d463;
+    --green-dim:rgba(39,212,99,0.15);
+    --green-glow:rgba(39,212,99,0.08);
+    --blue:#3367e3;
+    --red:#ef4444;
+    --gold:#f0b050;
+    --gold-dim:rgba(240,176,80,0.15);
+  }
+  html,body{min-height:100%;font-family:'Inter',sans-serif;color:#fff}
+  body{
+    min-height:100vh;
+    background:radial-gradient(ellipse at 20% 0%,#0c2a4a 0%,#051224 45%,#020b16 100%);
+    overflow-x:hidden;
+  }
+  body::after{
+    content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(39,212,99,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(39,212,99,0.025) 1px,transparent 1px);
+    background-size:50px 50px;pointer-events:none;z-index:0;
+  }
+  .shell{max-width:1100px;margin:0 auto;padding:20px;position:relative;z-index:1;}
+
+  /* LANG SWITCHER */
+  .lang-bar{display:flex;justify-content:flex-end;gap:6px;margin-bottom:12px;}
+  .lang-btn{padding:5px 14px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:.5px;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--muted);transition:all .15s;font-family:'Inter',sans-serif;}
+  .lang-btn.active{background:var(--green-dim);color:var(--green);border-color:rgba(39,212,99,0.35);}
+  .lang-btn:hover:not(.active){border-color:rgba(51,103,227,0.4);color:#fff;}
+
+  /* TOPBAR */
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;background:var(--panel);border:1px solid var(--line);border-radius:16px;margin-bottom:28px;}
+  .brand{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;letter-spacing:2px;}
+  .brand span{color:var(--green);}
+  .topbar-badge{font-size:11px;font-weight:700;padding:5px 14px;border-radius:99px;background:var(--gold-dim);color:var(--gold);letter-spacing:.5px;border:1px solid rgba(240,176,80,0.3);animation:glow-gold 2s ease-in-out infinite;}
+  @keyframes glow-gold{0%,100%{box-shadow:0 0 0 rgba(240,176,80,0)}50%{box-shadow:0 0 14px rgba(240,176,80,0.25)}}
+  .btn-back{height:36px;padding:0 16px;border:1px solid var(--line);border-radius:9px;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;background:transparent;font-family:'Inter',sans-serif;transition:all .15s;}
+  .btn-back:hover{border-color:rgba(51,103,227,0.5);color:#fff;}
+
+  /* HERO */
+  .hero{text-align:center;padding:36px 20px 44px;position:relative;}
+  .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--green);margin-bottom:20px;padding:6px 18px;border:1px solid rgba(39,212,99,0.25);border-radius:99px;background:var(--green-glow);}
+  .live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(39,212,99,0.8);animation:pulse 2s infinite;flex-shrink:0;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .hero-title{font-family:'Rajdhani',sans-serif;font-size:clamp(2.6rem,6vw,5rem);font-weight:700;letter-spacing:1px;line-height:1.05;margin-bottom:16px;}
+  .hero-title .accent{color:var(--green);}
+  .hero-title .gold{color:var(--gold);}
+  .hero-sub{font-size:15px;color:var(--muted);max-width:580px;margin:0 auto 34px;line-height:1.7;}
+
+  /* VAGAS */
+  .vagas-block{display:inline-flex;align-items:center;gap:24px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 32px;margin-bottom:30px;}
+  .vagas-stat{text-align:center;}
+  .vagas-num{font-family:'Rajdhani',sans-serif;font-size:2.8rem;font-weight:700;line-height:1;color:#fff;}
+  .vagas-num .slash{color:rgba(143,168,196,0.4);font-size:2rem;margin:0 4px;}
+  .vagas-num .total{color:var(--muted);font-size:2rem;}
+  .vagas-label{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--muted);margin-top:4px;}
+  .vagas-divider{width:1px;height:48px;background:var(--line);}
+  .vagas-bar-wrap{min-width:180px;}
+  .vagas-bar-label{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:7px;font-weight:600;}
+  .vagas-bar-track{height:4px;background:rgba(143,168,196,0.12);border-radius:2px;overflow:hidden;position:relative;}
+  .vagas-bar-fill{height:100%;width:74%;background:linear-gradient(90deg,#1fb854,var(--green));border-radius:2px;}
+  .vagas-bar-dot{position:absolute;right:0;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px rgba(39,212,99,0.8);animation:pulse 1.5s infinite;}
+
+  /* COUNTDOWN */
+  .cd-label-top{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--muted);margin-bottom:12px;text-align:center;}
+  .countdown{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:30px;}
+  .cd-unit{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 18px;text-align:center;min-width:72px;}
+  .cd-num{font-family:'Rajdhani',sans-serif;font-size:2rem;font-weight:700;color:#fff;line-height:1;display:block;}
+  .cd-sub{font-size:9px;font-weight:700;letter-spacing:1px;color:var(--muted);display:block;margin-top:2px;}
+  .cd-sep{font-family:'Rajdhani',sans-serif;font-size:2rem;color:var(--muted);opacity:.4;}
+
+  /* BUTTONS */
+  .btn-main{height:54px;padding:0 40px;border:none;border-radius:13px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;background:linear-gradient(135deg,#1fb854,#27d463);transition:opacity .15s,transform .1s;}
+  .btn-main:hover{opacity:.9;transform:translateY(-1px);}
+  .hero-disclaimer{font-size:11px;color:var(--muted);margin-top:12px;}
+
+  /* SECTION */
+  .sec-divider{display:flex;align-items:center;gap:16px;margin:36px 0 24px;}
+  .sec-line{flex:1;height:1px;background:var(--line2);}
+  .sec-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;color:var(--muted);white-space:nowrap;}
+
+  /* URGENCY */
+  .urgency-banner{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:14px;padding:16px 22px;display:flex;align-items:center;gap:14px;margin-bottom:28px;flex-wrap:wrap;}
+  .urgency-dot-red{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 8px rgba(239,68,68,0.7);animation:pulse 1s infinite;flex-shrink:0;}
+  .urgency-text{font-size:13px;color:#ffb0b0;line-height:1.5;flex:1;}
+  .urgency-text strong{color:#ff6b6b;}
+  .urgency-vagas{font-size:12px;font-weight:700;color:var(--red);letter-spacing:1px;white-space:nowrap;}
+
+  /* BENEFITS */
+  .benefits-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;}
+  .benefit-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 18px;transition:border-color .2s,transform .1s;position:relative;overflow:hidden;}
+  .benefit-card:hover{border-color:rgba(39,212,99,0.35);transform:translateY(-2px);}
+  .benefit-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--green),transparent);opacity:0;transition:opacity .3s;}
+  .benefit-card:hover::before{opacity:1;}
+  .bc-icon{font-size:26px;margin-bottom:12px;display:block;}
+  .bc-title{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:.5px;margin-bottom:6px;}
+  .bc-desc{font-size:12px;color:var(--muted);line-height:1.55;}
+  .bc-tag{display:inline-block;margin-top:10px;font-size:9px;font-weight:700;letter-spacing:1px;padding:3px 10px;border-radius:99px;background:var(--green-dim);color:var(--green);border:1px solid rgba(39,212,99,0.2);}
+  .bc-tag.gold{background:var(--gold-dim);color:var(--gold);border-color:rgba(240,176,80,0.2);}
+
+  /* COMPARE */
+  .compare-wrap{background:var(--panel);border:1px solid var(--line);border-radius:20px;overflow:hidden;margin-bottom:28px;}
+  .compare-header{padding:16px 22px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr repeat(3,120px);gap:8px;align-items:center;}
+  .compare-col-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-align:center;color:var(--muted);}
+  .compare-col-title.founder{color:var(--green);}
+  .compare-col-title.gold-col{color:var(--gold);}
+  .compare-row{display:grid;grid-template-columns:1fr repeat(3,120px);gap:8px;align-items:center;padding:13px 22px;border-bottom:1px solid var(--line2);transition:background .15s;}
+  .compare-row:last-child{border-bottom:none;}
+  .compare-row:hover{background:rgba(255,255,255,0.02);}
+  .compare-feat{font-size:13px;color:var(--muted);}
+  .compare-cell{text-align:center;font-size:14px;}
+  .c-yes{color:var(--green);}
+  .c-no{color:rgba(143,168,196,0.2);}
+
+  /* PRICING */
+  .pricing-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+  .price-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:28px 24px;position:relative;overflow:hidden;transition:border-color .2s;}
+  .price-card.featured{border:2px solid var(--green);background:linear-gradient(135deg,rgba(39,212,99,0.04),var(--panel));}
+  .price-card.featured::after{content:'MOST POPULAR';position:absolute;top:0;right:24px;font-size:9px;font-weight:700;letter-spacing:1.5px;background:var(--green);color:#020b16;padding:4px 14px;border-radius:0 0 8px 8px;}
+  .price-plan-name{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;color:var(--muted);margin-bottom:16px;}
+  .price-amount{font-family:'Rajdhani',sans-serif;font-size:clamp(3rem,5vw,4rem);font-weight:700;line-height:1;margin-bottom:4px;}
+  .price-amount sup{font-size:1.4rem;vertical-align:super;color:var(--green);}
+  .price-period{font-size:13px;color:var(--muted);}
+  .price-was{margin:10px 0 20px;padding:8px 12px;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.15);border-radius:8px;font-size:12px;color:var(--muted);}
+  .price-was .strike{text-decoration:line-through;color:rgba(143,168,196,0.5);}
+  .price-was .save{color:#ff8080;font-weight:700;margin-left:8px;}
+  .price-features{list-style:none;margin-bottom:24px;}
+  .price-features li{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--muted);padding:7px 0;border-bottom:1px solid var(--line2);}
+  .price-features li:last-child{border-bottom:none;}
+  .feat-check{color:var(--green);flex-shrink:0;}
+  .feat-hi{color:#d4edda;}
+  .price-btn{display:block;width:100%;height:48px;border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;background:linear-gradient(135deg,#1fb854,#27d463);transition:opacity .15s,transform .1s;}
+  .price-btn:hover{opacity:.9;transform:translateY(-1px);}
+  .price-btn.outline{background:transparent;border:1px solid rgba(39,212,99,0.4);color:var(--green);}
+  .price-btn.outline:hover{background:var(--green-dim);}
+  .price-guarantee{text-align:center;font-size:11px;color:var(--muted);margin-bottom:28px;}
+
+  /* INVESTOR FORM */
+  .investor-section{background:var(--panel);border:1px solid var(--line);border-radius:20px;overflow:hidden;margin-bottom:28px;}
+  .investor-header{padding:20px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;}
+  .investor-header-icon{font-size:22px;}
+  .investor-header-text h3{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;letter-spacing:.5px;margin-bottom:3px;}
+  .investor-header-text p{font-size:12px;color:var(--muted);}
+  .investor-body{padding:24px;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+  .form-group{display:flex;flex-direction:column;gap:7px;}
+  .form-group.full{grid-column:1/-1;}
+  .form-label{font-size:11px;font-weight:700;letter-spacing:1px;color:var(--muted);}
+  .form-input,.form-select,.form-textarea{background:rgba(4,13,26,0.8);border:1px solid var(--line);border-radius:10px;color:#fff;font-family:'Inter',sans-serif;font-size:13px;padding:11px 14px;transition:border-color .15s;outline:none;width:100%;}
+  .form-input::placeholder,.form-textarea::placeholder{color:rgba(143,168,196,0.4);}
+  .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:rgba(39,212,99,0.5);}
+  .form-select{appearance:none;cursor:pointer;}
+  .form-select option{background:#051224;color:#fff;}
+  .form-textarea{resize:vertical;min-height:100px;line-height:1.6;}
+  .form-row{display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap;}
+  .form-check-group{display:flex;align-items:center;gap:8px;cursor:pointer;}
+  .form-check-group input[type=checkbox]{width:16px;height:16px;accent-color:var(--green);cursor:pointer;}
+  .form-check-label{font-size:12px;color:var(--muted);}
+  .form-check-label a{color:var(--green);text-decoration:none;}
+  .btn-submit{height:50px;padding:0 36px;border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;background:linear-gradient(135deg,#1fb854,#27d463);transition:opacity .15s,transform .1s;white-space:nowrap;}
+  .btn-submit:hover{opacity:.9;transform:translateY(-1px);}
+  .btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+  .form-msg{display:none;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-top:14px;}
+  .form-msg.show{display:block;}
+  .form-msg.ok{background:rgba(39,212,99,0.1);color:#7dfcb0;border:1px solid rgba(39,212,99,0.2);}
+  .form-msg.err{background:rgba(239,68,68,0.1);color:#ffb0b0;border:1px solid rgba(239,68,68,0.2);}
+  .investor-note{font-size:11px;color:rgba(143,168,196,0.5);margin-top:10px;line-height:1.6;}
+
+  /* FAQ */
+  .faq-list{display:flex;flex-direction:column;gap:10px;margin-bottom:36px;}
+  .faq-item{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  .faq-q{padding:16px 20px;font-size:14px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:color .15s;user-select:none;}
+  .faq-q:hover{color:var(--green);}
+  .faq-icon{font-size:18px;color:var(--muted);transition:transform .2s;}
+  .faq-item.open .faq-icon{transform:rotate(45deg);color:var(--green);}
+  .faq-a{font-size:13px;color:var(--muted);line-height:1.65;padding:0 20px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s;}
+  .faq-item.open .faq-a{max-height:200px;padding:0 20px 16px;}
+
+  /* FOOTER CTA */
+  .footer-cta{text-align:center;padding:48px 20px;background:var(--panel);border:1px solid var(--line);border-radius:20px;margin-bottom:32px;position:relative;overflow:hidden;}
+  .footer-cta::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;height:500px;background:radial-gradient(circle,rgba(39,212,99,0.06),transparent 70%);pointer-events:none;}
+  .footer-cta-title{font-family:'Rajdhani',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;margin-bottom:12px;}
+  .footer-cta-sub{font-size:14px;color:var(--muted);margin-bottom:28px;}
+
+  /* FOOTER */
+  footer{border-top:1px solid rgba(39,212,99,0.08);padding:24px 0;text-align:center;}
+  .footer-brand{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;letter-spacing:4px;color:var(--green);margin-bottom:8px;text-shadow:0 0 10px rgba(39,212,99,0.2);}
+  .footer-copy{font-size:9px;color:rgba(61,107,82,0.8);letter-spacing:1.5px;line-height:1.8;}
+  .footer-disclaimer{font-size:8px;color:rgba(42,74,56,0.7);letter-spacing:1px;line-height:1.6;margin-top:8px;}
+
+  @media(max-width:800px){
+    .benefits-grid{grid-template-columns:1fr 1fr;}
+    .pricing-cards{grid-template-columns:1fr;}
+    .form-grid{grid-template-columns:1fr;}
+    .compare-header,.compare-row{grid-template-columns:1fr repeat(3,80px);}
+  }
+  @media(max-width:520px){
+    .benefits-grid{grid-template-columns:1fr;}
+    .vagas-block{flex-direction:column;gap:16px;}
+    .vagas-divider{width:100%;height:1px;}
+    .countdown{gap:3px;}
+    .cd-unit{min-width:58px;padding:10px 12px;}
+    .compare-header,.compare-row{grid-template-columns:1fr repeat(3,60px);}
+    .compare-feat{font-size:11px;}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- LANG SWITCHER -->
+  <div class="lang-bar">
+    <button class="lang-btn" onclick="setLang('pt')">🇧🇷 PT</button>
+    <button class="lang-btn active" onclick="setLang('en')">🇺🇸 EN</button>
+    <button class="lang-btn" onclick="setLang('es')">🇪🇸 ES</button>
+  </div>
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="brand">ORION <span>RADAR</span> PRO</div>
+    <div class="topbar-right">
+      <div class="topbar-badge" id="t-topbar-badge">⭐ FOUNDERS PROGRAM</div>
+      <button class="btn-back" onclick="window.location.href='/plans.html'">← <span id="t-back">Plans</span></button>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span class="live-dot"></span>
+      <span id="t-eyebrow">OPEN SPOTS — EARLY ACCESS</span>
+    </div>
+    <h1 class="hero-title" id="t-hero-title">
+      Get in before<br>
+      <span class="accent">everyone.</span><br>
+      Pay less <span class="gold">forever.</span>
+    </h1>
+    <p class="hero-sub" id="t-hero-sub">
+      The Founders Program is a one-time opportunity to lock in Platinum access to ORION RADAR at a permanent discount — before public launch. When spots are gone, this page closes.
+    </p>
+
+    <div class="vagas-block">
+      <div class="vagas-stat">
+        <div class="vagas-num"><span id="vagasLeft">13</span><span class="slash">/</span><span class="total">50</span></div>
+        <div class="vagas-label" id="t-spots-label">SPOTS LEFT</div>
+      </div>
+      <div class="vagas-divider"></div>
+      <div class="vagas-bar-wrap">
+        <div class="vagas-bar-label"><span id="t-fill">FILL RATE</span><span>74% <span id="t-taken">TAKEN</span></span></div>
+        <div class="vagas-bar-track">
+          <div class="vagas-bar-fill"></div>
+          <div class="vagas-bar-dot"></div>
+        </div>
+      </div>
+      <div class="vagas-divider"></div>
+      <div class="vagas-stat">
+        <div class="vagas-num" style="font-size:1.4rem;color:var(--green);">37</div>
+        <div class="vagas-label" id="t-secured">ALREADY SECURED</div>
+      </div>
+    </div>
+
+    <div class="cd-label-top" id="t-offer-closes">⏱ OFFER CLOSES IN</div>
+    <div class="countdown">
+      <div class="cd-unit"><span class="cd-num" id="cd-h">--</span><span class="cd-sub" id="t-hours">HOURS</span></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit"><span class="cd-num" id="cd-m">--</span><span class="cd-sub" id="t-min">MIN</span></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit"><span class="cd-num" id="cd-s">--</span><span class="cd-sub" id="t-sec">SEC</span></div>
+    </div>
+
+    <button class="btn-main" onclick="document.getElementById('planos').scrollIntoView({behavior:'smooth'})">
+      <span id="t-cta-hero">Secure my spot now →</span>
+    </button>
+    <div class="hero-disclaimer" id="t-disclaimer">🔒 7-day guarantee · No questions · Cancel anytime</div>
+  </div>
+
+  <!-- URGENCY -->
+  <div class="urgency-banner">
+    <div class="urgency-dot-red"></div>
+    <div class="urgency-text" id="t-urgency-text">
+      <strong>Warning:</strong> when all 50 spots are taken, the Founders Program closes permanently. No waitlist. No exceptions. Future users will pay full price.
+    </div>
+    <div class="urgency-vagas" id="t-urgency-spots">13 SPOTS LEFT</div>
+  </div>
+
+  <!-- BENEFITS -->
+  <div class="sec-divider"><div class="sec-line"></div><div class="sec-title" id="t-benefits-title">⊕ WHAT'S INCLUDED</div><div class="sec-line"></div></div>
+
+  <div class="benefits-grid">
+    <div class="benefit-card">
+      <span class="bc-icon">👑</span>
+      <div class="bc-title" id="t-b1t">FULL PLATINUM ACCESS</div>
+      <p class="bc-desc" id="t-b1d">Live signals, TradingView integration, custom watchlist, Entry/SL/TP1/TP2 — everything, no restrictions.</p>
+      <span class="bc-tag" id="t-b1tag">LIFETIME</span>
+    </div>
+    <div class="benefit-card">
+      <span class="bc-icon">🏅</span>
+      <div class="bc-title" id="t-b2t">EXCLUSIVE FOUNDER BADGE</div>
+      <p class="bc-desc" id="t-b2d">Your profile is permanently marked as ORION Founder #001–#050. A badge no future user will ever be able to get.</p>
+      <span class="bc-tag gold" id="t-b2tag">EXCLUSIVE</span>
+    </div>
+    <div class="benefit-card">
+      <span class="bc-icon">💰</span>
+      <div class="bc-title" id="t-b3t">PRICE LOCKED FOREVER</div>
+      <p class="bc-desc" id="t-b3d">Platinum normally costs $129/mo. You pay $49. Forever. When prices increase, your rate never changes.</p>
+      <span class="bc-tag" id="t-b3tag">GUARANTEED</span>
+    </div>
+    <div class="benefit-card">
+      <span class="bc-icon">📡</span>
+      <div class="bc-title" id="t-b4t">DIRECT LINE TO FOUNDER</div>
+      <p class="bc-desc" id="t-b4d">Private group with direct access for feedback, feature suggestions, and performance reports before anyone else.</p>
+      <span class="bc-tag" id="t-b4tag">VIP ACCESS</span>
+    </div>
+    <div class="benefit-card">
+      <span class="bc-icon">🚀</span>
+      <div class="bc-title" id="t-b5t">BETA ACCESS — NEW FEATURES</div>
+      <p class="bc-desc" id="t-b5d">Advanced ORION CHART, session filters, backtesting — early access to everything before public release.</p>
+      <span class="bc-tag" id="t-b5tag">BETA FIRST</span>
+    </div>
+    <div class="benefit-card">
+      <span class="bc-icon">🗳️</span>
+      <div class="bc-title" id="t-b6t">VOTE ON THE ROADMAP</div>
+      <p class="bc-desc" id="t-b6d">Founders vote directly on upcoming features. Your voice decides what ORION builds next.</p>
+      <span class="bc-tag gold" id="t-b6tag">INFLUENCE</span>
+    </div>
+  </div>
+
+  <!-- COMPARISON -->
+  <div class="sec-divider"><div class="sec-line"></div><div class="sec-title" id="t-compare-title">⊕ FOUNDER VS REGULAR PLANS</div><div class="sec-line"></div></div>
+
+  <div class="compare-wrap">
+    <div class="compare-header">
+      <div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;" id="t-compare-feat">FEATURE</div>
+      <div class="compare-col-title">Platinum<br><span style="font-size:10px;font-weight:500;">$129/mo</span></div>
+      <div class="compare-col-title founder">Founder<br><span style="font-size:10px;">$49/mo</span></div>
+      <div class="compare-col-title gold-col">Lifetime<br><span style="font-size:10px;">$299 once</span></div>
+    </div>
+    <div class="compare-row"><div class="compare-feat" id="t-cf1">Live ORION signals</div><div class="compare-cell c-yes">✓</div><div class="compare-cell c-yes">✓</div><div class="compare-cell c-yes">✓</div></div>
+    <div class="compare-row"><div class="compare-feat" id="t-cf2">TradingView live chart</div><div class="compare-cell c-yes">✓</div><div class="compare-cell c-yes">✓</div><div class="compare-cell c-yes">✓</div></div>
+    <div class="compare-row"><div class="compare-feat" id="t-cf3">Entry / SL / TP1 / TP2</div><div class="compare-cell c-yes">✓</div><div class="compare-cell c-yes">✓</div><div class="compare-cell c-yes">✓</div></div>
+    <div class="compare-row"><div class="compare-feat" id="t-cf4">Custom watchlist</div><div class="compare-cell c-yes">✓</div><div class="compare-cell c-yes">✓</div><div class="compare-cell c-yes">✓</div></div>
+    <div class="compare-row"><div class="compare-feat" id="t-cf5">Exclusive Founder badge</div><div class="compare-cell c-no">—</div><div class="compare-cell c-yes">✓</div><div class="compare-cell c-yes">✓</div></div>
+    <div class="compare-row"><div class="compare-feat" id="t-cf6">VIP channel with founder</div><div class="compare-cell c-no">—</div><div class="compare-cell c-yes">✓</div><div class="compare-cell c-yes">✓</div></div>
+    <div class="compare-row"><div class="compare-feat" id="t-cf7">Early beta access</div><div class="compare-cell c-no">—</div><div class="compare-cell c-yes">✓</div><div class="compare-cell c-yes">✓</div></div>
+    <div class="compare-row"><div class="compare-feat" id="t-cf8">Roadmap voting</div><div class="compare-cell c-no">—</div><div class="compare-cell c-no">—</div><div class="compare-cell c-yes">✓</div></div>
+    <div class="compare-row"><div class="compare-feat" id="t-cf9">Founder number engraved</div><div class="compare-cell c-no">—</div><div class="compare-cell c-no">—</div><div class="compare-cell c-yes">✓</div></div>
+    <div class="compare-row"><div class="compare-feat" id="t-cf10">Monthly renewal</div><div class="compare-cell" style="color:#ff8080;font-size:12px;">$129/mo</div><div class="compare-cell" style="color:#ff8080;font-size:12px;">$49/mo</div><div class="compare-cell c-yes" style="font-size:11px;" id="t-never">NEVER</div></div>
+  </div>
+
+  <!-- PRICING -->
+  <div class="sec-divider" id="planos"><div class="sec-line"></div><div class="sec-title" id="t-choose-plan">⊕ CHOOSE YOUR PLAN</div><div class="sec-line"></div></div>
+
+  <div class="pricing-cards">
+    <div class="price-card">
+      <div class="price-plan-name" id="t-p1name">FOUNDER · MONTHLY</div>
+      <div class="price-amount"><sup>$</sup>49</div>
+      <div class="price-period" id="t-p1period">per month · cancel anytime</div>
+      <div class="price-was"><span class="strike" id="t-p1was">Regular Platinum: $129/mo</span><span class="save">— SAVE 62%</span></div>
+      <ul class="price-features">
+        <li><span class="feat-check">✓</span><span id="t-pf1">Full Platinum access</span></li>
+        <li><span class="feat-check">✓</span><span id="t-pf2">Permanent Founder badge</span></li>
+        <li><span class="feat-check">✓</span><span id="t-pf3">VIP channel with founder</span></li>
+        <li><span class="feat-check">✓</span><span class="feat-hi" id="t-pf4">Price locked forever</span></li>
+        <li><span class="feat-check">✓</span><span id="t-pf5">Beta access to new features</span></li>
+      </ul>
+      <button class="price-btn outline" id="btnMonthly">
+        <span id="t-btn-monthly">Join as Monthly Founder →</span>
+      </button>
+    </div>
+    <div class="price-card featured">
+      <div class="price-plan-name" id="t-p2name">FOUNDER · LIFETIME</div>
+      <div class="price-amount"><sup>$</sup>299</div>
+      <div class="price-period" id="t-p2period">one-time payment · never renew again</div>
+      <div class="price-was"><span class="strike" id="t-p2was">Real value: $1,548+/year</span><span class="save">— PAY ONCE FOREVER</span></div>
+      <ul class="price-features">
+        <li><span class="feat-check">✓</span><span class="feat-hi" id="t-plf1">Everything in monthly plan</span></li>
+        <li><span class="feat-check">✓</span><span class="feat-hi" id="t-plf2">Zero renewals — never pay again</span></li>
+        <li><span class="feat-check">✓</span><span id="t-plf3">Founder number engraved #001–#050</span></li>
+        <li><span class="feat-check">✓</span><span id="t-plf4">Direct vote on product roadmap</span></li>
+        <li><span class="feat-check">✓</span><span class="feat-hi" id="t-plf5">ROI in under 7 months</span></li>
+      </ul>
+      <button class="price-btn" id="btnLifetime">
+        <span id="t-btn-lifetime">Secure lifetime access →</span>
+      </button>
+    </div>
+  </div>
+  <div class="price-guarantee" id="t-guarantee">🔒 7-day money-back guarantee · No questions asked · Secure payment via Stripe</div>
+
+  <!-- INVESTOR FORM -->
+  <div class="sec-divider"><div class="sec-line"></div><div class="sec-title" id="t-investor-title">⊕ INVEST IN ORION RADAR</div><div class="sec-line"></div></div>
+
+  <div class="investor-section">
+    <div class="investor-header">
+      <div class="investor-header-icon">📈</div>
+      <div class="investor-header-text">
+        <h3 id="t-inv-h3">Investor Interest Form</h3>
+        <p id="t-inv-sub">Are you interested in investing in ORION RADAR? Share your profile and we'll reach out.</p>
+      </div>
+    </div>
+    <div class="investor-body">
+      <div id="formMsg" class="form-msg"></div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" id="t-fl-name">FULL NAME *</label>
+          <input class="form-input" type="text" id="inv_name" placeholder="John Smith" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" id="t-fl-email">EMAIL *</label>
+          <input class="form-input" type="email" id="inv_email" placeholder="john@email.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" id="t-fl-country">COUNTRY *</label>
+          <select class="form-select" id="inv_country">
+            <option value="" disabled selected id="t-select-country">Select country...</option>
+            <option value="US">🇺🇸 United States</option>
+            <option value="BR">🇧🇷 Brazil</option>
+            <option value="PT">🇵🇹 Portugal</option>
+            <option value="ES">🇪🇸 Spain</option>
+            <option value="MX">🇲🇽 Mexico</option>
+            <option value="AR">🇦🇷 Argentina</option>
+            <option value="CO">🇨🇴 Colombia</option>
+            <option value="UK">🇬🇧 United Kingdom</option>
+            <option value="DE">🇩🇪 Germany</option>
+            <option value="FR">🇫🇷 France</option>
+            <option value="AE">🇦🇪 UAE</option>
+            <option value="OTHER">🌍 Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" id="t-fl-phone">PHONE / WHATSAPP</label>
+          <input class="form-input" type="tel" id="inv_phone" placeholder="+1 555 000 0000">
+        </div>
+        <div class="form-group">
+          <label class="form-label" id="t-fl-amount">INVESTMENT RANGE (USD) *</label>
+          <select class="form-select" id="inv_amount">
+            <option value="" disabled selected id="t-select-amount">Select range...</option>
+            <option value="1k-5k">$1,000 – $5,000</option>
+            <option value="5k-20k">$5,000 – $20,000</option>
+            <option value="20k-50k">$20,000 – $50,000</option>
+            <option value="50k-100k">$50,000 – $100,000</option>
+            <option value="100k+">$100,000+</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" id="t-fl-type">INVESTOR PROFILE *</label>
+          <select class="form-select" id="inv_type">
+            <option value="" disabled selected id="t-select-type">Select profile...</option>
+            <option value="angel" id="t-type-angel">Angel Investor</option>
+            <option value="vc" id="t-type-vc">Venture Capital</option>
+            <option value="individual" id="t-type-individual">Individual Investor</option>
+            <option value="corporate" id="t-type-corporate">Corporate / Strategic</option>
+            <option value="accelerator" id="t-type-accelerator">Accelerator / Incubator</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" id="t-fl-linkedin">LINKEDIN / WEBSITE</label>
+          <input class="form-input" type="url" id="inv_linkedin" placeholder="https://linkedin.com/in/...">
+        </div>
+        <div class="form-group">
+          <label class="form-label" id="t-fl-how">HOW DID YOU FIND US?</label>
+          <select class="form-select" id="inv_how">
+            <option value="" disabled selected>Select...</option>
+            <option value="social" id="t-how-social">Social Media</option>
+            <option value="referral" id="t-how-referral">Referral / Friend</option>
+            <option value="search" id="t-how-search">Search Engine</option>
+            <option value="trading" id="t-how-trading">Trading Community</option>
+            <option value="other" id="t-how-other">Other</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label" id="t-fl-msg">YOUR MESSAGE / PROPOSAL</label>
+          <textarea class="form-textarea" id="inv_message" placeholder="Tell us about your investment thesis, what interests you about ORION RADAR, and any questions you have..."></textarea>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-check-group">
+          <input type="checkbox" id="inv_consent">
+          <span class="form-check-label" id="t-consent">I agree to be contacted by the ORION RADAR team regarding this inquiry. <a href="/legal.html">Privacy Policy</a>.</span>
+        </label>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <button class="btn-submit" id="btnInvestor">
+          <span id="t-btn-submit">Submit investor profile →</span>
+        </button>
+        <span style="font-size:12px;color:var(--muted);" id="t-form-note">* Required fields. We respond within 48h.</span>
+      </div>
+      <div class="investor-note" id="t-inv-note">
+        ⚠ ORION RADAR™ is not a registered investment advisor. This form is for interest collection only. All investment discussions are subject to applicable laws and due diligence processes.
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="sec-divider"><div class="sec-line"></div><div class="sec-title" id="t-faq-title">⊕ FREQUENTLY ASKED QUESTIONS</div><div class="sec-line"></div></div>
+  <div class="faq-list" id="faqList"></div>
+
+  <!-- FOOTER CTA -->
+  <div class="footer-cta">
+    <h2 class="footer-cta-title" id="t-fcta-title">Only <span style="color:var(--green)">13 spots</span> left.</h2>
+    <p class="footer-cta-sub" id="t-fcta-sub">After that, this page closes permanently. There is no second chance.</p>
+    <button class="btn-main" onclick="document.getElementById('planos').scrollIntoView({behavior:'smooth'})">
+      <span id="t-fcta-btn">I want to secure my spot →</span>
+    </button>
+  </div>
+
+  <footer>
+    <div class="footer-brand">ORION RADAR™</div>
+    <div class="footer-copy">© 2025 ORION RADAR™. All rights reserved.</div>
+    <div class="footer-disclaimer">
+      ORION RADAR™ is not a registered investment advisor. All signals are for informational purposes only.<br>
+      Trading financial instruments involves substantial risk. Past performance does not guarantee future results.<br>
+      ORION RADAR™ does not execute orders and has no access to your brokerage account.
+    </div>
+  </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ─── SUPABASE ────────────────────────────────────────────────
+const SUPABASE_URL = 'https://eyawmevqfeaeioistrqk.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5YXdtZXZxZmVhZWlvaXN0cnFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNjE3MDMsImV4cCI6MjA4OTYzNzcwM30.zFT0i5XKwYEbtF6oWKdBtSNvDI8mo48zy-ucsVTWOoQ';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ─── TRANSLATIONS ─────────────────────────────────────────────
+const T = {
+  en: {
+    'topbar-badge':'⭐ FOUNDERS PROGRAM','back':'Plans',
+    'eyebrow':'OPEN SPOTS — EARLY ACCESS',
+    'hero-title':'Get in before<br><span class="accent">everyone.</span><br>Pay less <span class="gold">forever.</span>',
+    'hero-sub':'The Founders Program is a one-time opportunity to lock in Platinum access to ORION RADAR at a permanent discount — before public launch. When spots are gone, this page closes.',
+    'spots-label':'SPOTS LEFT','fill':'FILL RATE','taken':'TAKEN','secured':'ALREADY SECURED',
+    'offer-closes':'⏱ OFFER CLOSES IN','hours':'HOURS','min':'MIN','sec':'SEC',
+    'cta-hero':'Secure my spot now →','disclaimer':'🔒 7-day guarantee · No questions · Cancel anytime',
+    'urgency-text':'<strong>Warning:</strong> when all 50 spots are taken, the Founders Program closes permanently. No waitlist. No exceptions. Future users will pay full price.',
+    'urgency-spots':'13 SPOTS LEFT',
+    'benefits-title':'⊕ WHAT\'S INCLUDED',
+    'b1t':'FULL PLATINUM ACCESS','b1d':'Live signals, TradingView integration, custom watchlist, Entry/SL/TP1/TP2 — everything, no restrictions.','b1tag':'LIFETIME',
+    'b2t':'EXCLUSIVE FOUNDER BADGE','b2d':'Your profile is permanently marked as ORION Founder #001–#050. A badge no future user will ever be able to get.','b2tag':'EXCLUSIVE',
+    'b3t':'PRICE LOCKED FOREVER','b3d':'Platinum normally costs $129/mo. You pay $49. Forever. When prices increase, your rate never changes.','b3tag':'GUARANTEED',
+    'b4t':'DIRECT LINE TO FOUNDER','b4d':'Private group with direct access for feedback, feature suggestions, and performance reports before anyone else.','b4tag':'VIP ACCESS',
+    'b5t':'BETA ACCESS — NEW FEATURES','b5d':'Advanced ORION CHART, session filters, backtesting — early access to everything before public release.','b5tag':'BETA FIRST',
+    'b6t':'VOTE ON THE ROADMAP','b6d':'Founders vote directly on upcoming features. Your voice decides what ORION builds next.','b6tag':'INFLUENCE',
+    'compare-title':'⊕ FOUNDER VS REGULAR PLANS','compare-feat':'FEATURE',
+    'cf1':'Live ORION signals','cf2':'TradingView live chart','cf3':'Entry / SL / TP1 / TP2','cf4':'Custom watchlist',
+    'cf5':'Exclusive Founder badge','cf6':'VIP channel with founder','cf7':'Early beta access','cf8':'Roadmap voting','cf9':'Founder number engraved','cf10':'Monthly renewal','never':'NEVER',
+    'choose-plan':'⊕ CHOOSE YOUR PLAN',
+    'p1name':'FOUNDER · MONTHLY','p1period':'per month · cancel anytime','p1was':'Regular Platinum: $129/mo',
+    'pf1':'Full Platinum access','pf2':'Permanent Founder badge','pf3':'VIP channel with founder','pf4':'Price locked forever','pf5':'Beta access to new features',
+    'btn-monthly':'Join as Monthly Founder →',
+    'p2name':'FOUNDER · LIFETIME','p2period':'one-time payment · never renew again','p2was':'Real value: $1,548+/year',
+    'plf1':'Everything in monthly plan','plf2':'Zero renewals — never pay again','plf3':'Founder number engraved #001–#050','plf4':'Direct vote on product roadmap','plf5':'ROI in under 7 months',
+    'btn-lifetime':'Secure lifetime access →',
+    'guarantee':'🔒 7-day money-back guarantee · No questions asked · Secure payment via Stripe',
+    'investor-title':'⊕ INVEST IN ORION RADAR',
+    'inv-h3':'Investor Interest Form','inv-sub':'Are you interested in investing in ORION RADAR? Share your profile and we\'ll reach out.',
+    'fl-name':'FULL NAME *','fl-email':'EMAIL *','fl-country':'COUNTRY *','fl-phone':'PHONE / WHATSAPP',
+    'fl-amount':'INVESTMENT RANGE (USD) *','fl-type':'INVESTOR PROFILE *','fl-linkedin':'LINKEDIN / WEBSITE','fl-how':'HOW DID YOU FIND US?','fl-msg':'YOUR MESSAGE / PROPOSAL',
+    'consent':'I agree to be contacted by the ORION RADAR team regarding this inquiry. <a href="/legal.html">Privacy Policy</a>.',
+    'btn-submit':'Submit investor profile →','form-note':'* Required fields. We respond within 48h.',
+    'inv-note':'⚠ ORION RADAR™ is not a registered investment advisor. This form is for interest collection only. All investment discussions are subject to applicable laws and due diligence processes.',
+    'faq-title':'⊕ FREQUENTLY ASKED QUESTIONS',
+    'faq':[
+      ['What happens when the 50 spots run out?','The Founders Program closes permanently. There is no waitlist and no second edition. Anyone who misses out will pay the regular $129/mo when the product launches publicly.'],
+      ['Does ORION RADAR execute orders in MT5?','No. ORION RADAR is exclusively a monitoring and consultation app. It never executes orders, never requests broker credentials. The user decides. MT5 executes.'],
+      ['Is the $49/mo price guaranteed forever?','Yes. Your price is locked in the moment you become a Founder. Even if ORION raises prices in the future, your plan is never affected.'],
+      ['Can I cancel the monthly plan?','You can cancel anytime, no penalties. Access continues until the end of the paid period. Note that cancelling permanently loses your Founder pricing.'],
+      ['When is the product available?','ORION RADAR MVP is in its final development stage. Founders will get immediate access to the dashboard at launch, with priority over all other users.'],
+    ],
+    'fcta-title':'Only <span style="color:var(--green)">13 spots</span> left.',
+    'fcta-sub':'After that, this page closes permanently. There is no second chance.',
+    'fcta-btn':'I want to secure my spot →',
+    'msg-ok':'✅ Profile submitted! We\'ll reach out within 48 hours. Thank you for your interest in ORION RADAR.',
+    'msg-err-required':'Please fill in all required fields and accept the consent.',
+    'msg-err-db':'An error occurred. Please try again or contact us directly.',
+    'msg-loading':'Sending...',
+  },
+  pt: {
+    'topbar-badge':'⭐ PROGRAMA FUNDADORES','back':'Planos',
+    'eyebrow':'VAGAS ABERTAS — ACESSO ANTECIPADO',
+    'hero-title':'Entra antes<br><span class="accent">de todos.</span><br>Paga menos <span class="gold">para sempre.</span>',
+    'hero-sub':'O Programa Fundadores é uma oportunidade única de garantir acesso Platinum ao ORION RADAR com desconto permanente — antes do lançamento público. Quando as vagas acabarem, esta página fecha.',
+    'spots-label':'VAGAS RESTANTES','fill':'PREENCHIMENTO','taken':'OCUPADO','secured':'JÁ GARANTIRAM',
+    'offer-closes':'⏱ OFERTA ENCERRA EM','hours':'HORAS','min':'MIN','sec':'SEG',
+    'cta-hero':'Garantir minha vaga agora →','disclaimer':'🔒 Garantia de 7 dias · Sem perguntas · Cancela quando quiser',
+    'urgency-text':'<strong>Atenção:</strong> quando as 50 vagas esgotarem, o programa Fundadores fecha permanentemente. Nenhuma lista de espera. Nenhuma exceção. Os próximos utilizadores pagarão o preço cheio.',
+    'urgency-spots':'13 VAGAS RESTANTES',
+    'benefits-title':'⊕ O QUE ESTÁ INCLUÍDO',
+    'b1t':'ACESSO PLATINUM COMPLETO','b1d':'Sinais ao vivo, TradingView integrado, watchlist personalizada, Entry/SL/TP1/TP2 — tudo sem restrições.','b1tag':'VITALÍCIO',
+    'b2t':'BADGE EXCLUSIVO FUNDADOR','b2d':'O teu perfil fica marcado como Fundador ORION #001–#050. Um selo permanente que nenhum utilizador futuro poderá obter.','b2tag':'EXCLUSIVO',
+    'b3t':'PREÇO CONGELADO PARA SEMPRE','b3d':'O Platinum custa $129/mês. Tu pagas $49. Para sempre. Quando os preços subirem, o teu valor nunca muda.','b3tag':'GARANTIDO',
+    'b4t':'CANAL DIRETO COM O FUNDADOR','b4d':'Grupo privado com acesso direto para feedback, sugestões de features e relatórios de performance antes de todos.','b4tag':'VIP ACCESS',
+    'b5t':'BETA ACCESS — FEATURES NOVAS','b5d':'ORION CHART avançado, filtro de sessão, backtesting — acesso antecipado a tudo antes do lançamento público.','b5tag':'BETA FIRST',
+    'b6t':'VOTO NO ROADMAP DO PRODUTO','b6d':'Os Fundadores têm voto direto nas próximas funcionalidades. A tua voz define o que o ORION constrói a seguir.','b6tag':'INFLUÊNCIA',
+    'compare-title':'⊕ FUNDADOR VS PLANOS NORMAIS','compare-feat':'FUNCIONALIDADE',
+    'cf1':'Sinais ao vivo ORION','cf2':'TradingView live chart','cf3':'Entry / SL / TP1 / TP2','cf4':'Watchlist personalizada',
+    'cf5':'Badge exclusivo Fundador','cf6':'Canal VIP com fundador','cf7':'Beta access antecipado','cf8':'Voto no roadmap','cf9':'Número de Fundador gravado','cf10':'Renovação mensal','never':'NUNCA',
+    'choose-plan':'⊕ ESCOLHE O TEU PLANO',
+    'p1name':'FUNDADOR · MENSAL','p1period':'por mês · cancela quando quiseres','p1was':'Platinum normal: $129/mês',
+    'pf1':'Acesso Platinum completo','pf2':'Badge de Fundador permanente','pf3':'Canal VIP com o fundador','pf4':'Preço congelado para sempre','pf5':'Beta access a novas features',
+    'btn-monthly':'Entrar como Fundador Mensal →',
+    'p2name':'FUNDADOR · VITALÍCIO','p2period':'pagamento único · nunca mais renovas','p2was':'Valor real: +$1.548/ano',
+    'plf1':'Tudo do plano mensal incluído','plf2':'Zero renovações — nunca mais pagas','plf3':'Número de Fundador gravado #001–#050','plf4':'Voto direto no roadmap do produto','plf5':'Retorno do investimento em < 7 meses',
+    'btn-lifetime':'Garantir acesso vitalício →',
+    'guarantee':'🔒 Garantia de 7 dias — reembolso total sem perguntas · Pagamento seguro via Stripe',
+    'investor-title':'⊕ INVISTA NO ORION RADAR',
+    'inv-h3':'Formulário de Interesse — Investidores','inv-sub':'Tens interesse em investir no ORION RADAR? Partilha o teu perfil e entraremos em contacto.',
+    'fl-name':'NOME COMPLETO *','fl-email':'EMAIL *','fl-country':'PAÍS *','fl-phone':'TELEFONE / WHATSAPP',
+    'fl-amount':'VALOR DISPONÍVEL PARA INVESTIR (USD) *','fl-type':'PERFIL DO INVESTIDOR *','fl-linkedin':'LINKEDIN / WEBSITE','fl-how':'COMO NOS ENCONTROU?','fl-msg':'MENSAGEM / PROPOSTA',
+    'consent':'Concordo em ser contactado pela equipa do ORION RADAR relativamente a esta consulta. <a href="/legal.html">Política de Privacidade</a>.',
+    'btn-submit':'Submeter perfil de investidor →','form-note':'* Campos obrigatórios. Respondemos em 48h.',
+    'inv-note':'⚠ O ORION RADAR™ não é um consultor de investimento registado. Este formulário é apenas para recolha de interesse. Todas as discussões de investimento estão sujeitas às leis aplicáveis e processos de due diligence.',
+    'faq-title':'⊕ PERGUNTAS FREQUENTES',
+    'faq':[
+      ['O que acontece quando as 50 vagas acabam?','O programa Fundadores fecha permanentemente. Não existe lista de espera nem segunda edição. Quem não entrar pagará o preço normal de $129/mês quando o produto for lançado publicamente.'],
+      ['O ORION RADAR executa ordens no MT5?','Não. O ORION RADAR é exclusivamente um app de consulta e monitorização. Nunca executa ordens, nunca pede credenciais do broker. O utilizador decide. O MT5 executa.'],
+      ['O preço de $49/mês fica garantido para sempre?','Sim. O teu preço fica congelado no momento em que te tornares Fundador. Mesmo que o ORION aumente os preços no futuro, o teu plano nunca é afetado.'],
+      ['Posso cancelar o plano mensal?','Podes cancelar a qualquer momento sem penalizações. O acesso mantém-se até ao fim do período pago. Ao cancelar perdes o preço de Fundador permanentemente.'],
+      ['Quando o produto está disponível?','O ORION RADAR MVP está em fase final de desenvolvimento. Os Fundadores terão acesso imediato ao dashboard no lançamento, com prioridade sobre todos os outros utilizadores.'],
+    ],
+    'fcta-title':'Só restam <span style="color:var(--green)">13 vagas.</span>',
+    'fcta-sub':'Depois disso, esta página fecha para sempre. Não existe segunda oportunidade.',
+    'fcta-btn':'Quero garantir a minha vaga →',
+    'msg-ok':'✅ Perfil enviado! Entraremos em contacto em até 48 horas. Obrigado pelo interesse no ORION RADAR.',
+    'msg-err-required':'Por favor preenche todos os campos obrigatórios e aceita o consentimento.',
+    'msg-err-db':'Ocorreu um erro. Por favor tenta novamente ou contacta-nos diretamente.',
+    'msg-loading':'A enviar...',
+  },
+  es: {
+    'topbar-badge':'⭐ PROGRAMA FUNDADORES','back':'Planes',
+    'eyebrow':'PLAZAS ABIERTAS — ACCESO ANTICIPADO',
+    'hero-title':'Entra antes<br><span class="accent">que todos.</span><br>Paga menos <span class="gold">para siempre.</span>',
+    'hero-sub':'El Programa Fundadores es una oportunidad única de asegurar acceso Platinum a ORION RADAR con descuento permanente — antes del lanzamiento público. Cuando se agoten las plazas, esta página cierra.',
+    'spots-label':'PLAZAS RESTANTES','fill':'OCUPACIÓN','taken':'TOMADO','secured':'YA ASEGURADO',
+    'offer-closes':'⏱ OFERTA CIERRA EN','hours':'HORAS','min':'MIN','sec':'SEG',
+    'cta-hero':'Asegurar mi plaza ahora →','disclaimer':'🔒 Garantía de 7 días · Sin preguntas · Cancela cuando quieras',
+    'urgency-text':'<strong>Atención:</strong> cuando las 50 plazas se agoten, el programa Fundadores cierra permanentemente. Sin lista de espera. Sin excepciones. Los futuros usuarios pagarán el precio completo.',
+    'urgency-spots':'13 PLAZAS RESTANTES',
+    'benefits-title':'⊕ QUÉ ESTÁ INCLUIDO',
+    'b1t':'ACCESO PLATINUM COMPLETO','b1d':'Señales en vivo, TradingView integrado, watchlist personalizada, Entry/SL/TP1/TP2 — todo sin restricciones.','b1tag':'DE POR VIDA',
+    'b2t':'INSIGNIA EXCLUSIVA FUNDADOR','b2d':'Tu perfil queda marcado como Fundador ORION #001–#050. Una insignia que ningún usuario futuro podrá obtener.','b2tag':'EXCLUSIVO',
+    'b3t':'PRECIO BLOQUEADO PARA SIEMPRE','b3d':'El Platinum cuesta $129/mes. Tú pagas $49. Para siempre. Cuando los precios suban, tu tarifa nunca cambia.','b3tag':'GARANTIZADO',
+    'b4t':'LÍNEA DIRECTA CON EL FUNDADOR','b4d':'Grupo privado con acceso directo para feedback, sugerencias de features e informes de rendimiento antes que nadie.','b4tag':'VIP ACCESS',
+    'b5t':'ACCESO BETA — NUEVAS FEATURES','b5d':'ORION CHART avanzado, filtros de sesión, backtesting — acceso anticipado a todo antes del lanzamiento público.','b5tag':'BETA FIRST',
+    'b6t':'VOTO EN EL ROADMAP','b6d':'Los Fundadores votan directamente en las próximas funcionalidades. Tu voz decide qué construye ORION a continuación.','b6tag':'INFLUENCIA',
+    'compare-title':'⊕ FUNDADOR VS PLANES REGULARES','compare-feat':'FUNCIONALIDAD',
+    'cf1':'Señales en vivo ORION','cf2':'TradingView live chart','cf3':'Entry / SL / TP1 / TP2','cf4':'Watchlist personalizada',
+    'cf5':'Insignia exclusiva Fundador','cf6':'Canal VIP con fundador','cf7':'Acceso beta anticipado','cf8':'Voto en el roadmap','cf9':'Número de Fundador grabado','cf10':'Renovación mensual','never':'NUNCA',
+    'choose-plan':'⊕ ELIGE TU PLAN',
+    'p1name':'FUNDADOR · MENSUAL','p1period':'por mes · cancela cuando quieras','p1was':'Platinum regular: $129/mes',
+    'pf1':'Acceso Platinum completo','pf2':'Insignia de Fundador permanente','pf3':'Canal VIP con el fundador','pf4':'Precio bloqueado para siempre','pf5':'Acceso beta a nuevas features',
+    'btn-monthly':'Unirse como Fundador Mensual →',
+    'p2name':'FUNDADOR · DE POR VIDA','p2period':'pago único · nunca más renueves','p2was':'Valor real: +$1.548/año',
+    'plf1':'Todo el plan mensual incluido','plf2':'Cero renovaciones — nunca más pagas','plf3':'Número de Fundador grabado #001–#050','plf4':'Voto directo en el roadmap del producto','plf5':'Retorno de inversión en menos de 7 meses',
+    'btn-lifetime':'Asegurar acceso de por vida →',
+    'guarantee':'🔒 Garantía de devolución de 7 días · Sin preguntas · Pago seguro vía Stripe',
+    'investor-title':'⊕ INVIERTE EN ORION RADAR',
+    'inv-h3':'Formulario de Interés — Inversores','inv-sub':'¿Estás interesado en invertir en ORION RADAR? Comparte tu perfil y nos pondremos en contacto.',
+    'fl-name':'NOMBRE COMPLETO *','fl-email':'EMAIL *','fl-country':'PAÍS *','fl-phone':'TELÉFONO / WHATSAPP',
+    'fl-amount':'RANGO DE INVERSIÓN (USD) *','fl-type':'PERFIL DEL INVERSOR *','fl-linkedin':'LINKEDIN / SITIO WEB','fl-how':'¿CÓMO NOS ENCONTRASTE?','fl-msg':'MENSAJE / PROPUESTA',
+    'consent':'Acepto ser contactado por el equipo de ORION RADAR sobre esta consulta. <a href="/legal.html">Política de Privacidad</a>.',
+    'btn-submit':'Enviar perfil de inversor →','form-note':'* Campos obligatorios. Respondemos en 48h.',
+    'inv-note':'⚠ ORION RADAR™ no es un asesor de inversiones registrado. Este formulario es solo para recopilar interés. Todas las discusiones de inversión están sujetas a las leyes aplicables y procesos de due diligence.',
+    'faq-title':'⊕ PREGUNTAS FRECUENTES',
+    'faq':[
+      ['¿Qué pasa cuando las 50 plazas se agotan?','El programa Fundadores cierra permanentemente. No hay lista de espera ni segunda edición. Los que no entren pagarán el precio normal de $129/mes cuando el producto se lance públicamente.'],
+      ['¿ORION RADAR ejecuta órdenes en MT5?','No. ORION RADAR es exclusivamente una app de consulta y monitorización. Nunca ejecuta órdenes, nunca solicita credenciales del broker. El usuario decide. MT5 ejecuta.'],
+      ['¿El precio de $49/mes está garantizado para siempre?','Sí. Tu precio queda bloqueado en el momento en que te conviertes en Fundador. Aunque ORION aumente los precios en el futuro, tu plan nunca se ve afectado.'],
+      ['¿Puedo cancelar el plan mensual?','Puedes cancelar en cualquier momento sin penalizaciones. El acceso continúa hasta el final del período pagado. Al cancelar pierdes el precio de Fundador permanentemente.'],
+      ['¿Cuándo estará disponible el producto?','El MVP de ORION RADAR está en su fase final de desarrollo. Los Fundadores tendrán acceso inmediato al dashboard en el lanzamiento, con prioridad sobre todos los demás usuarios.'],
+    ],
+    'fcta-title':'Solo quedan <span style="color:var(--green)">13 plazas.</span>',
+    'fcta-sub':'Después de eso, esta página cierra permanentemente. No hay segunda oportunidad.',
+    'fcta-btn':'Quiero asegurar mi plaza →',
+    'msg-ok':'✅ ¡Perfil enviado! Nos pondremos en contacto en 48 horas. Gracias por tu interés en ORION RADAR.',
+    'msg-err-required':'Por favor completa todos los campos obligatorios y acepta el consentimiento.',
+    'msg-err-db':'Ocurrió un error. Por favor intenta de nuevo o contáctanos directamente.',
+    'msg-loading':'Enviando...',
+  }
+};
+
+let currentLang = 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase().includes(lang)));
+  const t = T[lang];
+  const ids = ['topbar-badge','back','eyebrow','hero-sub','spots-label','fill','taken','secured',
+    'offer-closes','hours','min','sec','cta-hero','disclaimer','urgency-spots',
+    'benefits-title','b1t','b1d','b1tag','b2t','b2d','b2tag','b3t','b3d','b3tag',
+    'b4t','b4d','b4tag','b5t','b5d','b5tag','b6t','b6d','b6tag',
+    'compare-title','compare-feat','cf1','cf2','cf3','cf4','cf5','cf6','cf7','cf8','cf9','cf10','never',
+    'choose-plan','p1name','p1period','p1was','pf1','pf2','pf3','pf4','pf5','btn-monthly',
+    'p2name','p2period','p2was','plf1','plf2','plf3','plf4','plf5','btn-lifetime','guarantee',
+    'investor-title','inv-h3','inv-sub','fl-name','fl-email','fl-country','fl-phone',
+    'fl-amount','fl-type','fl-linkedin','fl-how','fl-msg','consent','btn-submit','form-note','inv-note',
+    'faq-title','fcta-sub','fcta-btn','urgency-text'];
+  ids.forEach(id => {
+    const el = document.getElementById('t-'+id);
+    if (el && t[id] !== undefined) el.innerHTML = t[id];
+  });
+  // hero title special
+  const ht = document.getElementById('t-hero-title');
+  if (ht && t['hero-title']) ht.innerHTML = t['hero-title'];
+  const fct = document.getElementById('t-fcta-title');
+  if (fct && t['fcta-title']) fct.innerHTML = t['fcta-title'];
+  // rebuild faq
+  buildFaq(lang);
+  // placeholder for textarea
+  const ta = document.getElementById('inv_message');
+  const placeholders = {
+    en: 'Tell us about your investment thesis, what interests you about ORION RADAR, and any questions you have...',
+    pt: 'Fala-nos sobre a tua tese de investimento, o que te interessa no ORION RADAR e qualquer questão que tenhas...',
+    es: 'Cuéntanos sobre tu tesis de inversión, qué te interesa de ORION RADAR y cualquier pregunta que tengas...'
+  };
+  if (ta) ta.placeholder = placeholders[lang];
+}
+
+function buildFaq(lang) {
+  const faqs = T[lang].faq;
+  const list = document.getElementById('faqList');
+  if (!list) return;
+  list.innerHTML = faqs.map(([q,a]) => `
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">${q} <span class="faq-icon">+</span></div>
+      <div class="faq-a">${a}</div>
+    </div>`).join('');
+}
+
+function toggleFaq(el) {
+  const item = el.parentElement;
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+}
+
+// ─── COUNTDOWN ───────────────────────────────────────────────
+const END_TIME = new Date().getTime() + 72 * 3600 * 1000;
+function updateCountdown() {
+  const diff = Math.max(0, END_TIME - new Date().getTime());
+  document.getElementById('cd-h').textContent = String(Math.floor(diff/3600000)).padStart(2,'0');
+  document.getElementById('cd-m').textContent = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+  document.getElementById('cd-s').textContent = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+// ─── CHECKOUT BUTTONS ────────────────────────────────────────
+document.getElementById('btnMonthly').onclick = () => {
+  alert('Payment integration coming soon — Stripe link will go here!');
+  // window.location.href = 'YOUR_STRIPE_MONTHLY_LINK';
+};
+document.getElementById('btnLifetime').onclick = () => {
+  alert('Payment integration coming soon — Stripe link will go here!');
+  // window.location.href = 'YOUR_STRIPE_LIFETIME_LINK';
+};
+
+// ─── INVESTOR FORM ───────────────────────────────────────────
+function showFormMsg(text, type) {
+  const el = document.getElementById('formMsg');
+  el.innerHTML = text;
+  el.className = 'form-msg show ' + type;
+  el.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+document.getElementById('btnInvestor').onclick = async function() {
+  const t = T[currentLang];
+  const name    = document.getElementById('inv_name').value.trim();
+  const email   = document.getElementById('inv_email').value.trim();
+  const country = document.getElementById('inv_country').value;
+  const phone   = document.getElementById('inv_phone').value.trim();
+  const amount  = document.getElementById('inv_amount').value;
+  const type    = document.getElementById('inv_type').value;
+  const linkedin= document.getElementById('inv_linkedin').value.trim();
+  const how     = document.getElementById('inv_how').value;
+  const message = document.getElementById('inv_message').value.trim();
+  const consent = document.getElementById('inv_consent').checked;
+
+  if (!name || !email || !country || !amount || !type || !consent) {
+    showFormMsg(t['msg-err-required'], 'err'); return;
+  }
+
+  this.disabled = true;
+  const btnSpan = document.getElementById('t-btn-submit');
+  const origText = btnSpan.textContent;
+  btnSpan.textContent = t['msg-loading'];
+
+  try {
+    const { error } = await sb.from('investor_leads').insert([{
+      name, email, country, phone: phone||null,
+      investment_range: amount, investor_type: type,
+      linkedin: linkedin||null, how_found: how||null,
+      message: message||null, lang: currentLang,
+      created_at: new Date().toISOString()
+    }]);
+    if (error) throw error;
+    showFormMsg(t['msg-ok'], 'ok');
+    ['inv_name','inv_email','inv_phone','inv_linkedin','inv_message'].forEach(id => document.getElementById(id).value = '');
+    ['inv_country','inv_amount','inv_type','inv_how'].forEach(id => document.getElementById(id).selectedIndex = 0);
+    document.getElementById('inv_consent').checked = false;
+  } catch(err) {
+    console.error(err);
+    showFormMsg(t['msg-err-db'], 'err');
+  } finally {
+    this.disabled = false;
+    btnSpan.textContent = origText;
+  }
+};
+
+// ─── INIT ────────────────────────────────────────────────────
+buildFaq('en');
+</script>
+</body>
+</html>
