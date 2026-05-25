@@ -334,11 +334,11 @@
       <svg class="donut-svg" id="donutSvg" viewBox="0 0 140 140">
         <circle cx="70" cy="70" r="52" fill="none" stroke="rgba(0,210,110,0.07)" stroke-width="18"/>
         <circle id="donutWin" cx="70" cy="70" r="52" fill="none" stroke="#00e87a" stroke-width="18"
-          stroke-dasharray="0 327" stroke-linecap="round" transform="rotate(-90 70 70)"
-          style="transition:stroke-dasharray 1s ease"/>
+          stroke-dasharray="0 327" stroke-dashoffset="82" stroke-linecap="butt"
+          style="transition:stroke-dasharray .8s ease,stroke-dashoffset .8s ease"/>
         <circle id="donutLoss" cx="70" cy="70" r="52" fill="none" stroke="#ff3558" stroke-width="18"
-          stroke-dasharray="0 327" stroke-linecap="round" transform="rotate(-90 70 70)"
-          style="transition:stroke-dasharray 1s ease;opacity:.7"/>
+          stroke-dasharray="0 327" stroke-dashoffset="82" stroke-linecap="butt"
+          style="transition:stroke-dasharray .8s ease,stroke-dashoffset .8s ease"/>
         <text id="donutPct" x="70" y="66" text-anchor="middle" font-family="Orbitron,sans-serif"
           font-size="18" font-weight="900" fill="#dff2ea">—%</text>
         <text id="donutLbl" x="70" y="84" text-anchor="middle" font-family="Share Tech Mono,monospace"
@@ -552,21 +552,35 @@ function drawDonut(wins, losses) {
   const total = wins + losses;
   const wr = total ? Math.round((wins/total)*100) : 0;
   const circ = 2 * Math.PI * 52; // ~326.7
-  const winDash = total ? (wins/total)*circ : 0;
-  const lossDash = total ? (losses/total)*circ : 0;
-  const winOffset = 0;
-  const lossOffset = -(circ - winDash);
 
-  document.getElementById('donutWin').setAttribute('stroke-dasharray', `${winDash} ${circ-winDash}`);
+  const winEl = document.getElementById('donutWin');
   const lossEl = document.getElementById('donutLoss');
-  lossEl.setAttribute('stroke-dasharray', `${lossDash} ${circ-lossDash}`);
-  lossEl.style.strokeDashoffset = -winDash;
-  lossEl.setAttribute('transform', `rotate(-90 70 70)`);
-  // hack: offset loss segment after win
-  lossEl.style.transform = `rotate(${-90 + (winDash/circ)*360}deg)`;
-  lossEl.style.transformOrigin = '70px 70px';
+
+  if (total === 0) {
+    // Empty state — grey ring
+    winEl.setAttribute('stroke-dasharray', `0 ${circ}`);
+    lossEl.setAttribute('stroke-dasharray', `0 ${circ}`);
+    lossEl.setAttribute('stroke-dashoffset', '0');
+  } else {
+    const winDash = (wins / total) * circ;
+    const lossDash = (losses / total) * circ;
+
+    // WIN segment — starts at top (-90deg = stroke-dashoffset = circ/4)
+    winEl.setAttribute('stroke-dasharray', `${winDash} ${circ - winDash}`);
+    winEl.setAttribute('stroke-dashoffset', `${circ / 4}`);
+
+    // LOSS segment — starts right after WIN segment
+    lossEl.setAttribute('stroke-dasharray', `${lossDash} ${circ - lossDash}`);
+    lossEl.setAttribute('stroke-dashoffset', `${circ / 4 - winDash}`);
+  }
+
+  // Color win segment green or grey if 0
+  winEl.setAttribute('stroke', wins > 0 ? '#00e87a' : 'rgba(0,210,110,0.07)');
+  // Color loss segment red or grey if 0
+  lossEl.setAttribute('stroke', losses > 0 ? '#ff3558' : 'rgba(0,210,110,0.07)');
 
   document.getElementById('donutPct').textContent = wr + '%';
+  document.getElementById('donutPct').setAttribute('fill', wr >= 50 ? '#00e87a' : '#ff3558');
   document.getElementById('donutW').textContent = wins;
   document.getElementById('donutL').textContent = losses;
 }
@@ -737,15 +751,15 @@ function renderTrades(trades) {
 
 // ── STREAK ─────────────────────────────────────────────────────
 function calcStreak(trades) {
-  if (!trades||!trades.length) return {streak:0, positive:true};
+  if (!trades||!trades.length) return {streak:0, positive:true, type:'—'};
   const sorted = [...trades].sort((a,b)=>new Date(b.closed_at)-new Date(a.closed_at));
-  let streak = 0;
   const first = sorted[0]?.result;
+  let streak = 0;
   for (const tr of sorted) {
     if (tr.result === first) streak++;
     else break;
   }
-  return {streak, positive: first === 'WIN'};
+  return {streak, positive: first === 'WIN', type: first};
 }
 
 // ── RENDER ALL ─────────────────────────────────────────────────
@@ -772,10 +786,18 @@ function renderAll(data, trades) {
   document.getElementById('statPeriod').textContent = t['period-suffix'](currentDays);
 
   // Streak
-  const {streak, positive} = calcStreak(filtered);
+  const {streak, positive, type} = calcStreak(filtered);
   const streakEl = document.getElementById('metStreak');
+  const streakLbl = document.getElementById('t-met-streak');
   streakEl.textContent = streak || '—';
   streakEl.className = 'metric-value ' + (streak===0?'':(positive?'green':'red'));
+  if (streakLbl) {
+    if (streak === 0) streakLbl.textContent = '// WIN STREAK';
+    else if (positive) streakLbl.textContent = '// WIN STREAK 🔥';
+    else streakLbl.textContent = '// LOSS STREAK ⚠';
+  }
+  const streakSub = document.getElementById('t-met-streak-sub');
+  if (streakSub) streakSub.textContent = streak===0 ? '—' : (positive ? 'consecutive wins' : 'consecutive losses');
 
   // Avg RR
   const rrTrades = filtered.filter(tr=>tr.pnl_r);
@@ -799,10 +821,10 @@ function renderAll(data, trades) {
     avgRR: a.rrs.length ? a.rrs.reduce((s,v)=>s+v,0)/a.rrs.length : 0,
   })).sort((a,b)=>b.winRate-a.winRate);
 
-  // Best asset
-  const best = assets[0];
-  document.getElementById('metBest').textContent = best?.symbol || '—';
-  document.getElementById('metBestSub').textContent = best ? t['best-wr'](best.winRate) : '—';
+  // Best asset — only show if has at least 1 win
+  const bestWithWins = assets.find(a => a.wins > 0);
+  document.getElementById('metBest').textContent = bestWithWins?.symbol || '—';
+  document.getElementById('metBestSub').textContent = bestWithWins ? t['best-wr'](bestWithWins.winRate) : 'no wins yet';
   document.getElementById('metAssets').textContent = assets.length || '—';
 
   // Updated at
