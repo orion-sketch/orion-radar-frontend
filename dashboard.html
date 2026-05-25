@@ -693,9 +693,9 @@
           <span id="orionChartLabel" style="font-family:var(--mono);font-size:9px;color:var(--muted2)">— / —</span>
           <span id="orionChartTime" style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.5px;"></span>
           <div style="display:flex;gap:3px;">
-            <button class="tf-btn" data-tf="M5"  onclick="orionSetTf('M5',this)">M5</button>
+            <button class="tf-btn active" data-tf="M5"  onclick="orionSetTf('M5',this)">M5</button>
             <button class="tf-btn" data-tf="M15" onclick="orionSetTf('M15',this)">M15</button>
-            <button class="tf-btn active" data-tf="H1" onclick="orionSetTf('H1',this)">H1</button>
+            <button class="tf-btn" data-tf="H1" onclick="orionSetTf('H1',this)">H1</button>
             <button class="tf-btn" data-tf="H4"  onclick="orionSetTf('H4',this)">H4</button>
           </div>
         </div>
@@ -2448,7 +2448,7 @@ function setTheme(t, btn) {
 window._orionChart   = null;
 window._orionSeries  = null;
 window._orionCurrentSym = null;
-window._orionCurrentTf  = 'H1';
+window._orionCurrentTf  = 'M5';
 window._orionSignals = {};   // populated by loadSignals patch
 const _oc_pl = [];
 
@@ -2555,7 +2555,7 @@ async function orionLoadChart(sym, tf) {
   if (!window._orionChart) return;
 
   window._orionCurrentSym = sym;
-  window._orionCurrentTf = tf || 'H1';
+  window._orionCurrentTf = tf || 'M5';
   // Update watermark with current TF
   window._orionChart.applyOptions({ watermark: { text: window._orionCurrentTf } });
 
@@ -2585,7 +2585,7 @@ async function orionLoadChart(sym, tf) {
   // Busca candles reais via backend /ohlcv (Finnhub)
   let candles = [];
   try {
-    const ohlcvRes = await fetch(`${BACKEND_URL}/ohlcv?symbol=${encodeURIComponent(sym)}&tf=${encodeURIComponent(window._orionCurrentTf || 'H1')}`, { cache: 'no-cache' });
+    const ohlcvRes = await fetch(`${BACKEND_URL}/ohlcv?symbol=${encodeURIComponent(sym)}&tf=${encodeURIComponent(window._orionCurrentTf || 'M5')}`, { cache: 'no-cache' });
     if (ohlcvRes.ok) {
       const ohlcvData = await ohlcvRes.json();
       if (ohlcvData.candles && ohlcvData.candles.length) candles = ohlcvData.candles;
