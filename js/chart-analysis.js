@@ -106,6 +106,14 @@ function cc() {
   return {bg:'#080d12',grid:'#0f1e2c',text:'#4a7090',up:'#2de89a',dn:'#e84a2d',border:'#162030'};
 }
 
+function updateWatermark(){
+  const el=document.getElementById('chart-watermark');
+  if(!el)return;
+  const sym=state.selAsset||'—';
+  const tf=state.selTF||'—';
+  el.textContent=`${sym} / ${tf}`;
+}
+
 function initChart() {
   const el = document.getElementById('chart-container');
   if (!el || !window.LightweightCharts) return;
@@ -127,6 +135,20 @@ function initChart() {
     const{width,height}=e[0].contentRect;
     state.chart.applyOptions({width,height});
   }).observe(el);
+
+  // Injeta watermark no container se nao existir
+  if(!document.getElementById('chart-watermark')){
+    const wm=document.createElement('div');
+    wm.id='chart-watermark';
+    wm.style.cssText='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);'+
+      'font-family:\'Rajdhani\',sans-serif;font-size:48px;font-weight:700;'+
+      'color:rgba(39,212,99,0.06);letter-spacing:4px;pointer-events:none;'+
+      'white-space:nowrap;z-index:0;user-select:none;';
+    el.style.position='relative';
+    el.appendChild(wm);
+  }
+  updateWatermark();
+
   window.orionChart={applyTheme(){initChart();if(state.selAsset)loadChart(state.selAsset,state.selTF);}};
 }
 
@@ -187,6 +209,7 @@ function plotMarkers(sym,tf,candles){
 
 async function loadChart(sym,tf){
   if(!state.chart||!state.candleSeries)return;
+  updateWatermark();
   showLoading(true);
   const candles=await fetchOHLCV(sym,tf);
   if(candles.length){
@@ -495,11 +518,23 @@ function initEvents(){
   document.getElementById('tf-selector')?.addEventListener('click',e=>{
     const btn=e.target.closest('.tf-btn');
     if(!btn)return;
-    state.selTF=btn.dataset.tf;
+    const requestedTF=btn.dataset.tf;
+    const sym=state.selAsset;
+
+    // Verifica se existe sinal nesse TF para o ativo selecionado
+    const hasSig = sym && state.signals[sym]?.tfs[requestedTF];
+    if(!hasSig && sym){
+      // Mostra aviso visual no botao por 1.5s mas ainda carrega o grafico (sem marcadores)
+      btn.style.opacity='0.4';
+      setTimeout(()=>btn.style.opacity='',1500);
+    }
+
+    state.selTF=requestedTF;
     document.querySelectorAll('.tf-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
+    updateWatermark();
     renderAll();
-    if(state.selAsset)loadChart(state.selAsset,state.selTF);
+    if(sym) loadChart(sym,state.selTF);
   });
 
   document.getElementById('rank-slider')?.addEventListener('input',e=>{
