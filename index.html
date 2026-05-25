@@ -65,6 +65,101 @@
     hr { border: none; border-top: 1px solid #0f2235; margin: 14px 0; }
     .status { text-align: center; font-size: 11px; color: #2a4060; margin-top: 16px; letter-spacing: 0.5px; }
     @media (max-width: 460px) { .card { padding: 26px 18px; } }
+
+    /* ── View Plans Button ── */
+    .view-plans-btn {
+      margin-top: 14px; width: 100%; height: 40px; border-radius: 10px;
+      border: 1px solid rgba(39,212,99,0.3); background: rgba(39,212,99,0.07);
+      color: #27d463; font-size: 13px; font-weight: 700; font-family: 'Inter', sans-serif;
+      letter-spacing: .5px; cursor: pointer; transition: background .2s, border-color .2s;
+    }
+    .view-plans-btn:hover { background: rgba(39,212,99,0.15); border-color: rgba(39,212,99,0.5); }
+
+    /* ── Plans Modal ── */
+    #orionPlansModal {
+      display: none; position: fixed; inset: 0; z-index: 99999;
+      background: rgba(1,6,15,0.93); backdrop-filter: blur(8px);
+      align-items: center; justify-content: center; padding: 16px;
+    }
+    #orionPlansModal.open { display: flex; }
+    .opm-shell {
+      width: 100%; max-width: 940px; max-height: 92vh; overflow-y: auto;
+      background: rgba(6,16,32,0.98); border: 1px solid rgba(24,50,77,0.9);
+      border-radius: 24px; box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      scrollbar-width: thin; scrollbar-color: rgba(39,212,99,0.3) transparent;
+    }
+    .opm-shell::-webkit-scrollbar { width: 4px; }
+    .opm-shell::-webkit-scrollbar-thumb { background: rgba(39,212,99,0.3); border-radius: 4px; }
+    .opm-header {
+      position: sticky; top: 0; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 22px; border-bottom: 1px solid rgba(24,50,77,0.7);
+      background: rgba(6,16,32,0.98); backdrop-filter: blur(10px);
+    }
+    .opm-title { font-family: 'Rajdhani', sans-serif; font-size: 19px; font-weight: 700; letter-spacing: 2px; }
+    .opm-title span { color: #27d463; }
+    .opm-close {
+      width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgba(24,50,77,0.8);
+      background: rgba(10,25,50,0.8); color: #8fa8c4; font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: all .2s;
+    }
+    .opm-close:hover { background: rgba(239,68,68,0.15); border-color: #ef4444; color: #ef4444; }
+    .opm-subtitle {
+      text-align: center; padding: 18px 22px 4px;
+      font-size: 12px; color: #8fa8c4;
+    }
+    .opm-subtitle strong {
+      display: block; font-family: 'Rajdhani', sans-serif; font-size: 24px;
+      font-weight: 700; color: #fff; letter-spacing: 1px; margin-bottom: 3px;
+    }
+    .opm-grid {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 12px; padding: 18px 22px;
+    }
+    @media(max-width:720px) { .opm-grid { grid-template-columns: repeat(2,1fr); } }
+    @media(max-width:440px) { .opm-grid { grid-template-columns: 1fr; } }
+    .opm-card {
+      background: rgba(4,12,26,0.9); border: 1px solid rgba(24,50,77,0.7);
+      border-radius: 16px; padding: 18px 14px; position: relative; overflow: hidden;
+      transition: border-color .2s, transform .15s, box-shadow .2s;
+    }
+    .opm-card:hover { transform: translateY(-3px); }
+    .opm-card.bronze:hover  { border-color: rgba(180,120,30,0.5);  box-shadow: 0 10px 28px rgba(180,120,30,0.1); }
+    .opm-card.silver:hover  { border-color: rgba(150,170,190,0.5); box-shadow: 0 10px 28px rgba(150,170,190,0.1); }
+    .opm-card.gold:hover    { border-color: rgba(255,200,50,0.4);  box-shadow: 0 10px 28px rgba(255,200,50,0.08); }
+    .opm-card.platinum:hover { border-color: rgba(39,212,99,0.5); box-shadow: 0 10px 28px rgba(39,212,99,0.1); }
+    .opm-popular {
+      display: inline-block; background: rgba(39,212,99,0.15); color: #27d463;
+      font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 99px;
+      letter-spacing: .8px; margin-bottom: 7px; border: 1px solid rgba(39,212,99,0.25);
+    }
+    .opm-card-name { font-family: 'Rajdhani', sans-serif; font-size: 21px; font-weight: 700; margin-bottom: 2px; }
+    .bronze  .opm-card-name { color: #f0b050; }
+    .silver  .opm-card-name { color: #c8d8e8; }
+    .gold    .opm-card-name { color: #ffd060; }
+    .platinum .opm-card-name { color: #6bff9d; }
+    .opm-price { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 2px; }
+    .opm-price span { font-size: 12px; font-weight: 400; color: #8fa8c4; }
+    .opm-desc { font-size: 11px; color: #8fa8c4; margin-bottom: 12px; line-height: 1.4; }
+    .opm-divider { height: 1px; background: rgba(24,50,77,0.5); margin-bottom: 11px; }
+    .opm-features { display: flex; flex-direction: column; gap: 6px; }
+    .opm-feat { display: flex; align-items: flex-start; gap: 7px; font-size: 11px; color: #90a8c0; line-height: 1.35; }
+    .opm-feat .opm-chk { flex-shrink: 0; color: #27d463; margin-top: 1px; }
+    .opm-feat.locked { color: #2a4060; }
+    .opm-feat.locked .opm-chk { color: #1a3050; }
+    .opm-cta {
+      padding: 14px 22px 22px; border-top: 1px solid rgba(24,50,77,0.5);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+    }
+    .opm-cta-note { font-size: 12px; color: #8fa8c4; line-height: 1.5; }
+    .opm-cta-note strong { color: #fff; font-weight: 700; }
+    .opm-btn-start {
+      height: 42px; padding: 0 26px; border: none; border-radius: 10px;
+      background: linear-gradient(135deg,#1fb854,#27d463); color: #fff;
+      font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif;
+      white-space: nowrap; transition: opacity .15s, transform .1s;
+    }
+    .opm-btn-start:hover { opacity: .9; transform: translateY(-1px); }
   </style>
 </head>
 <body>
@@ -83,6 +178,7 @@
       <hr />
       <button id="goSignup" class="btn btn-blue">Create Account</button>
       <div class="center"><button id="goForgot" class="link-btn">Forgot password?</button></div>
+      <button class="view-plans-btn" onclick="openOrionPlans()">View Plans &amp; Pricing →</button>
     </section>
 
     <!-- SIGNUP -->
@@ -276,6 +372,101 @@
         showMsg('Password updated. You can now log in.', 'ok');
       };
     });
+  </script>
+
+  <!-- ── Plans Modal ─────────────────────────────────────── -->
+  <div id="orionPlansModal" onclick="if(event.target.id==='orionPlansModal')closeOrionPlans()">
+    <div class="opm-shell">
+      <div class="opm-header">
+        <div class="opm-title">ORION <span>RADAR</span>™ PRO</div>
+        <button class="opm-close" onclick="closeOrionPlans()">✕</button>
+      </div>
+      <div class="opm-subtitle">
+        <strong>Choose Your Plan</strong>
+        Each tier builds on the previous one. Create an account to subscribe.
+      </div>
+      <div class="opm-grid">
+        <!-- BRONZE -->
+        <div class="opm-card bronze">
+          <div class="opm-card-name">Bronze</div>
+          <div class="opm-price">$29<span>/mo</span></div>
+          <div class="opm-desc">Core signals for new traders.</div>
+          <div class="opm-divider"></div>
+          <div class="opm-features">
+            <div class="opm-feat"><span class="opm-chk">✦</span>Core market signals</div>
+            <div class="opm-feat"><span class="opm-chk">✦</span>Main timeframes (H1, M15, M5)</div>
+            <div class="opm-feat"><span class="opm-chk">✦</span>Telegram alerts</div>
+            <div class="opm-feat"><span class="opm-chk">✦</span>BOS &amp; CHOCH patterns</div>
+            <div class="opm-feat"><span class="opm-chk">✦</span>20s scan interval</div>
+            <div class="opm-feat locked"><span class="opm-chk">✕</span>Custom watchlist</div>
+            <div class="opm-feat locked"><span class="opm-chk">✕</span>Live signals</div>
+            <div class="opm-feat locked"><span class="opm-chk">✕</span>TradingView charts</div>
+          </div>
+        </div>
+        <!-- SILVER -->
+        <div class="opm-card silver">
+          <div class="opm-card-name">Silver</div>
+          <div class="opm-price">$59<span>/mo</span></div>
+          <div class="opm-desc">Custom watchlist + indicators.</div>
+          <div class="opm-divider"></div>
+          <div class="opm-features">
+            <div class="opm-feat"><span class="opm-chk">✦</span>Everything in Bronze</div>
+            <div class="opm-feat"><span class="opm-chk">✦</span>Custom asset watchlist</div>
+            <div class="opm-feat"><span class="opm-chk">✦</span>Indicator selection (FVG, OB, LSR…)</div>
+            <div class="opm-feat"><span class="opm-chk">✦</span>Expanded coverage</div>
+            <div class="opm-feat"><span class="opm-chk">✦</span>Faster signal filtering</div>
+            <div class="opm-feat locked"><span class="opm-chk">✕</span>Live signals</div>
+            <div class="opm-feat locked"><span class="opm-chk">✕</span>TradingView charts</div>
+          </div>
+        </div>
+        <!-- GOLD -->
+        <div class="opm-card gold">
+          <div class="opm-card-name">Gold</div>
+          <div class="opm-price">$99<span>/mo</span></div>
+          <div class="opm-desc">Live signals from ORION scanner.</div>
+          <div class="opm-divider"></div>
+          <div class="opm-features">
+            <div class="opm-feat"><span class="opm-chk">✦</span>Everything in Silver</div>
+            <div class="opm-feat"><span class="opm-chk">✦</span>Real-time ORION signals</div>
+            <div class="opm-feat"><span class="opm-chk">✦</span>Entry / SL / TP1 / TP2</div>
+            <div class="opm-feat"><span class="opm-chk">✦</span>Score + setup details</div>
+            <div class="opm-feat"><span class="opm-chk">✦</span>Priority Telegram alerts</div>
+            <div class="opm-feat"><span class="opm-chk">✦</span>15s live feed</div>
+            <div class="opm-feat locked"><span class="opm-chk">✕</span>TradingView charts</div>
+          </div>
+        </div>
+        <!-- PLATINUM -->
+        <div class="opm-card platinum">
+          <div class="opm-popular">MOST POPULAR</div>
+          <div class="opm-card-name">Platinum</div>
+          <div class="opm-price">$129<span>/mo</span></div>
+          <div class="opm-desc">Full access. Signals + TradingView.</div>
+          <div class="opm-divider"></div>
+          <div class="opm-features">
+            <div class="opm-feat"><span class="opm-chk">✦</span>Everything in Gold</div>
+            <div class="opm-feat"><span class="opm-chk">✦</span>TradingView live charts</div>
+            <div class="opm-feat"><span class="opm-chk">✦</span>Real-time feed priority</div>
+            <div class="opm-feat"><span class="opm-chk">✦</span>Maximum confluence (7-factor)</div>
+            <div class="opm-feat"><span class="opm-chk">✦</span>Top-tier signal priority</div>
+            <div class="opm-feat"><span class="opm-chk">✦</span>Full platform access</div>
+          </div>
+        </div>
+      </div>
+      <div class="opm-cta">
+        <div class="opm-cta-note">
+          <strong>Ready to start?</strong><br>
+          Create your free account and choose a plan to activate access.
+        </div>
+        <button class="opm-btn-start" onclick="closeOrionPlans(); document.getElementById('goSignup').click()">
+          Create Account →
+        </button>
+      </div>
+    </div>
+  </div>
+  <script>
+    function openOrionPlans()  { document.getElementById('orionPlansModal').classList.add('open');    document.body.style.overflow='hidden'; }
+    function closeOrionPlans() { document.getElementById('orionPlansModal').classList.remove('open'); document.body.style.overflow=''; }
+    document.addEventListener('keydown', e => { if(e.key==='Escape') closeOrionPlans(); });
   </script>
 
   <footer style="position:fixed;bottom:0;left:0;right:0;padding:10px 20px;text-align:center;background:rgba(2,8,16,0.85);border-top:1px solid rgba(39,212,99,0.08);z-index:100;">
