@@ -4,7 +4,8 @@
  */
 'use strict';
 
-const SIGNALS_URL = '/api/signals';
+const BACKEND_URL  = 'https://orion-radar-backend.onrender.com';
+const SIGNALS_URL  = BACKEND_URL + '/signals';
 const TF_MAP = { M5:'5min', M15:'15min', H1:'1h', H4:'4h', D:'1day', W:'1week' };
 
 const state = {
@@ -56,50 +57,15 @@ async function fetchSignals() {
     state.signals = grouped;
     state.assets  = Object.keys(grouped);
   } catch (err) {
-    console.warn('[ORION] Mock ativo:', err.message);
-    loadMock();
+    console.warn('[ORION] Sem sinais:', err.message);
+    state.signals = {};
+    state.assets  = [];
   }
   if (!state.selAsset && state.assets.length > 0) state.selAsset = state.assets[0];
   renderAll();
 }
 
-function loadMock() {
-  state.signals = {
-    XAUUSD:{ tfs:{
-      M5: {dir:'buy',  score:72,entry:4517.00,tp:4522.00,tp2:4528.00,sl:4513.00,setup:'ORDER_BLOCK',conf:['CONTEXT','EMA','FIBO']},
-      M15:{dir:'buy',  score:81,entry:4517.00,tp:4528.00,tp2:4540.00,sl:4509.00,setup:'ENGULFING',conf:['CONTEXT','CONFIRM','EMA','FIBO']},
-      H1: {dir:'buy',  score:88,entry:4517.00,tp:4545.00,tp2:4570.00,sl:4495.00,setup:'LIQ_SWEEP',conf:['CONTEXT','CONFIRM','EMA','FIBO','VWAP']},
-      H4: {dir:'buy',  score:76,entry:4517.00,tp:4580.00,tp2:4630.00,sl:4470.00,setup:'BOS',conf:['CONTEXT','EMA','DELTA']},
-      D:  {dir:'neutral',score:54,entry:4517.00,tp:4650.00,tp2:0,sl:4400.00,setup:'BOS',conf:['EMA']},
-      W:  {dir:'buy',  score:65,entry:4517.00,tp:4750.00,tp2:0,sl:4300.00,setup:'ENGULFING',conf:['EMA','DELTA']},
-    }},
-    BTCUSD:{ tfs:{
-      M5: {dir:'sell',score:68,entry:82000,tp:81500,tp2:81000,sl:82600,setup:'ENGULFING',conf:['CONTEXT','DELTA']},
-      M15:{dir:'sell',score:77,entry:82000,tp:81000,tp2:80200,sl:83000,setup:'ORDER_BLOCK',conf:['CONTEXT','CONFIRM','EMA']},
-      H1: {dir:'sell',score:83,entry:82000,tp:80000,tp2:78500,sl:83800,setup:'LIQ_SWEEP',conf:['CONTEXT','CONFIRM','EMA','FIBO']},
-      H4: {dir:'neutral',score:50,entry:82000,tp:85000,tp2:0,sl:78000,setup:'BOS',conf:['EMA']},
-      D:  {dir:'buy', score:61,entry:82000,tp:88000,tp2:92000,sl:76000,setup:'ENGULFING',conf:['EMA','DELTA']},
-      W:  {dir:'buy', score:70,entry:82000,tp:95000,tp2:0,sl:68000,setup:'BOS',conf:['EMA','DELTA','VWAP']},
-    }},
-    EURUSD:{ tfs:{
-      M5: {dir:'neutral',score:48,entry:1.1620,tp:1.1638,tp2:0,sl:1.1605,setup:'BOS',conf:['EMA']},
-      M15:{dir:'sell',score:62,entry:1.1620,tp:1.1590,tp2:1.1560,sl:1.1645,setup:'ENGULFING',conf:['CONTEXT','EMA']},
-      H1: {dir:'sell',score:71,entry:1.1620,tp:1.1560,tp2:1.1510,sl:1.1670,setup:'ORDER_BLOCK',conf:['CONTEXT','CONFIRM','EMA']},
-      H4: {dir:'sell',score:79,entry:1.1620,tp:1.1500,tp2:1.1440,sl:1.1700,setup:'LIQ_SWEEP',conf:['CONTEXT','CONFIRM','EMA','FIBO']},
-      D:  {dir:'sell',score:85,entry:1.1620,tp:1.1400,tp2:1.1280,sl:1.1750,setup:'ENGULFING',conf:['CONTEXT','CONFIRM','EMA','FIBO','VWAP']},
-      W:  {dir:'neutral',score:52,entry:1.1620,tp:1.1900,tp2:0,sl:1.1300,setup:'BOS',conf:['EMA']},
-    }},
-    GBPUSD:{ tfs:{
-      M5: {dir:'buy',score:55,entry:1.3367,tp:1.3390,tp2:0,sl:1.3345,setup:'BOS',conf:['EMA','DELTA']},
-      M15:{dir:'buy',score:63,entry:1.3367,tp:1.3410,tp2:1.3445,sl:1.3330,setup:'ENGULFING',conf:['CONTEXT','EMA','FIBO']},
-      H1: {dir:'buy',score:74,entry:1.3367,tp:1.3450,tp2:1.3510,sl:1.3290,setup:'ORDER_BLOCK',conf:['CONTEXT','CONFIRM','EMA','FIBO']},
-      H4: {dir:'buy',score:80,entry:1.3367,tp:1.3520,tp2:1.3610,sl:1.3220,setup:'LIQ_SWEEP',conf:['CONTEXT','CONFIRM','EMA','FIBO','VWAP']},
-      D:  {dir:'buy',score:91,entry:1.3367,tp:1.3650,tp2:1.3850,sl:1.3100,setup:'ENGULFING',conf:['CONTEXT','CONFIRM','EMA','FIBO','VWAP']},
-      W:  {dir:'buy',score:86,entry:1.3367,tp:1.3900,tp2:0,sl:1.2900,setup:'BOS',conf:['CONTEXT','EMA','DELTA','VWAP']},
-    }},
-  };
-  state.assets = Object.keys(state.signals);
-}
+// loadMock removido — sem dados falsos
 
 // ─── FILTROS ─────────────────────────────────────────────────────
 function assetPassesFilter(sym) {
@@ -113,49 +79,22 @@ function assetPassesFilter(sym) {
   return true;
 }
 
-// ─── OHLCV ───────────────────────────────────────────────────────
+// ─── OHLCV — candles reais via backend /ohlcv (Finnhub) ─────────
 async function fetchOHLCV(symbol, tf) {
   try {
-    const key = window.TWELVEDATA_KEY || '';
-    if (!key) throw new Error('sem chave');
-    const tdSym = symbol.slice(0,3) + '/' + symbol.slice(3);
-    const url   = `https://api.twelvedata.com/time_series?symbol=${tdSym}&interval=${TF_MAP[tf]||'1h'}&outputsize=80&apikey=${key}`;
-    const res   = await fetch(url);
-    const data  = await res.json();
-    if (!data.values) throw new Error('sem values');
-    return data.values.reverse().map(v => ({
-      time:  Math.floor(new Date(v.datetime).getTime()/1000),
-      open:  parseFloat(v.open), high: parseFloat(v.high),
-      low:   parseFloat(v.low),  close:parseFloat(v.close),
-    }));
-  } catch(_) { return buildFake(symbol, tf); }
+    const url = `${BACKEND_URL}/ohlcv?symbol=${encodeURIComponent(symbol)}&tf=${encodeURIComponent(tf)}`;
+    const res = await fetch(url, { cache: 'no-cache' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (!data.candles || !data.candles.length) throw new Error('sem candles');
+    return data.candles;
+  } catch(err) {
+    console.warn('[ORION] fetchOHLCV falhou:', err.message, '— sem candles');
+    return [];
+  }
 }
 
-function buildFake(symbol, tf) {
-  const sig  = state.signals[symbol]?.tfs[tf];
-  const base = sig?.entry || 1.0;
-  const sl   = sig?.sl || 0;
-  const tp   = sig?.tp || 0;
-  const rangeTP = tp ? Math.abs(tp - base) : 0;
-  const rangeSL = sl ? Math.abs(sl - base) : 0;
-  const range   = Math.max(rangeTP, rangeSL, base * 0.0005);
-  const vol  = range * 0.6;
-  const step = {M5:300,M15:900,H1:3600,H4:14400,D:86400,W:604800}[tf]||3600;
-  const now  = Math.floor(Date.now()/1000);
-  const isUp = sig?.dir !== 'sell';
-  let p = isUp ? base - range * 1.5 : base + range * 1.5;
-  return Array.from({length:80},(_,i)=>{
-    const time  = now-(79-i)*step;
-    const open  = p;
-    const bias  = isUp ? 0.52 : 0.48;
-    const move  = (Math.random()-(1-bias))*vol;
-    const close = open+move;
-    const high  = Math.max(open,close)+Math.random()*vol*0.3;
-    const low   = Math.min(open,close)-Math.random()*vol*0.3;
-    p = close;
-    return {time,open,high,low,close};
-  });
-}
+// buildFake removido — dados reais via /ohlcv apenas
 
 // ─── CHART ───────────────────────────────────────────────────────
 function cc() {
@@ -251,25 +190,42 @@ async function loadChart(sym,tf){
   showLoading(true);
   const candles=await fetchOHLCV(sym,tf);
   if(candles.length){
+    // Reset autoscale antes de setar dados
+    state.candleSeries.applyOptions({autoscaleInfoProvider:undefined});
     state.candleSeries.setData(candles);
     plotMarkers(sym,tf,candles);
+    state.chart.timeScale().fitContent();
 
+    // Força escala Y para incluir Entry, TP e SL
     const sig=state.signals[sym]?.tfs[tf];
     if(sig){
-      const prices=[sig.entry,sig.tp,sig.tp2,sig.sl].filter(Boolean);
-      const candlePrices=candles.flatMap(c=>[c.high,c.low]);
-      const allPrices=[...prices,...candlePrices];
+      const sigPrices=[sig.entry,sig.tp,sig.tp2,sig.sl].filter(Boolean);
+      // Pega apenas as últimas 40 velas para o range Y (evita distorção com velas antigas)
+      const recent=candles.slice(-40);
+      const candlePrices=recent.flatMap(c=>[c.high,c.low]);
+      const allPrices=[...sigPrices,...candlePrices];
       const minP=Math.min(...allPrices);
       const maxP=Math.max(...allPrices);
-      const pad=(maxP-minP)*0.2;
-      state.candleSeries.applyOptions({
-        autoscaleInfoProvider:()=>({
-          priceRange:{minValue:minP-pad,maxValue:maxP+pad},
-          margins:{above:20,below:20}
-        })
-      });
+      const pad=(maxP-minP)*0.25;
+      // Usa setVisiblePriceRange do priceScale — mais confiável que autoscaleInfoProvider
+      try {
+        state.chart.priceScale('right').applyOptions({
+          autoScale:false,
+          scaleMargins:{top:0.15,bottom:0.15}
+        });
+        state.candleSeries.applyOptions({
+          autoscaleInfoProvider:()=>({
+            priceRange:{minValue:minP-pad,maxValue:maxP+pad},
+            margins:{above:15,below:15}
+          })
+        });
+        // Reativa autoScale após definir range
+        setTimeout(()=>{
+          if(!state.chart)return;
+          state.chart.priceScale('right').applyOptions({autoScale:true});
+        },100);
+      } catch(e){}
     }
-    state.chart.timeScale().fitContent();
   }
   showLoading(false);
 }

@@ -2536,54 +2536,7 @@ function orionFmtPrice(n) {
     : n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 }
 
-function orionBuildFakeCandles(sig) {
-  const entry  = parseFloat(sig.entry) || 1.0;
-  const sl     = parseFloat(sig.sl)    || entry;
-  const tp1    = parseFloat(sig.tp1 || sig.tp) || entry;
-  const tp2    = parseFloat(sig.tp2) || tp1;
-  const isBuy  = (sig.direction||'buy').toLowerCase() !== 'sell';
-
-  const allLvl     = [entry, sl, tp1, tp2];
-  const minLvl     = Math.min(...allLvl);
-  const maxLvl     = Math.max(...allLvl);
-  const totalRange = (maxLvl - minLvl) || entry * 0.002;
-
-  // Candle noise = 15% of signal range max
-  const vol  = totalRange * 0.15;
-  const wick = vol * 0.3;
-
-  const steps = {M2:120,M5:300,M15:900,M30:1800,H1:3600,H4:14400};
-  const step  = steps[window._orionCurrentTf] || 300;
-  const now   = Math.floor(Date.now()/1000);
-  const total = 60;
-
-  // Start near SL for BUY (price comes from below), near SL for SELL (from above)
-  // Use only 20% offset from SL — candles stay close to the signal range
-  const slOffset = totalRange * 0.2;
-  let p = isBuy ? sl - slOffset : sl + slOffset;
-
-  const candles = [];
-  for (let i = 0; i < total; i++) {
-    const time     = now - (total - 1 - i) * step;
-    const open     = p;
-    const progress = i / (total - 1);
-    // Strong drift toward entry in last 40% of candles
-    const driftStr = progress < 0.6 ? 0.04 : 0.12;
-    const drift    = (entry - p) * driftStr;
-    const noise    = (Math.random() - 0.48) * vol;
-    let close      = open + drift + noise;
-    // Last candle always closes at entry
-    if (i === total - 1) close = entry;
-    // Clamp within signal range + small buffer
-    const buf = totalRange * 0.15;
-    close = Math.max(minLvl - buf, Math.min(maxLvl + buf, close));
-    const high = Math.max(open, close) + Math.random() * wick;
-    const low  = Math.min(open, close) - Math.random() * wick;
-    p = close;
-    candles.push({time, open, high, low, close});
-  }
-  return candles;
-}
+// orionBuildFakeCandles removido — dados reais via /ohlcv
 
 // Load chart with explicit signal object (avoids _orionSignals timing issues)
 function orionLoadChartWithSig(sym, tf, sig) {
@@ -2629,8 +2582,15 @@ async function orionLoadChart(sym, tf) {
     if (timeEl && sig.timestamp) timeEl.textContent = '🕐 ' + orionFmtTime(sig.timestamp);
   }
 
-  // Build fake candles anchored to entry price
-  const candles = sig ? orionBuildFakeCandles(sig) : [];
+  // Busca candles reais via backend /ohlcv (Finnhub)
+  let candles = [];
+  try {
+    const ohlcvRes = await fetch(`${BACKEND_URL}/ohlcv?symbol=${encodeURIComponent(sym)}&tf=${encodeURIComponent(window._orionCurrentTf || 'H1')}`, { cache: 'no-cache' });
+    if (ohlcvRes.ok) {
+      const ohlcvData = await ohlcvRes.json();
+      if (ohlcvData.candles && ohlcvData.candles.length) candles = ohlcvData.candles;
+    }
+  } catch(e) { console.warn('[ORION CHART] /ohlcv error:', e.message); }
   if (candles.length) {
     // Ensure unique timestamps (LightweightCharts requires strictly ascending)
     const seen = new Set();
