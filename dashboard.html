@@ -693,9 +693,9 @@
           <span id="orionChartLabel" style="font-family:var(--mono);font-size:9px;color:var(--muted2)">— / —</span>
           <span id="orionChartTime" style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.5px;"></span>
           <div style="display:flex;gap:3px;">
-            <button class="tf-btn active" data-tf="M5"  onclick="orionSetTf('M5',this)">M5</button>
+            <button class="tf-btn" data-tf="M5"  onclick="orionSetTf('M5',this)">M5</button>
             <button class="tf-btn" data-tf="M15" onclick="orionSetTf('M15',this)">M15</button>
-            <button class="tf-btn" data-tf="H1" onclick="orionSetTf('H1',this)">H1</button>
+            <button class="tf-btn active" data-tf="H1" onclick="orionSetTf('H1',this)">H1</button>
             <button class="tf-btn" data-tf="H4"  onclick="orionSetTf('H4',this)">H4</button>
           </div>
         </div>
@@ -2432,7 +2432,8 @@ document.addEventListener('DOMContentLoaded', async function(){
     </div>
   </footer>
 
-<script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+<script src="https://s3.tradingview.com/tv.js"></script>
+  <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 <script>
 // ── THEME SWITCHER ────────────────────────────────────────────────
 function setTheme(t, btn) {
@@ -2448,7 +2449,7 @@ function setTheme(t, btn) {
 window._orionChart   = null;
 window._orionSeries  = null;
 window._orionCurrentSym = null;
-window._orionCurrentTf  = 'M5';
+window._orionCurrentTf  = 'H1';
 window._orionSignals = {};   // populated by loadSignals patch
 const _oc_pl = [];
 
@@ -2536,41 +2537,44 @@ function orionFmtPrice(n) {
     : n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 }
 
-// orionBuildFakeCandles removido — dados reais via /ohlcv
 
-// Load chart with explicit signal object (avoids _orionSignals timing issues)
-function orionLoadChartWithSig(sym, tf, sig) {
-  if (sig) {
-    if (!window._orionSignals) window._orionSignals = {};
-    if (!window._orionSignals[sym]) window._orionSignals[sym] = {};
-    window._orionSignals[sym][tf] = sig;
+// ── ORION CHART via TradingView Advanced Charts ───────────────────
+const ORION_TV_TF = {M2:'1',M5:'5',M15:'15',M30:'30',H1:'60',H4:'240',D:'D',W:'W'};
+const ORION_TV_SYM = {
+  EURUSD:'FX:EURUSD', GBPUSD:'FX:GBPUSD', USDJPY:'FX:USDJPY',
+  AUDUSD:'FX:AUDUSD', USDCAD:'FX:USDCAD', NZDUSD:'FX:NZDUSD',
+  EURJPY:'FX:EURJPY', GBPJPY:'FX:GBPJPY', EURGBP:'FX:EURGBP',
+  XAUUSD:'OANDA:XAUUSD', XAGUSD:'OANDA:XAGUSD',
+  BTCUSD:'BINANCE:BTCUSDT', ETHUSD:'BINANCE:ETHUSDT',
+};
+
+let _tvWidget = null;
+let _tvSig    = null;
+
+function orionInitTVChart(sym, tf, sig) {
+  const el = document.getElementById('orion-mini-chart');
+  if (!el) return;
+
+  const tvSym = ORION_TV_SYM[sym] || ('FX:' + sym);
+  const tvTF  = ORION_TV_TF[tf] || '5';
+
+  // Store sig for after chart loads
+  _tvSig = sig;
+
+  // Remove existing widget
+  if (_tvWidget) {
+    try { _tvWidget.remove(); } catch(e) {}
+    _tvWidget = null;
   }
-  orionLoadChart(sym, tf);
-}
+  el.innerHTML = '';
 
-async function orionLoadChart(sym, tf) {
-  // Set TF before init so watermark is correct
-  if (tf) window._orionCurrentTf = tf;
-  if (!window._orionChart || !window._orionSeries) orionInitChart();
-  if (!window._orionChart) return;
-
-  window._orionCurrentSym = sym;
-  window._orionCurrentTf = tf || 'M5';
-  // Update watermark with current TF
-  window._orionChart.applyOptions({ watermark: { text: window._orionCurrentTf } });
-
+  // Show loading
   const loadEl = document.getElementById('orion-mini-chart-loading');
-  if (loadEl) { loadEl.style.display='flex'; loadEl.innerHTML='<div class="orion-chart-dot" style="width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1s infinite;"></div> CARREGANDO...'; }
-
-  // Get signal data — try direct lookup first, then fallback
-  const symData = window._orionSignals?.[sym] || {};
-  const sig = symData[tf] || symData['M5'] || symData['M2'] || symData['H1'] || Object.values(symData)[0] || null;
+  if (loadEl) { loadEl.style.display = 'flex'; loadEl.innerHTML = '<div class="orion-chart-dot" style="width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1s infinite;"></div> CARREGANDO...'; }
 
   // Update label
   const lbl = document.getElementById('orionChartLabel');
   if (lbl) lbl.textContent = sym + ' / ' + tf;
-  const timeEl = document.getElementById('orionChartTime');
-  if (timeEl) timeEl.textContent = '';
 
   // Update levels
   if (sig) {
@@ -2582,107 +2586,108 @@ async function orionLoadChart(sym, tf) {
     if (timeEl && sig.timestamp) timeEl.textContent = '🕐 ' + orionFmtTime(sig.timestamp);
   }
 
-  // Busca candles reais via backend /ohlcv (Finnhub)
-  let candles = [];
+  // TradingView widget
+  _tvWidget = new TradingView.widget({
+    container_id: 'orion-mini-chart',
+    symbol:       tvSym,
+    interval:     tvTF,
+    timezone:     'UTC',
+    theme:        document.body.classList.contains('theme-light') ? 'light' : 'dark',
+    style:        '1',
+    locale:       'en',
+    toolbar_bg:   '#040e1c',
+    enable_publishing: false,
+    hide_top_toolbar:  false,
+    hide_legend:       false,
+    save_image:        false,
+    withdateranges:    false,
+    hide_side_toolbar: true,
+    autosize:          true,
+    studies:           [],
+    overrides: {
+      'paneProperties.background':            '#080d12',
+      'paneProperties.backgroundType':        'solid',
+      'paneProperties.gridLinesMode':         'both',
+      'paneProperties.vertGridProperties.color': '#0f1e2c',
+      'paneProperties.horzGridProperties.color': '#0f1e2c',
+      'scalesProperties.textColor':           '#4a7090',
+      'mainSeriesProperties.candleStyle.upColor':         '#2de89a',
+      'mainSeriesProperties.candleStyle.downColor':       '#e84a2d',
+      'mainSeriesProperties.candleStyle.borderUpColor':   '#2de89a',
+      'mainSeriesProperties.candleStyle.borderDownColor': '#e84a2d',
+      'mainSeriesProperties.candleStyle.wickUpColor':     '#2de89a',
+      'mainSeriesProperties.candleStyle.wickDownColor':   '#e84a2d',
+    },
+    onChartReady: function() {
+      if (loadEl) loadEl.style.display = 'none';
+      if (_tvSig) orionDrawSignalLines(_tvSig);
+    }
+  });
+}
+
+function orionDrawSignalLines(sig) {
+  if (!_tvWidget || !sig) return;
   try {
-    const ohlcvRes = await fetch(`${BACKEND_URL}/ohlcv?symbol=${encodeURIComponent(sym)}&tf=${encodeURIComponent(window._orionCurrentTf || 'M5')}`, { cache: 'no-cache' });
-    if (ohlcvRes.ok) {
-      const ohlcvData = await ohlcvRes.json();
-      if (ohlcvData.candles && ohlcvData.candles.length) candles = ohlcvData.candles;
-    }
-  } catch(e) { console.warn('[ORION CHART] /ohlcv error:', e.message); }
-  if (candles.length) {
-    // Ensure unique timestamps (LightweightCharts requires strictly ascending)
-    const seen = new Set();
-    const uniqueCandles = candles
-      .sort((a,b) => a.time - b.time)
-      .filter(c => {
-        if (seen.has(c.time)) return false;
-        seen.add(c.time);
-        return true;
-      });
-    try {
-      window._orionSeries.setData(uniqueCandles);
-    } catch(e) {
-      console.error('[ORION CHART] setData error:', e.message);
-      try {
-        orionInitChart();
-        window._orionChart.applyOptions({ watermark: { text: window._orionCurrentTf } });
-        window._orionSeries.setData(uniqueCandles);
-        console.log('[ORION CHART] retry OK');
-      } catch(e2) {
-        console.error('[ORION CHART] retry failed:', e2.message);
-        return;
-      }
-    }
+    const chart = _tvWidget.activeChart();
+    const isBuy = (sig.direction || sig.side || 'buy').toLowerCase() !== 'sell';
 
-    // Markers
-    if (sig) {
-      const c = orionChartColors();
-      const last = candles[candles.length-1].time;
-      const isUp = (sig.direction||'buy') !== 'sell';
-      const mkrs = [];
-      // Para BUY: SL abaixo, TP acima. Para SELL: SL acima, TP abaixo.
-      if (sig.entry) mkrs.push({time:last, position:isUp?'belowBar':'aboveBar', color:c.text, shape:'circle', text:'ENTRY '+orionFmtPrice(sig.entry), size:1});
-      if (sig.tp1||sig.tp) mkrs.push({time:last, position:isUp?'aboveBar':'belowBar', color:c.up, shape:isUp?'arrowUp':'arrowDown', text:'TP1 '+orionFmtPrice(sig.tp1||sig.tp), size:1});
-      if (sig.tp2) mkrs.push({time:last, position:isUp?'aboveBar':'belowBar', color:c.up, shape:isUp?'arrowUp':'arrowDown', text:'TP2 '+orionFmtPrice(sig.tp2), size:1});
-      if (sig.sl)  mkrs.push({time:last, position:isUp?'belowBar':'aboveBar', color:c.dn, shape:isUp?'arrowDown':'arrowUp', text:'SL '+orionFmtPrice(sig.sl), size:1});
-      window._orionSeries.setMarkers(mkrs);
+    // Remove existing shapes
+    chart.removeAllShapes();
 
-      orionClearPL();
-      orionAddPL(sig.entry,      'ENTRY', c.text, true);
-      orionAddPL(sig.tp1||sig.tp,'TP1',   c.up,   false);
-      if (sig.tp2) orionAddPL(sig.tp2,'TP2', c.up, true);
-      orionAddPL(sig.sl,         'SL',    c.dn,   false);
+    // Draw horizontal lines for Entry, TP1, TP2, SL
+    const lines = [
+      { price: parseFloat(sig.entry),        color: '#ffffff', text: 'ENTRY', lineStyle: 2 },
+      { price: parseFloat(sig.tp1 || sig.tp),color: '#2de89a', text: 'TP1',   lineStyle: 0 },
+      { price: parseFloat(sig.tp2 || 0),     color: '#2de89a', text: 'TP2',   lineStyle: 2 },
+      { price: parseFloat(sig.sl),           color: '#e84a2d', text: 'SL',    lineStyle: 0 },
+    ];
 
-      // Let LightweightCharts autoscale naturally after fitContent
-    }
-    setTimeout(() => {
-      try {
-        // Set time range
-        const last  = uniqueCandles[uniqueCandles.length - 1];
-        const first = uniqueCandles[0];
-        window._orionChart.timeScale().setVisibleRange({
-          from: first.time,
-          to: last.time + (last.time - first.time) * 0.12
-        });
-        // Set price range explicitly with generous padding
-        if (sig) {
-          const lvls   = [sig.entry, sig.sl, sig.tp1||sig.tp, sig.tp2].filter(Boolean).map(Number);
-          const minL   = Math.min(...lvls);
-          const maxL   = Math.max(...lvls);
-          const range  = maxL - minL;
-          const pad    = range * 1.2; // 120% padding each side
-          window._orionChart.priceScale('right').applyOptions({
-            autoScale: false,
-            scaleMargins: { top: 0.15, bottom: 0.15 }
-          });
-          window._orionSeries.applyOptions({
-            autoscaleInfoProvider: () => ({
-              priceRange: {
-                minValue: minL - pad,
-                maxValue: maxL + pad
-              }
-            })
-          });
+    lines.forEach(l => {
+      if (!l.price) return;
+      chart.createShape(
+        { price: l.price },
+        {
+          shape:     'horizontal_line',
+          overrides: {
+            linecolor:     l.color,
+            linewidth:     2,
+            linestyle:     l.lineStyle,
+            showLabel:     true,
+            textcolor:     l.color,
+            fontsize:      12,
+            bold:          true,
+            text:          l.text + ' ' + orionFmtPrice(l.price),
+            showInObjectTree: false,
+          }
         }
-      } catch(e) { /* silent */ }
-    }, 100);
+      );
+    });
+  } catch(e) {
+    console.warn('[ORION] drawSignalLines error:', e.message);
   }
+}
 
-  // Aguarda o próximo frame antes de esconder o loading
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    if (loadEl) loadEl.style.display = 'none';
-  }));
+function orionLoadChartWithSig(sym, tf, sig) {
+  if (sig) {
+    if (!window._orionSignals) window._orionSignals = {};
+    if (!window._orionSignals[sym]) window._orionSignals[sym] = {};
+    window._orionSignals[sym][tf] = sig;
+  }
+  orionInitTVChart(sym, tf, sig);
+}
+
+async function orionLoadChart(sym, tf) {
+  const sig = window._orionSignals?.[sym]?.[tf] || null;
+  orionInitTVChart(sym, tf, sig);
 }
 
 function orionSetTf(tf, btn) {
   window._orionCurrentTf = tf;
-  if (window._orionChart) window._orionChart.applyOptions({ watermark: { text: tf } });
   document.querySelectorAll('#orionChartPanel .tf-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   if (window._orionCurrentSym) orionLoadChart(window._orionCurrentSym, tf);
 }
+
 
 // Hook into existing loadSignals to populate _orionSignals
 const _origLoadSignals = typeof loadSignals === 'function' ? loadSignals : null;
