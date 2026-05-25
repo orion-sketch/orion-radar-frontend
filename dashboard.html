@@ -718,15 +718,13 @@
           <div style="font-family:var(--mono);font-size:12px;color:var(--red);" id="oc-sl">—</div>
         </div>
       </div>
-      <div style="flex:1;display:flex;flex-direction:row;min-height:300px;">
-        <div style="flex:1;position:relative;" id="orion-mini-chart">
+      <div style="flex:1;position:relative;min-height:300px;" id="orion-mini-chart">
         <div id="orion-mini-chart-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);gap:8px;z-index:5;">
           <div class="orion-chart-dot" style="width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1s infinite;"></div>
           SELECIONE UM SINAL
         </div>
-        </div>
-        <!-- Signal levels panel — outside TV iframe -->
-        <div id="orion-sig-overlay" style="display:none;flex-direction:column;justify-content:space-evenly;width:76px;border-left:1px solid var(--line);background:rgba(4,14,28,0.95);padding:6px 4px;flex-shrink:0;"></div>
+        <!-- Signal level overlay — floats above the TV chart -->
+        <div id="orion-sig-overlay" style="display:none;position:absolute;right:0;top:0;bottom:0;width:90px;pointer-events:none;z-index:10;"></div>
       </div>
       <div style="padding:6px 12px;border-top:1px solid var(--line);display:flex;gap:14px;flex-shrink:0;">
         <span style="font-family:var(--mono);font-size:9px;color:var(--muted2);">◉ ENTRADA &nbsp; ▲ TP &nbsp; ▼ SL</span>
@@ -2436,8 +2434,7 @@ document.addEventListener('DOMContentLoaded', async function(){
     </div>
   </footer>
 
-<script src="https://s3.tradingview.com/tv.js"></script>
-  <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+<script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 <script>
 // ── THEME SWITCHER ────────────────────────────────────────────────
 function setTheme(t, btn) {
@@ -2542,154 +2539,93 @@ function orionFmtPrice(n) {
 }
 
 
-// ── ORION CHART via TradingView Advanced Charts ───────────────────
-const ORION_TV_TF = {M2:'1',M5:'5',M15:'15',M30:'30',H1:'60',H4:'240',D:'D',W:'W'};
-const ORION_TV_SYM = {
-  EURUSD:'FX:EURUSD', GBPUSD:'FX:GBPUSD', USDJPY:'FX:USDJPY',
-  AUDUSD:'FX:AUDUSD', USDCAD:'FX:USDCAD', NZDUSD:'FX:NZDUSD',
-  EURJPY:'FX:EURJPY', GBPJPY:'FX:GBPJPY', EURGBP:'FX:EURGBP',
-  XAUUSD:'OANDA:XAUUSD', XAGUSD:'OANDA:XAGUSD',
-  BTCUSD:'BINANCE:BTCUSDT', ETHUSD:'BINANCE:ETHUSDT',
-};
+// ── ORION CHART via Lightweight Charts + real data ───────────────
+window._orionChart   = null;
+window._orionSeries  = null;
+window._orionPLines  = [];
+window._orionCurrentSym = null;
+window._orionCurrentTf  = 'M5';
 
-let _tvWidget = null;
-let _tvSig    = null;
-
-function orionInitTVChart(sym, tf, sig) {
-  const el = document.getElementById('orion-mini-chart');
-  if (!el) return;
-
-  const tvSym = ORION_TV_SYM[sym] || ('FX:' + sym);
-  const tvTF  = ORION_TV_TF[tf] || '5';
-
-  // Store sig for after chart loads
-  _tvSig = sig || null;
-  // Draw immediately if overlay already exists (re-click same asset)
-  if (_tvSig) setTimeout(() => orionDrawSignalLines(_tvSig), 500);
-
-  // Remove existing widget but preserve overlay
-  if (_tvWidget) {
-    try { _tvWidget.remove(); } catch(e) {}
-    _tvWidget = null;
-  }
-  // Clear only TV chart divs, not our overlay
-  Array.from(el.children).forEach(child => {
-    if (child.id !== 'orion-sig-overlay' && child.id !== 'orion-mini-chart-loading') {
-      child.remove();
-    }
-  });
-
-  // Show loading
-  const loadEl = document.getElementById('orion-mini-chart-loading');
-  if (loadEl) { loadEl.style.display = 'flex'; loadEl.innerHTML = '<div class="orion-chart-dot" style="width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1s infinite;"></div> CARREGANDO...'; }
-
-  // Update label
-  const lbl = document.getElementById('orionChartLabel');
-  if (lbl) lbl.textContent = sym + ' / ' + tf;
-
-  // Update levels
-  if (sig) {
-    document.getElementById('oc-entry').textContent = orionFmtPrice(sig.entry);
-    document.getElementById('oc-tp1').textContent   = orionFmtPrice(sig.tp1 || sig.tp);
-    document.getElementById('oc-tp2').textContent   = sig.tp2 ? orionFmtPrice(sig.tp2) : '—';
-    document.getElementById('oc-sl').textContent    = orionFmtPrice(sig.sl);
-    const timeEl = document.getElementById('orionChartTime');
-    if (timeEl && sig.timestamp) timeEl.textContent = '🕐 ' + orionFmtTime(sig.timestamp);
-  }
-
-  // TradingView widget
-  _tvWidget = new TradingView.widget({
-    container_id: 'orion-mini-chart',
-    symbol:       tvSym,
-    interval:     tvTF,
-    timezone:     'UTC',
-    theme:        document.body.classList.contains('theme-light') ? 'light' : 'dark',
-    style:        '1',
-    locale:       'en',
-    toolbar_bg:   '#040e1c',
-    enable_publishing: false,
-    hide_top_toolbar:  false,
-    hide_legend:       false,
-    save_image:        false,
-    withdateranges:    false,
-    hide_side_toolbar: true,
-    autosize:          true,
-    studies:           [],
-    overrides: {
-      'paneProperties.background':            '#080d12',
-      'paneProperties.backgroundType':        'solid',
-      'paneProperties.gridLinesMode':         'both',
-      'paneProperties.vertGridProperties.color': '#0f1e2c',
-      'paneProperties.horzGridProperties.color': '#0f1e2c',
-      'scalesProperties.textColor':           '#4a7090',
-      'mainSeriesProperties.candleStyle.upColor':         '#2de89a',
-      'mainSeriesProperties.candleStyle.downColor':       '#e84a2d',
-      'mainSeriesProperties.candleStyle.borderUpColor':   '#2de89a',
-      'mainSeriesProperties.candleStyle.borderDownColor': '#e84a2d',
-      'mainSeriesProperties.candleStyle.wickUpColor':     '#2de89a',
-      'mainSeriesProperties.candleStyle.wickDownColor':   '#e84a2d',
-    },
-    onChartReady: function() {
-      if (loadEl) loadEl.style.display = 'none';
-      if (_tvSig) orionDrawSignalLines(_tvSig);
-    }
-  });
-}
-
-function orionDrawSignalLines(sig) {
-  if (!sig) return;
-  const overlay = document.getElementById('orion-sig-overlay');
-  if (!overlay) return;
-
-  const entry = parseFloat(sig.entry) || 0;
-  const tp1   = parseFloat(sig.tp1 || sig.tp) || 0;
-  const tp2   = parseFloat(sig.tp2) || 0;
-  const sl    = parseFloat(sig.sl) || 0;
-  const isBuy = (sig.direction || sig.side || 'buy').toLowerCase() !== 'sell';
-
-  // Fixed position badges on right side — sorted by price
-  const levels = [
-    { price: tp2,   label: 'TP2',   color: '#2de89a', bg: 'rgba(45,232,154,0.15)' },
-    { price: tp1,   label: 'TP1',   color: '#2de89a', bg: 'rgba(45,232,154,0.2)'  },
-    { price: entry, label: 'ENTRY', color: '#ffffff', bg: 'rgba(255,255,255,0.15)' },
-    { price: sl,    label: 'SL',    color: '#e84a2d', bg: 'rgba(232,74,45,0.15)'  },
-  ].filter(l => l.price).sort((a,b) => isBuy ? b.price - a.price : a.price - b.price);
-
-  overlay.style.display = 'flex';
-
-  overlay.innerHTML = levels.map(l => `
-    <div style="
-      background:${l.bg};
-      border:1px solid ${l.color};
-      border-right:none;
-      border-radius:3px 0 0 3px;
-      padding:3px 6px;
-      font-family:var(--mono);
-      font-size:9px;
-      font-weight:700;
-      color:${l.color};
-      letter-spacing:.5px;
-      white-space:nowrap;
-      backdrop-filter:blur(4px);
-    ">
-      <div style="font-size:8px;opacity:0.7;">${l.label}</div>
-      <div style="font-size:10px;">${orionFmtPrice(l.price)}</div>
-    </div>
-  `).join('');
-}
-
-function orionLoadChartWithSig(sym, tf, sig) {
+async function orionLoadChartWithSig(sym, tf, sig) {
   if (sig) {
     if (!window._orionSignals) window._orionSignals = {};
     if (!window._orionSignals[sym]) window._orionSignals[sym] = {};
     window._orionSignals[sym][tf] = sig;
   }
-  orionInitTVChart(sym, tf, sig);
+  window._orionCurrentSym = sym;
+  window._orionCurrentTf  = tf || 'M5';
+  await orionLoadChart(sym, tf, sig);
 }
 
-async function orionLoadChart(sym, tf) {
-  const sig = window._orionSignals?.[sym]?.[tf] || null;
-  orionInitTVChart(sym, tf, sig);
+async function orionLoadChart(sym, tf, sig) {
+  if (!window._orionChart || !window._orionSeries) orionInitChart();
+  if (!window._orionChart) return;
+
+  window._orionCurrentSym = sym;
+  window._orionCurrentTf  = tf || 'M5';
+
+  const loadEl = document.getElementById('orion-mini-chart-loading');
+  if (loadEl) { loadEl.style.display = 'flex'; loadEl.innerHTML = '<div class="orion-chart-dot" style="width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1s infinite;"></div> CARREGANDO...'; }
+
+  const lbl = document.getElementById('orionChartLabel');
+  if (lbl) lbl.textContent = sym + ' / ' + tf;
+
+  const sigData = sig || window._orionSignals?.[sym]?.[tf] || null;
+
+  if (sigData) {
+    document.getElementById('oc-entry').textContent = orionFmtPrice(sigData.entry);
+    document.getElementById('oc-tp1').textContent   = orionFmtPrice(sigData.tp1 || sigData.tp);
+    document.getElementById('oc-tp2').textContent   = sigData.tp2 ? orionFmtPrice(sigData.tp2) : '—';
+    document.getElementById('oc-sl').textContent    = orionFmtPrice(sigData.sl);
+    const timeEl = document.getElementById('orionChartTime');
+    if (timeEl && sigData.timestamp) timeEl.textContent = '🕐 ' + orionFmtTime(sigData.timestamp);
+  }
+
+  let candles = [];
+  try {
+    const res = await fetch(`${BACKEND_URL}/ohlcv?symbol=${encodeURIComponent(sym)}&tf=${encodeURIComponent(tf)}`, { cache:'no-cache' });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.candles?.length) candles = data.candles;
+    }
+  } catch(e) { console.warn('[ORION] ohlcv error:', e.message); }
+
+  if (loadEl) loadEl.style.display = 'none';
+  if (!candles.length) return;
+
+  window._orionSeries.applyOptions({ autoscaleInfoProvider: undefined });
+  window._orionSeries.setData(candles);
+
+  orionClearPL();
+  if (sigData) {
+    const c = orionChartColors();
+    const isBuy = (sigData.direction || sigData.side || 'buy').toLowerCase() !== 'sell';
+    orionAddPL(sigData.entry,              'ENTRY', '#ffffff', true);
+    orionAddPL(sigData.tp1 || sigData.tp,  'TP1',   c.up,     false);
+    if (sigData.tp2) orionAddPL(sigData.tp2, 'TP2', c.up, true);
+    orionAddPL(sigData.sl,                 'SL',    c.dn,     false);
+
+    const last = candles[candles.length-1].time;
+    window._orionSeries.setMarkers([
+      { time:last, position:isBuy?'belowBar':'aboveBar', color:'#ffffff', shape:'circle',                    text:'ENTRY '+orionFmtPrice(sigData.entry), size:2 },
+      { time:last, position:isBuy?'aboveBar':'belowBar', color:c.up,      shape:isBuy?'arrowUp':'arrowDown', text:'TP1 '+orionFmtPrice(sigData.tp1||sigData.tp), size:2 },
+      { time:last, position:isBuy?'belowBar':'aboveBar', color:c.dn,      shape:isBuy?'arrowDown':'arrowUp', text:'SL '+orionFmtPrice(sigData.sl), size:2 },
+    ].filter(m => m.text && !m.text.includes('undefined')));
+
+    const sigPrices = [sigData.entry, sigData.tp1||sigData.tp, sigData.tp2, sigData.sl].filter(Boolean).map(Number);
+    const recent    = candles.slice(-40);
+    const allP      = [...sigPrices, ...recent.flatMap(c=>[c.high,c.low])];
+    const minP      = Math.min(...allP);
+    const maxP      = Math.max(...allP);
+    const pad       = (maxP-minP)*0.25;
+    window._orionSeries.applyOptions({
+      autoscaleInfoProvider: () => ({
+        priceRange: { minValue:minP-pad, maxValue:maxP+pad },
+        margins: { above:15, below:15 }
+      })
+    });
+  }
+  window._orionChart.timeScale().fitContent();
 }
 
 function orionSetTf(tf, btn) {
@@ -2698,42 +2634,6 @@ function orionSetTf(tf, btn) {
   if (btn) btn.classList.add('active');
   if (window._orionCurrentSym) orionLoadChart(window._orionCurrentSym, tf);
 }
-
-
-// Hook into existing loadSignals to populate _orionSignals
-const _origLoadSignals = typeof loadSignals === 'function' ? loadSignals : null;
-function patchSignalsIntoOrion(signals) {
-  const grouped = {};
-  (signals||[]).forEach(s => {
-    const sym = (s.symbol||'').toUpperCase();
-    const tf  = (s.timeframe||s.tf||'H1').toUpperCase();
-    if (!sym) return;
-    if (!grouped[sym]) grouped[sym] = {};
-    grouped[sym][tf] = s;
-  });
-  window._orionSignals = grouped;
-}
-
-// Make feed items clickable to load orion chart
-function orionBindFeedClicks() {
-  document.querySelectorAll('.fi').forEach(el => {
-    el.addEventListener('click', function() {
-      const sym = (this.dataset.sym || '').toUpperCase();
-      const tf  = (this.dataset.tf  || 'H1').toUpperCase();
-      if (sym) orionLoadChart(sym, tf);
-    }, {once:false});
-  });
-}
-
-// Init chart on DOM ready
-document.addEventListener('DOMContentLoaded', () => {
-  orionInitChart();
-  // Observe feed mutations to re-bind clicks when signals load
-  const feed = document.getElementById('signalsFeed');
-  if (feed) {
-    new MutationObserver(() => orionBindFeedClicks()).observe(feed, {childList:true, subtree:true});
-  }
-});
 </script>
 </body>
 </html>
