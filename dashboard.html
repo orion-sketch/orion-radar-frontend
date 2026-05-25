@@ -2638,69 +2638,36 @@ function orionDrawSignalLines(sig) {
   const sl    = parseFloat(sig.sl) || 0;
   const isBuy = (sig.direction || sig.side || 'buy').toLowerCase() !== 'sell';
 
-  // All signal prices
-  const prices = [entry, tp1, tp2, sl].filter(Boolean);
-  if (!prices.length) return;
-
-  const minP = Math.min(...prices);
-  const maxP = Math.max(...prices);
-  const range = maxP - minP || entry * 0.001;
-
-  // Chart height
-  const chartH = overlay.parentElement.clientHeight || 300;
-  // Add 20% padding top and bottom
-  const pad = range * 0.4;
-  const visMin = minP - pad;
-  const visMax = maxP + pad;
-  const visRange = visMax - visMin;
-
-  function priceToY(p) {
-    return ((visMax - p) / visRange) * chartH;
-  }
-
+  // Fixed position badges on right side — sorted by price
   const levels = [
-    { price: entry, label: 'ENTRY', color: '#ffffff', dash: true },
-    { price: tp1,   label: 'TP1',   color: '#2de89a', dash: false },
-    { price: tp2,   label: 'TP2',   color: '#2de89a', dash: true },
-    { price: sl,    label: 'SL',    color: '#e84a2d', dash: false },
-  ].filter(l => l.price);
+    { price: tp2,   label: 'TP2',   color: '#2de89a', bg: 'rgba(45,232,154,0.15)' },
+    { price: tp1,   label: 'TP1',   color: '#2de89a', bg: 'rgba(45,232,154,0.2)'  },
+    { price: entry, label: 'ENTRY', color: '#ffffff', bg: 'rgba(255,255,255,0.15)' },
+    { price: sl,    label: 'SL',    color: '#e84a2d', bg: 'rgba(232,74,45,0.15)'  },
+  ].filter(l => l.price).sort((a,b) => isBuy ? b.price - a.price : a.price - b.price);
 
   overlay.style.display = 'block';
-  overlay.innerHTML = levels.map(l => {
-    const y = priceToY(l.price);
-    const pct = ((visMax - l.price) / visRange * 100).toFixed(2);
-    return `
-      <div style="
-        position:absolute;
-        right:0;
-        top:${pct}%;
-        transform:translateY(-50%);
-        display:flex;
-        align-items:center;
-        gap:3px;
-        pointer-events:none;
-      ">
-        <div style="
-          width:40px;
-          height:1px;
-          background:${l.color};
-          opacity:0.8;
-          ${l.dash ? 'border-top:1px dashed '+l.color+';background:transparent;' : ''}
-        "></div>
-        <div style="
-          background:${l.color};
-          color:${l.label==='ENTRY'?'#000':'#000'};
-          font-family:var(--mono);
-          font-size:9px;
-          font-weight:700;
-          padding:1px 4px;
-          border-radius:2px;
-          white-space:nowrap;
-          letter-spacing:.5px;
-        ">${l.label}</div>
-      </div>
-    `;
-  }).join('');
+  overlay.style.cssText = 'display:flex;flex-direction:column;justify-content:space-evenly;position:absolute;right:0;top:10%;bottom:10%;width:80px;pointer-events:none;z-index:10;gap:4px;padding:4px 0;';
+
+  overlay.innerHTML = levels.map(l => `
+    <div style="
+      background:${l.bg};
+      border:1px solid ${l.color};
+      border-right:none;
+      border-radius:3px 0 0 3px;
+      padding:3px 6px;
+      font-family:var(--mono);
+      font-size:9px;
+      font-weight:700;
+      color:${l.color};
+      letter-spacing:.5px;
+      white-space:nowrap;
+      backdrop-filter:blur(4px);
+    ">
+      <div style="font-size:8px;opacity:0.7;">${l.label}</div>
+      <div style="font-size:10px;">${orionFmtPrice(l.price)}</div>
+    </div>
+  `).join('');
 }
 
 function orionLoadChartWithSig(sym, tf, sig) {
