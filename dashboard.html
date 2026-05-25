@@ -718,13 +718,15 @@
           <div style="font-family:var(--mono);font-size:12px;color:var(--red);" id="oc-sl">—</div>
         </div>
       </div>
-      <div style="flex:1;position:relative;min-height:300px;" id="orion-mini-chart">
+      <div style="flex:1;display:flex;flex-direction:row;min-height:300px;">
+        <div style="flex:1;position:relative;" id="orion-mini-chart">
         <div id="orion-mini-chart-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);gap:8px;z-index:5;">
           <div class="orion-chart-dot" style="width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1s infinite;"></div>
           SELECIONE UM SINAL
         </div>
-        <!-- Signal level overlay — floats above the TV chart -->
-        <div id="orion-sig-overlay" style="display:none;position:absolute;right:0;top:0;bottom:0;width:90px;pointer-events:none;z-index:10;"></div>
+        </div>
+        <!-- Signal levels panel — outside TV iframe -->
+        <div id="orion-sig-overlay" style="display:none;flex-direction:column;justify-content:space-evenly;width:76px;border-left:1px solid var(--line);background:rgba(4,14,28,0.95);padding:6px 4px;flex-shrink:0;"></div>
       </div>
       <div style="padding:6px 12px;border-top:1px solid var(--line);display:flex;gap:14px;flex-shrink:0;">
         <span style="font-family:var(--mono);font-size:9px;color:var(--muted2);">◉ ENTRADA &nbsp; ▲ TP &nbsp; ▼ SL</span>
@@ -2653,8 +2655,7 @@ function orionDrawSignalLines(sig) {
     { price: sl,    label: 'SL',    color: '#e84a2d', bg: 'rgba(232,74,45,0.15)'  },
   ].filter(l => l.price).sort((a,b) => isBuy ? b.price - a.price : a.price - b.price);
 
-  overlay.style.display = 'block';
-  overlay.style.cssText = 'display:flex;flex-direction:column;justify-content:space-evenly;position:absolute;right:0;top:10%;bottom:10%;width:80px;pointer-events:none;z-index:10;gap:4px;padding:4px 0;';
+  overlay.style.display = 'flex';
 
   overlay.innerHTML = levels.map(l => `
     <div style="
