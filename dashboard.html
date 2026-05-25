@@ -80,6 +80,53 @@
     .notif-badge.show{transform:translateY(0);opacity:1;}
 
     /* TOPBAR */
+    /* ── SESSION CLOCK BAR ── */
+    .sess-bar{position:relative;height:36px;background:rgba(2,10,20,0.98);
+      border:1px solid var(--line2);border-radius:8px;overflow:hidden;
+      margin-bottom:8px;display:flex;flex-direction:column;}
+    .sess-timeline{position:relative;height:22px;width:100%;}
+    .sess-block{position:absolute;top:0;height:100%;display:flex;align-items:center;
+      justify-content:center;font-family:var(--mono);font-size:9px;font-weight:700;
+      letter-spacing:1.5px;overflow:hidden;transition:opacity .3s;}
+    .sess-block.tokyo  {background:rgba(100,120,255,0.18);color:#8899ff;border-right:1px solid rgba(100,120,255,0.2);}
+    .sess-block.london {background:rgba(0,232,122,0.15);color:var(--green);border-right:1px solid rgba(0,232,122,0.2);}
+    .sess-block.overlap{background:rgba(0,200,100,0.28);color:#00ff99;border-right:1px solid rgba(0,200,100,0.3);}
+    .sess-block.ny     {background:rgba(255,184,0,0.15);color:var(--amber);border-right:1px solid rgba(255,184,0,0.2);}
+    .sess-block.off    {background:rgba(255,255,255,0.03);color:rgba(143,168,196,0.3);}
+    /* Active session highlight */
+    .sess-block.active {filter:brightness(1.4);}
+    .sess-block.active::after{content:'';position:absolute;inset:0;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent);}
+    /* Scan line — current time */
+    .sess-now{position:absolute;top:0;bottom:0;width:2px;
+      background:rgba(255,255,255,0.9);z-index:10;
+      box-shadow:0 0 6px rgba(255,255,255,0.6);
+      transition:left .5s linear;pointer-events:none;}
+    .sess-now::before{content:'▼';position:absolute;top:-2px;left:-4px;
+      font-size:8px;color:rgba(255,255,255,0.9);}
+    /* Bottom labels row */
+    .sess-labels{display:flex;height:14px;width:100%;position:relative;}
+    .sess-tick{position:absolute;font-family:var(--mono);font-size:7px;
+      color:rgba(143,168,196,0.35);letter-spacing:.5px;transform:translateX(-50%);}
+    /* Status pill */
+    .sess-status{position:absolute;right:8px;top:4px;
+      font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:1px;
+      padding:2px 8px;border-radius:3px;z-index:5;}
+    .sess-status.london{background:rgba(0,232,122,0.12);color:var(--green);border:1px solid rgba(0,232,122,0.2);}
+    .sess-status.overlap{background:rgba(0,200,100,0.2);color:#00ff99;border:1px solid rgba(0,200,100,0.3);}
+    .sess-status.ny{background:rgba(255,184,0,0.12);color:var(--amber);border:1px solid rgba(255,184,0,0.2);}
+    .sess-status.tokyo{background:rgba(100,120,255,0.12);color:#8899ff;border:1px solid rgba(100,120,255,0.2);}
+    .sess-status.off{background:rgba(255,53,88,0.08);color:var(--red);border:1px solid rgba(255,53,88,0.15);}
+    /* Volume flag */
+    .vol-flag{position:absolute;left:8px;top:4px;font-family:var(--mono);
+      font-size:8px;letter-spacing:.5px;color:var(--muted2);z-index:5;display:flex;gap:5px;align-items:center;}
+    .vol-dot{width:5px;height:5px;border-radius:50%;}
+    .vol-high .vol-dot{background:var(--green);box-shadow:0 0 5px var(--green);}
+    .vol-med  .vol-dot{background:var(--amber);}
+    .vol-low  .vol-dot{background:var(--red);}
+    /* Blink animation for active */
+    @keyframes sess-pulse{0%,100%{opacity:1}50%{opacity:.6}}
+
     .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;
       padding:10px 18px;margin-bottom:13px;
       background:var(--panel);border:1px solid var(--line2);border-radius:10px;
@@ -514,6 +561,19 @@
 <div class="shell" id="mainContent" style="display:none">
 
   <!-- TOPBAR -->
+  <!-- SESSION CLOCK BAR -->
+  <div class="sess-bar" id="sessBar">
+    <div class="sess-timeline" id="sessTimeline">
+      <!-- blocks injected by JS -->
+      <div class="sess-now" id="sessNow"></div>
+      <div class="vol-flag" id="volFlag">
+        <div class="vol-dot"></div><span id="volLabel">—</span>
+      </div>
+      <div class="sess-status" id="sessStatus">—</div>
+    </div>
+    <div class="sess-labels" id="sessLabels"></div>
+  </div>
+
   <div class="topbar">
     <div class="tb-left">
       <div class="logo-wrap">
@@ -2634,6 +2694,103 @@ function orionSetTf(tf, btn) {
   if (btn) btn.classList.add('active');
   if (window._orionCurrentSym) orionLoadChart(window._orionCurrentSym, tf);
 }
+
+// ── SESSION CLOCK BAR ─────────────────────────────────────────────
+// Sessions in UTC hours [start, end]
+const SESSIONS = [
+  { id:'tokyo',   label:'TÓQUIO',        start:0,  end:8,  cls:'tokyo'  },
+  { id:'london',  label:'LONDRA',         start:8,  end:13, cls:'london' },
+  { id:'overlap', label:'OVERLAP ★',      start:13, end:16, cls:'overlap'},
+  { id:'ny',      label:'NEW YORK',       start:16, end:21, cls:'ny'     },
+  { id:'off1',    label:'',              start:21, end:24, cls:'off'    },
+];
+
+const VOL_INFO = {
+  tokyo:   { label:'VOL MODERADO — JPY/AUD/NZD', cls:'vol-med'  },
+  london:  { label:'VOL ALTO ★ MELHOR WR',       cls:'vol-high' },
+  overlap: { label:'VOL MÁXIMO ★★ LONDON+NY',    cls:'vol-high' },
+  ny:      { label:'VOL ALTO — USD PAIRS',        cls:'vol-med'  },
+  off1:    { label:'VOL BAIXO — SINAIS PAUSADOS', cls:'vol-low'  },
+};
+
+const SESS_STATUS_TEXT = {
+  tokyo:   'ÁSIA ACTIVA',
+  london:  'LONDON ★',
+  overlap: 'OVERLAP ★★',
+  ny:      'NY ACTIVA',
+  off1:    'FORA DE HORAS ⚠',
+};
+
+function buildSessBar() {
+  const timeline = document.getElementById('sessTimeline');
+  const labels   = document.getElementById('sessLabels');
+  if(!timeline || !labels) return;
+
+  const TOTAL = 24; // 24h
+  // Build session blocks
+  SESSIONS.forEach(s => {
+    const left  = (s.start / TOTAL * 100).toFixed(3) + '%';
+    const width = ((s.end - s.start) / TOTAL * 100).toFixed(3) + '%';
+    const block = document.createElement('div');
+    block.className = 'sess-block ' + s.cls;
+    block.id = 'sess-block-' + s.id;
+    block.style.left  = left;
+    block.style.width = width;
+    block.textContent = s.label;
+    timeline.insertBefore(block, document.getElementById('sessNow'));
+  });
+
+  // Hour ticks every 3h
+  for(let h = 0; h <= 24; h += 3) {
+    const tick = document.createElement('div');
+    tick.className = 'sess-tick';
+    tick.style.left = (h / 24 * 100).toFixed(1) + '%';
+    tick.textContent = String(h).padStart(2,'0') + 'h';
+    labels.appendChild(tick);
+  }
+}
+
+function updateSessBar() {
+  const now    = new Date();
+  const utcH   = now.getUTCHours();
+  const utcM   = now.getUTCMinutes();
+  const utcS   = now.getUTCSeconds();
+  const totalMinutes = utcH * 60 + utcM + utcS / 60;
+  const pct    = (totalMinutes / (24 * 60) * 100).toFixed(4) + '%';
+
+  // Move scan line
+  const nowEl = document.getElementById('sessNow');
+  if(nowEl) nowEl.style.left = pct;
+
+  // Find current session
+  let curSess = null;
+  SESSIONS.forEach(s => {
+    const block = document.getElementById('sess-block-' + s.id);
+    if(!block) return;
+    const active = utcH >= s.start && utcH < s.end;
+    block.classList.toggle('active', active);
+    if(active) curSess = s;
+  });
+
+  // Update status pill
+  const statusEl = document.getElementById('sessStatus');
+  const volEl    = document.getElementById('volFlag');
+  const volLbl   = document.getElementById('volLabel');
+
+  if(curSess && statusEl) {
+    const sid = curSess.id;
+    statusEl.textContent = SESS_STATUS_TEXT[sid] || sid.toUpperCase();
+    statusEl.className   = 'sess-status ' + curSess.cls;
+    const vi = VOL_INFO[sid] || {};
+    if(volEl)  volEl.className  = 'vol-flag ' + (vi.cls||'vol-low');
+    if(volLbl) volLbl.textContent = vi.label || '—';
+  }
+}
+
+// Init and tick every second
+buildSessBar();
+updateSessBar();
+setInterval(updateSessBar, 1000);
 </script>
 </body>
 </html>
