@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ORION RADAR™ — Signal Performance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#020a14;--bg2:#040f1e;
+      --panel:rgba(3,12,26,0.98);
+      --line:rgba(0,210,110,0.09);--line2:rgba(0,210,110,0.20);--line3:rgba(0,210,110,0.38);
+      --green:#00e87a;--green2:#00ff90;--green3:#00c462;
+      --glow:rgba(0,232,122,0.12);--glow2:rgba(0,232,122,0.28);
+      --red:#ff3558;--amber:#ffb800;--blue:#22d3ee;
+      --text:#dff2ea;--muted:#3d6b52;--muted2:#6b9a78;--muted3:#9bbfa8;
+      --mono:'Share Tech Mono',monospace;--display:'Orbitron',sans-serif;
+    }
+    html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden}
+    body{
+      background-image:
+        radial-gradient(ellipse 90% 40% at 50% -5%,rgba(0,232,122,0.05) 0%,transparent 65%),
+        repeating-linear-gradient(0deg,transparent,transparent 47px,rgba(0,210,110,0.022) 48px),
+        repeating-linear-gradient(90deg,transparent,transparent 47px,rgba(0,210,110,0.022) 48px);
+      min-height:100vh;
+    }
+    body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+      background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.035) 4px);}
+
+    /* ── TOPBAR ── */
+    .topbar{display:flex;align-items:center;justify-content:space-between;
+      padding:14px 24px;border-bottom:1px solid var(--line);
+      background:rgba(2,10,20,0.97);position:sticky;top:0;z-index:100;
+      backdrop-filter:blur(12px);}
+    .tb-brand{font-family:var(--display);font-size:13px;font-weight:900;
+      letter-spacing:4px;color:var(--green);text-shadow:0 0 20px var(--glow2);}
+    .tb-brand em{color:var(--text);font-style:normal;}
+    .tb-center{font-family:var(--mono);font-size:10px;color:var(--muted2);letter-spacing:3px;}
+    .tb-right{display:flex;align-items:center;gap:12px;}
+    .tb-live{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--muted2);}
+    .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);
+      box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+    .btn-back{height:32px;padding:0 14px;background:transparent;
+      border:1px solid rgba(0,232,122,0.2);color:var(--muted2);
+      font-family:var(--mono);font-size:9px;letter-spacing:1px;
+      border-radius:4px;cursor:pointer;transition:all .15s;}
+    .btn-back:hover{border-color:var(--green);color:var(--green);}
+
+    /* ── SHELL ── */
+    .shell{max-width:1200px;margin:0 auto;padding:32px 20px 80px;}
+
+    /* ── HERO HEADLINE ── */
+    .hero{text-align:center;padding:40px 0 48px;}
+    .hero-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:4px;
+      color:var(--muted2);margin-bottom:14px;}
+    .hero-title{font-family:var(--display);font-size:clamp(28px,5vw,52px);font-weight:900;
+      letter-spacing:2px;line-height:1.1;margin-bottom:12px;}
+    .hero-title span{color:var(--green);text-shadow:0 0 40px var(--glow2);}
+    .hero-sub{font-size:14px;color:var(--muted3);max-width:480px;margin:0 auto 28px;line-height:1.6;}
+    .period-tabs{display:inline-flex;gap:4px;background:rgba(0,232,122,0.04);
+      border:1px solid var(--line2);border-radius:8px;padding:4px;}
+    .period-btn{height:32px;padding:0 18px;background:transparent;border:none;
+      color:var(--muted2);font-family:var(--mono);font-size:10px;letter-spacing:1px;
+      border-radius:5px;cursor:pointer;transition:all .2s;}
+    .period-btn.active{background:rgba(0,232,122,0.12);color:var(--green);
+      box-shadow:0 0 12px rgba(0,232,122,0.15);}
+
+    /* ── BIG 3 STATS ── */
+    .big3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
+    .big-card{background:var(--panel);border:1px solid var(--line2);border-radius:20px;
+      padding:32px 24px;text-align:center;position:relative;overflow:hidden;
+      transition:border-color .2s,box-shadow .2s;}
+    .big-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+      background:linear-gradient(90deg,transparent,var(--green),transparent);opacity:.4;}
+    .big-card:hover{border-color:var(--line3);box-shadow:0 8px 40px rgba(0,232,122,0.08);}
+    .big-card.win .big-num{color:var(--green);text-shadow:0 0 30px rgba(0,232,122,0.5);}
+    .big-card.total .big-num{color:var(--blue);text-shadow:0 0 30px rgba(34,211,238,0.4);}
+    .big-card.score .big-num{color:var(--amber);text-shadow:0 0 30px rgba(255,184,0,0.4);}
+    .big-label{font-family:var(--mono);font-size:9px;letter-spacing:3px;
+      color:var(--muted2);margin-bottom:16px;text-transform:uppercase;}
+    .big-num{font-family:var(--display);font-size:clamp(48px,8vw,80px);
+      font-weight:900;line-height:1;margin-bottom:8px;transition:all .3s;}
+    .big-unit{font-family:var(--mono);font-size:12px;color:var(--muted2);}
+    .big-sub{font-size:12px;color:var(--muted2);margin-top:10px;}
+    .big-sub strong{color:var(--text);}
+    .big-ring{position:absolute;bottom:-30px;right:-30px;width:120px;height:120px;
+      border-radius:50%;opacity:.04;}
+    .win .big-ring{background:var(--green);}
+    .total .big-ring{background:var(--blue);}
+    .score .big-ring{background:var(--amber);}
+
+    /* ── STREAK + RATIO ROW ── */
+    .metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+    .metric-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+      padding:18px 16px;display:flex;flex-direction:column;gap:6px;}
+    .metric-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--muted);}
+    .metric-value{font-family:var(--display);font-size:22px;font-weight:700;color:var(--text);}
+    .metric-value.green{color:var(--green);}
+    .metric-value.red{color:var(--red);}
+    .metric-value.amber{color:var(--amber);}
+    .metric-sub{font-size:11px;color:var(--muted2);}
+
+    /* ── EQUITY CURVE ── */
+    .section{background:var(--panel);border:1px solid var(--line);border-radius:20px;
+      overflow:hidden;margin-bottom:20px;}
+    .section-head{padding:16px 20px;border-bottom:1px solid var(--line);
+      display:flex;align-items:center;justify-content:space-between;}
+    .section-title{font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--muted2);}
+    .section-title span{color:var(--green);}
+    .section-badge{font-family:var(--mono);font-size:9px;padding:3px 10px;
+      background:rgba(0,232,122,0.08);border:1px solid rgba(0,232,122,0.2);
+      color:var(--green);border-radius:99px;letter-spacing:1px;}
+    #equity-chart{height:240px;padding:16px;}
+    .equity-svg{width:100%;height:100%;}
+
+    /* ── ASSET TABLE ── */
+    .asset-table{width:100%;border-collapse:collapse;}
+    .asset-table th{font-family:var(--mono);font-size:9px;letter-spacing:2px;
+      color:var(--muted);padding:10px 16px;text-align:left;
+      border-bottom:1px solid var(--line);font-weight:400;}
+    .asset-table th.r{text-align:right;}
+    .asset-table td{padding:12px 16px;border-bottom:1px solid rgba(0,210,110,0.05);
+      font-size:13px;vertical-align:middle;}
+    .asset-table tr:last-child td{border-bottom:none;}
+    .asset-table tr:hover td{background:rgba(0,232,122,0.03);}
+    .sym-cell{font-family:var(--display);font-size:13px;font-weight:700;color:var(--text);}
+    .wr-cell{text-align:right;}
+    .wr-num{font-family:var(--display);font-size:15px;font-weight:700;}
+    .wr-bar-wrap{margin-top:4px;height:3px;background:rgba(255,255,255,0.05);border-radius:2px;}
+    .wr-bar{height:100%;border-radius:2px;transition:width .8s cubic-bezier(.4,0,.2,1);}
+    .wl-cell{text-align:right;font-family:var(--mono);font-size:12px;}
+    .wins{color:var(--green);}
+    .losses{color:var(--red);}
+    .rr-cell{text-align:right;font-family:var(--mono);font-size:12px;color:var(--amber);}
+    .score-cell{text-align:right;}
+    .score-pip{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;}
+    .rank-badge{font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:99px;
+      letter-spacing:1px;white-space:nowrap;}
+    .rank-elite{background:rgba(0,232,122,0.12);color:var(--green);border:1px solid rgba(0,232,122,0.25);}
+    .rank-strong{background:rgba(255,184,0,0.1);color:var(--amber);border:1px solid rgba(255,184,0,0.2);}
+    .rank-base{background:rgba(255,255,255,0.05);color:var(--muted3);border:1px solid rgba(255,255,255,0.08);}
+
+    /* ── RECENT TRADES ── */
+    .trades-list{display:flex;flex-direction:column;}
+    .trade-row{display:grid;grid-template-columns:auto 1fr auto auto auto auto;
+      align-items:center;gap:12px;padding:12px 20px;
+      border-bottom:1px solid rgba(0,210,110,0.05);transition:background .15s;}
+    .trade-row:last-child{border-bottom:none;}
+    .trade-row:hover{background:rgba(0,232,122,0.03);}
+    .trade-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+    .dot-win{background:var(--green);box-shadow:0 0 8px rgba(0,232,122,0.6);}
+    .dot-loss{background:var(--red);box-shadow:0 0 8px rgba(255,53,88,0.6);}
+    .trade-sym{font-family:var(--display);font-size:13px;font-weight:700;}
+    .trade-setup{font-size:11px;color:var(--muted2);font-family:var(--mono);}
+    .trade-result{font-family:var(--display);font-size:13px;font-weight:700;}
+    .result-win{color:var(--green);}
+    .result-loss{color:var(--red);}
+    .trade-rr{font-family:var(--mono);font-size:11px;color:var(--amber);}
+    .trade-score{font-family:var(--mono);font-size:11px;color:var(--muted3);}
+    .trade-time{font-family:var(--mono);font-size:10px;color:var(--muted);}
+
+    /* ── EMPTY STATE ── */
+    .empty-state{padding:60px 20px;text-align:center;}
+    .empty-icon{font-size:40px;margin-bottom:16px;opacity:.3;}
+    .empty-text{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:2px;}
+
+    /* ── LOADING ── */
+    .skeleton{background:linear-gradient(90deg,rgba(0,232,122,0.03),rgba(0,232,122,0.08),rgba(0,232,122,0.03));
+      background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px;}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+    /* ── DISCLAIMER ── */
+    .disclaimer-box{background:rgba(255,53,88,0.04);border:1px solid rgba(255,53,88,0.12);
+      border-radius:14px;padding:16px 20px;margin-top:24px;
+      font-family:var(--mono);font-size:9px;color:rgba(255,53,88,0.6);
+      letter-spacing:.5px;line-height:1.8;text-align:center;}
+
+    /* ── FOOTER ── */
+    footer{position:fixed;bottom:0;left:0;right:0;padding:10px 20px;text-align:center;
+      background:rgba(2,8,16,0.92);border-top:1px solid rgba(0,232,122,0.06);z-index:100;
+      backdrop-filter:blur(10px);}
+    footer div{font-size:11px;color:var(--muted);letter-spacing:.5px;}
+    footer a{color:var(--muted2);text-decoration:none;}
+    footer a:hover{color:var(--green);}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:760px){
+      .big3{grid-template-columns:1fr 1fr;}.big-card.score{grid-column:span 2;}
+      .metrics-row{grid-template-columns:1fr 1fr;}
+      .trade-row{grid-template-columns:auto 1fr auto auto;}
+      .trade-score,.trade-time{display:none;}
+    }
+    @media(max-width:500px){
+      .big3{grid-template-columns:1fr;}.big-card.score{grid-column:auto;}
+      .metrics-row{grid-template-columns:1fr 1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tb-brand">ORION <em>RADAR</em>™</div>
+  <div class="tb-center">// SIGNAL PERFORMANCE REPORT</div>
+  <div class="tb-right">
+    <div class="tb-live"><div class="live-dot"></div><span id="updatedAt">LOADING...</span></div>
+    <button class="btn-back" onclick="window.location.href='/'">← BACK</button>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">// VERIFIED SIGNAL RESULTS</div>
+    <h1 class="hero-title">ORION <span>RADAR</span><br>PERFORMANCE</h1>
+    <p class="hero-sub">Real results from the ORION scanner. Every signal tracked automatically from entry to close.</p>
+    <div class="period-tabs">
+      <button class="period-btn active" data-days="7">7 DAYS</button>
+      <button class="period-btn" data-days="30">30 DAYS</button>
+      <button class="period-btn" data-days="90">90 DAYS</button>
+    </div>
+  </div>
+
+  <!-- BIG 3 -->
+  <div class="big3">
+    <div class="big-card win">
+      <div class="big-ring"></div>
+      <div class="big-label">// WIN RATE</div>
+      <div class="big-num" id="statWinRate">—</div>
+      <div class="big-unit">PERCENT</div>
+      <div class="big-sub" id="statWL">— wins · — losses</div>
+    </div>
+    <div class="big-card total">
+      <div class="big-ring"></div>
+      <div class="big-label">// SIGNALS TRACKED</div>
+      <div class="big-num" id="statTotal">—</div>
+      <div class="big-unit">CLOSED TRADES</div>
+      <div class="big-sub" id="statPeriod">last — days</div>
+    </div>
+    <div class="big-card score">
+      <div class="big-ring"></div>
+      <div class="big-label">// AVG CONFLUENCE SCORE</div>
+      <div class="big-num" id="statScore">—</div>
+      <div class="big-unit">OUT OF 100</div>
+      <div class="big-sub">ORION multi-factor analysis</div>
+    </div>
+  </div>
+
+  <!-- METRICS ROW -->
+  <div class="metrics-row">
+    <div class="metric-card">
+      <div class="metric-label">// WIN STREAK</div>
+      <div class="metric-value green" id="metStreak">—</div>
+      <div class="metric-sub">consecutive wins</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">// AVG RISK/REWARD</div>
+      <div class="metric-value amber" id="metRR">—</div>
+      <div class="metric-sub">avg R per closed trade</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">// BEST ASSET</div>
+      <div class="metric-value green" id="metBest">—</div>
+      <div class="metric-sub" id="metBestSub">—% win rate</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">// ACTIVE ASSETS</div>
+      <div class="metric-value" id="metAssets">—</div>
+      <div class="metric-sub">pairs monitored</div>
+    </div>
+  </div>
+
+  <!-- EQUITY CURVE -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-title">// <span>CUMULATIVE R</span> — EQUITY CURVE</div>
+      <div class="section-badge">AUTO-TRACKED</div>
+    </div>
+    <div id="equity-chart">
+      <svg class="equity-svg" id="equitySvg" viewBox="0 0 800 200" preserveAspectRatio="none"></svg>
+    </div>
+  </div>
+
+  <!-- ASSET BREAKDOWN -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-title">// <span>PERFORMANCE</span> BY ASSET</div>
+      <div class="section-badge" id="assetCount">— ASSETS</div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="asset-table">
+        <thead>
+          <tr>
+            <th>ASSET</th>
+            <th class="r">WIN RATE</th>
+            <th class="r">W / L</th>
+            <th class="r">AVG R</th>
+            <th class="r">AVG SCORE</th>
+            <th class="r">RANK</th>
+          </tr>
+        </thead>
+        <tbody id="assetTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RECENT TRADES -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-title">// <span>RECENT</span> CLOSED SIGNALS</div>
+      <div class="section-badge">LIVE LOG</div>
+    </div>
+    <div class="trades-list" id="tradesList"></div>
+  </div>
+
+  <!-- DISCLAIMER -->
+  <div class="disclaimer-box">
+    ⚠ ORION RADAR™ IS NOT A REGISTERED INVESTMENT ADVISOR. ALL SIGNALS ARE FOR INFORMATIONAL PURPOSES ONLY.<br>
+    PAST PERFORMANCE DOES NOT GUARANTEE FUTURE RESULTS. TRADING FINANCIAL INSTRUMENTS INVOLVES SUBSTANTIAL RISK OF LOSS.<br>
+    ORION RADAR™ DOES NOT EXECUTE ORDERS AND HAS NO ACCESS TO YOUR BROKERAGE ACCOUNT.
+  </div>
+
+</div><!-- /.shell -->
+
+<footer>
+  <div>
+    © 2026 ORION RADAR™ &nbsp;|&nbsp;
+    <a href="/terms.html">Terms</a> &nbsp;|&nbsp;
+    <a href="/privacy.html">Privacy</a> &nbsp;|&nbsp;
+    <a href="/refund.html">Refund Policy</a>
+  </div>
+</footer>
+
+<script>
+const BACKEND = 'https://orion-radar-backend.onrender.com';
+let currentDays = 7;
+let rawData = null;
+
+// ── COUNTER ANIMATION ──────────────────────────────────────────
+function animateCount(el, target, suffix='', decimals=0, duration=1200){
+  const start = performance.now();
+  const from = 0;
+  function tick(now){
+    const p = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    const val = from + (target - from) * ease;
+    el.textContent = decimals > 0 ? val.toFixed(decimals) : Math.round(val) + suffix;
+    if(p < 1) requestAnimationFrame(tick);
+    else el.textContent = target + suffix;
+  }
+  requestAnimationFrame(tick);
+}
+
+// ── EQUITY CURVE SVG ──────────────────────────────────────────
+function drawEquity(trades){
+  const svg = document.getElementById('equitySvg');
+  svg.innerHTML = '';
+  if(!trades || trades.length === 0){ svg.innerHTML='<text x="400" y="100" fill="rgba(0,232,122,0.2)" font-family="Share Tech Mono" font-size="11" text-anchor="middle" letter-spacing="3">NO DATA YET</text>'; return; }
+
+  // Build cumulative R series
+  const sorted = [...trades].sort((a,b)=>new Date(a.closed_at)-new Date(b.closed_at));
+  let cumR = 0;
+  const points = [{r:0, i:0}];
+  sorted.forEach((t,i)=>{
+    cumR += (t.pnl_r || (t.result==='WIN'?1:-1));
+    points.push({r:cumR, i:i+1});
+  });
+
+  const W=800, H=200, pad=20;
+  const minR = Math.min(...points.map(p=>p.r));
+  const maxR = Math.max(...points.map(p=>p.r));
+  const rangeR = maxR - minR || 1;
+
+  const toX = i => pad + (i/(points.length-1))*(W-pad*2);
+  const toY = r => (H-pad) - ((r-minR)/rangeR)*(H-pad*2);
+
+  // Zero line
+  const zeroY = toY(0);
+  const zLine = document.createElementNS('http://www.w3.org/2000/svg','line');
+  zLine.setAttribute('x1',pad); zLine.setAttribute('x2',W-pad);
+  zLine.setAttribute('y1',zeroY); zLine.setAttribute('y2',zeroY);
+  zLine.setAttribute('stroke','rgba(255,255,255,0.06)'); zLine.setAttribute('stroke-dasharray','4,4');
+  svg.appendChild(zLine);
+
+  // Area fill
+  const area = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+  const pts = points.map((p,i)=>`${toX(i)},${toY(p.r)}`).join(' ');
+  const areaPath = pts + ` ${toX(points.length-1)},${H-pad} ${toX(0)},${H-pad}`;
+  area.setAttribute('points', areaPath);
+  area.setAttribute('fill','rgba(0,232,122,0.06)');
+  svg.appendChild(area);
+
+  // Line
+  const polyline = document.createElementNS('http://www.w3.org/2000/svg','polyline');
+  polyline.setAttribute('points', pts);
+  polyline.setAttribute('fill','none');
+  polyline.setAttribute('stroke', cumR >= 0 ? '#00e87a' : '#ff3558');
+  polyline.setAttribute('stroke-width','2');
+  polyline.setAttribute('stroke-linejoin','round');
+  svg.appendChild(polyline);
+
+  // End dot
+  const lastPt = points[points.length-1];
+  const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  dot.setAttribute('cx', toX(points.length-1));
+  dot.setAttribute('cy', toY(lastPt.r));
+  dot.setAttribute('r','4');
+  dot.setAttribute('fill', cumR >= 0 ? '#00e87a' : '#ff3558');
+  dot.setAttribute('filter','url(#glow)');
+  svg.appendChild(dot);
+
+  // Glow filter
+  const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+  defs.innerHTML=`<filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
+  svg.appendChild(defs);
+
+  // Final R label
+  const label = document.createElementNS('http://www.w3.org/2000/svg','text');
+  label.setAttribute('x', toX(points.length-1) - 8);
+  label.setAttribute('y', toY(lastPt.r) - 10);
+  label.setAttribute('fill', cumR >= 0 ? '#00e87a' : '#ff3558');
+  label.setAttribute('font-family','Orbitron,sans-serif');
+  label.setAttribute('font-size','11');
+  label.setAttribute('font-weight','700');
+  label.setAttribute('text-anchor','end');
+  label.textContent = (cumR >= 0 ? '+' : '') + cumR.toFixed(1) + 'R';
+  svg.appendChild(label);
+}
+
+// ── ASSET TABLE ──────────────────────────────────────────────
+function renderAssetTable(assets){
+  const tbody = document.getElementById('assetTableBody');
+  document.getElementById('assetCount').textContent = assets.length + ' ASSETS';
+  if(!assets.length){
+    tbody.innerHTML=`<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">📡</div><div class="empty-text">NO ASSET DATA YET</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = assets.map(a => {
+    const wr = a.winRate || 0;
+    const barColor = wr >= 70 ? '#00e87a' : wr >= 50 ? '#ffb800' : '#ff3558';
+    const rankClass = wr >= 70 ? 'rank-elite' : wr >= 50 ? 'rank-strong' : 'rank-base';
+    const rankLabel = wr >= 70 ? 'ELITE' : wr >= 50 ? 'STRONG' : 'BASE';
+    const avgRR = a.avgRR ? a.avgRR.toFixed(2) : '—';
+    return `
+    <tr>
+      <td><div class="sym-cell">${a.symbol}</div></td>
+      <td class="wr-cell">
+        <div class="wr-num" style="color:${barColor}">${wr}%</div>
+        <div class="wr-bar-wrap"><div class="wr-bar" style="width:${wr}%;background:${barColor}"></div></div>
+      </td>
+      <td class="wl-cell"><span class="wins">${a.wins}W</span> / <span class="losses">${a.losses}L</span></td>
+      <td class="rr-cell">${avgRR}R</td>
+      <td class="score-cell"><span class="score-pip">${a.avgScore}<span style="color:var(--muted);font-size:9px">/100</span></span></td>
+      <td style="text-align:right"><span class="rank-badge ${rankClass}">${rankLabel}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── RECENT TRADES ──────────────────────────────────────────────
+function renderTrades(trades){
+  const list = document.getElementById('tradesList');
+  if(!trades || !trades.length){
+    list.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">NO CLOSED TRADES YET</div></div>`;
+    return;
+  }
+  const recent = [...trades].sort((a,b)=>new Date(b.closed_at)-new Date(a.closed_at)).slice(0,20);
+  list.innerHTML = recent.map(t => {
+    const isWin = t.result === 'WIN';
+    const rr = t.pnl_r ? (t.pnl_r > 0 ? '+' : '') + Number(t.pnl_r).toFixed(2) + 'R' : '—';
+    const dt = t.closed_at ? new Date(t.closed_at).toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+    return `
+    <div class="trade-row">
+      <div class="trade-dot ${isWin?'dot-win':'dot-loss'}"></div>
+      <div>
+        <div class="trade-sym">${t.symbol||'—'}</div>
+        <div class="trade-setup">${t.setup||'—'} · ${t.side||'—'}</div>
+      </div>
+      <div class="trade-result ${isWin?'result-win':'result-loss'}">${isWin?'WIN':'LOSS'}</div>
+      <div class="trade-rr">${rr}</div>
+      <div class="trade-score">SC ${t.score||'—'}</div>
+      <div class="trade-time">${dt}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── STREAK CALCULATION ─────────────────────────────────────────
+function calcStreak(trades){
+  if(!trades||!trades.length) return 0;
+  const sorted = [...trades].sort((a,b)=>new Date(b.closed_at)-new Date(a.closed_at));
+  let streak = 0;
+  for(const t of sorted){
+    if(t.result==='WIN') streak++;
+    else break;
+  }
+  return streak;
+}
+
+// ── RENDER ALL ────────────────────────────────────────────────
+function renderAll(data){
+  rawData = data;
+
+  // Big 3
+  animateCount(document.getElementById('statWinRate'), data.winRate||0, '%');
+  animateCount(document.getElementById('statTotal'), data.total||0, '');
+  animateCount(document.getElementById('statScore'), data.avgScore||0, '');
+  document.getElementById('statWL').textContent = `${data.wins||0} wins · ${data.losses||0} losses`;
+  document.getElementById('statPeriod').textContent = `last ${data.days||7} days`;
+
+  // Metrics
+  const streak = calcStreak(data.recentTrades||[]);
+  document.getElementById('metStreak').textContent = streak || '—';
+  document.getElementById('metStreak').className = 'metric-value ' + (streak >= 3 ? 'green' : streak > 0 ? 'amber' : '');
+
+  const avgRR = data.assets?.length
+    ? (data.assets.reduce((s,a)=>s+(a.avgRR||0),0)/data.assets.length).toFixed(2)
+    : '—';
+  document.getElementById('metRR').textContent = avgRR !== '—' ? avgRR + 'R' : '—';
+
+  const best = data.assets?.sort((a,b)=>b.winRate-a.winRate)[0];
+  document.getElementById('metBest').textContent = best?.symbol || '—';
+  document.getElementById('metBestSub').textContent = best ? `${best.winRate}% win rate` : '—';
+  document.getElementById('metAssets').textContent = data.assets?.length || '—';
+
+  // Updated at
+  const now = new Date();
+  document.getElementById('updatedAt').textContent =
+    'UPDATED ' + now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+
+  // Charts & tables
+  drawEquity(data.recentTrades||[]);
+  renderAssetTable(data.assets||[]);
+  renderTrades(data.recentTrades||[]);
+}
+
+// ── FETCH ─────────────────────────────────────────────────────
+async function loadData(days){
+  try {
+    // Fetch performance stats
+    const r = await fetch(`${BACKEND}/performance?days=${days}`, {cache:'no-store'});
+    const d = await r.json();
+
+    // Fetch recent trades for equity curve & trade log
+    let recentTrades = [];
+    try {
+      const r2 = await fetch(`${BACKEND}/recent-trades?days=${days}`, {cache:'no-store'});
+      const d2 = await r2.json();
+      recentTrades = Array.isArray(d2.trades) ? d2.trades : [];
+    } catch(_){}
+
+    renderAll({...d, recentTrades});
+  } catch(err){
+    console.warn('[ORION PERF]', err);
+    // Show empty state gracefully
+    renderAll({winRate:0,total:0,avgScore:0,wins:0,losses:0,days,assets:[],recentTrades:[]});
+  }
+}
+
+// ── PERIOD TABS ───────────────────────────────────────────────
+document.querySelectorAll('.period-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentDays = parseInt(btn.dataset.days);
+    loadData(currentDays);
+  });
+});
+
+// ── INIT ──────────────────────────────────────────────────────
+loadData(currentDays);
+setInterval(()=>loadData(currentDays), 60_000);
+</script>
+</body>
+</html>
