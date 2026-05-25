@@ -190,41 +190,46 @@ async function loadChart(sym,tf){
   showLoading(true);
   const candles=await fetchOHLCV(sym,tf);
   if(candles.length){
-    // Reset autoscale antes de setar dados
+    // 1. Reset completo — sem autoscaleInfoProvider residual
     state.candleSeries.applyOptions({autoscaleInfoProvider:undefined});
+    state.chart.priceScale('right').applyOptions({autoScale:true});
     state.candleSeries.setData(candles);
     plotMarkers(sym,tf,candles);
-    state.chart.timeScale().fitContent();
 
-    // Força escala Y para incluir Entry, TP e SL
     const sig=state.signals[sym]?.tfs[tf];
     if(sig){
-      const sigPrices=[sig.entry,sig.tp,sig.tp2,sig.sl].filter(Boolean);
-      // Pega apenas as últimas 40 velas para o range Y (evita distorção com velas antigas)
-      const recent=candles.slice(-40);
-      const candlePrices=recent.flatMap(c=>[c.high,c.low]);
-      const allPrices=[...sigPrices,...candlePrices];
-      const minP=Math.min(...allPrices);
-      const maxP=Math.max(...allPrices);
-      const pad=(maxP-minP)*0.25;
-      // Usa setVisiblePriceRange do priceScale — mais confiável que autoscaleInfoProvider
-      try {
-        state.chart.priceScale('right').applyOptions({
-          autoScale:false,
-          scaleMargins:{top:0.15,bottom:0.15}
+      // 2. Calcula range Y ideal: Entry no centro, TP e SL visiveis com padding generoso
+      const entry  = sig.entry;
+      const topRef = Math.max(sig.tp||entry, sig.tp2||entry);
+      const botRef = sig.sl || entry;
+      const distUp   = Math.abs(topRef - entry);
+      const distDown = Math.abs(entry - botRef);
+      const span     = Math.max(distUp, distDown, 0.001);
+      const pad  = span * 0.4;
+      const minP = Math.min(topRef, botRef, entry) - pad;
+      const maxP = Math.max(topRef, botRef, entry) + pad;
+
+      // 3. Mostra apenas as ultimas N velas no eixo X (foco na acao recente)
+      const showCandles = tf==='M5'?60 : tf==='M15'?48 : tf==='H1'?72 : 50;
+      const visibleSlice = candles.slice(-showCandles);
+      if(visibleSlice.length>=2){
+        state.chart.timeScale().setVisibleRange({
+          from: visibleSlice[0].time,
+          to:   visibleSlice[visibleSlice.length-1].time,
         });
-        state.candleSeries.applyOptions({
-          autoscaleInfoProvider:()=>({
-            priceRange:{minValue:minP-pad,maxValue:maxP+pad},
-            margins:{above:15,below:15}
-          })
-        });
-        // Reativa autoScale após definir range
-        setTimeout(()=>{
-          if(!state.chart)return;
-          state.chart.priceScale('right').applyOptions({autoScale:true});
-        },100);
-      } catch(e){}
+      }
+
+      // 4. Trava escala Y no range calculado — sem autoScale interferindo
+      state.chart.priceScale('right').applyOptions({autoScale:false});
+      state.candleSeries.applyOptions({
+        autoscaleInfoProvider:()=>({
+          priceRange:{minValue:minP, maxValue:maxP},
+          margins:{above:0,below:0}
+        })
+      });
+    } else {
+      state.chart.timeScale().fitContent();
+      state.chart.priceScale('right').applyOptions({autoScale:true});
     }
   }
   showLoading(false);
