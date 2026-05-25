@@ -70,7 +70,7 @@
   .vagas-bar-wrap{min-width:180px;}
   .vagas-bar-label{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:7px;font-weight:600;}
   .vagas-bar-track{height:4px;background:rgba(143,168,196,0.12);border-radius:2px;overflow:hidden;position:relative;}
-  .vagas-bar-fill{height:100%;width:74%;background:linear-gradient(90deg,#1fb854,var(--green));border-radius:2px;}
+  .vagas-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,#1fb854,var(--green));border-radius:2px;}
   .vagas-bar-dot{position:absolute;right:0;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px rgba(39,212,99,0.8);animation:pulse 1.5s infinite;}
 
   /* COUNTDOWN */
@@ -253,12 +253,12 @@
 
     <div class="vagas-block">
       <div class="vagas-stat">
-        <div class="vagas-num"><span id="vagasLeft">13</span><span class="slash">/</span><span class="total">50</span></div>
+        <div class="vagas-num"><span id="vagasLeft">0</span><span class="slash">/</span><span class="total">50</span></div>
         <div class="vagas-label" id="t-spots-label">SPOTS LEFT</div>
       </div>
       <div class="vagas-divider"></div>
       <div class="vagas-bar-wrap">
-        <div class="vagas-bar-label"><span id="t-fill">FILL RATE</span><span>74% <span id="t-taken">TAKEN</span></span></div>
+        <div class="vagas-bar-label"><span id="t-fill">FILL RATE</span><span>0% <span id="t-taken">TAKEN</span></span></div>
         <div class="vagas-bar-track">
           <div class="vagas-bar-fill"></div>
           <div class="vagas-bar-dot"></div>
@@ -266,7 +266,7 @@
       </div>
       <div class="vagas-divider"></div>
       <div class="vagas-stat">
-        <div class="vagas-num" style="font-size:1.4rem;color:var(--green);">37</div>
+        <div class="vagas-num" style="font-size:1.4rem;color:var(--green);">0</div>
         <div class="vagas-label" id="t-secured">ALREADY SECURED</div>
       </div>
     </div>
@@ -292,7 +292,7 @@
     <div class="urgency-text" id="t-urgency-text">
       <strong>Warning:</strong> when all 50 spots are taken, the Founders Program closes permanently. No waitlist. No exceptions. Future users will pay full price.
     </div>
-    <div class="urgency-vagas" id="t-urgency-spots">13 SPOTS LEFT</div>
+    <div class="urgency-vagas" id="t-urgency-spots">0 SPOTS LEFT</div>
   </div>
 
   <!-- BENEFITS -->
@@ -824,3 +824,4 @@ buildFaq('en');
 </script>
 </body>
 </html>
+
