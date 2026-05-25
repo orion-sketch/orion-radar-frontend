@@ -70,7 +70,7 @@
   .vagas-bar-wrap{min-width:180px;}
   .vagas-bar-label{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:7px;font-weight:600;}
   .vagas-bar-track{height:4px;background:rgba(143,168,196,0.12);border-radius:2px;overflow:hidden;position:relative;}
-  .vagas-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,#1fb854,var(--green));border-radius:2px;}
+  .vagas-bar-fill{height:100%;width:74%;background:linear-gradient(90deg,#1fb854,var(--green));border-radius:2px;}
   .vagas-bar-dot{position:absolute;right:0;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px rgba(39,212,99,0.8);animation:pulse 1.5s infinite;}
 
   /* COUNTDOWN */
@@ -251,24 +251,42 @@
       The Founders Program is a one-time opportunity to lock in Platinum access to ORION RADAR at a permanent discount — before public launch. When spots are gone, this page closes.
     </p>
 
-    <div class="vagas-block">
-      <div class="vagas-stat">
-        <div class="vagas-num"><span id="vagasLeft">0</span><span class="slash">/</span><span class="total">50</span></div>
-        <div class="vagas-label" id="t-spots-label">SPOTS LEFT</div>
-      </div>
-      <div class="vagas-divider"></div>
-      <div class="vagas-bar-wrap">
-        <div class="vagas-bar-label"><span id="t-fill">FILL RATE</span><span>0% <span id="t-taken">TAKEN</span></span></div>
-        <div class="vagas-bar-track">
-          <div class="vagas-bar-fill"></div>
-          <div class="vagas-bar-dot"></div>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:30px;">
+
+      <!-- MENSAL COUNTER -->
+      <div class="vagas-block" style="margin-bottom:0;">
+        <div class="vagas-stat">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;color:var(--green);margin-bottom:8px;text-align:center;" id="t-monthly-tag">MONTHLY PLAN</div>
+          <div class="vagas-num"><span id="vagasMonthly">0</span><span class="slash">/</span><span class="total">100</span></div>
+          <div class="vagas-label" id="t-spots-label">SPOTS LEFT</div>
+        </div>
+        <div class="vagas-divider"></div>
+        <div class="vagas-bar-wrap">
+          <div class="vagas-bar-label"><span id="t-fill">FILL RATE</span><span><span id="pctMonthly">0</span>% <span id="t-taken">TAKEN</span></span></div>
+          <div class="vagas-bar-track">
+            <div class="vagas-bar-fill" id="barMonthly" style="width:0%"></div>
+            <div class="vagas-bar-dot"></div>
+          </div>
         </div>
       </div>
-      <div class="vagas-divider"></div>
-      <div class="vagas-stat">
-        <div class=<div style="text-align:center"><div style="font-family:Rajdhani,sans-serif;font-size:2rem;font-weight:700;color:#fff"><span id="vagasVit">0</span><span style="color:var(--muted);font-size:1.4rem">/50</span></div><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--muted);margin-top:4px">VITAL�CIO � VAGAS</div></div>
-        <div class="vagas-label" id="t-secured">ALREADY SECURED</div>
+
+      <!-- VITALÍCIO COUNTER -->
+      <div class="vagas-block" style="margin-bottom:0;border-color:rgba(240,176,80,0.35);">
+        <div class="vagas-stat">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;color:var(--gold);margin-bottom:8px;text-align:center;" id="t-lifetime-tag">LIFETIME PLAN</div>
+          <div class="vagas-num" style="color:var(--gold);"><span id="vagasLifetime">0</span><span class="slash">/</span><span class="total" style="color:var(--muted);">50</span></div>
+          <div class="vagas-label" id="t-spots-label-lt">SPOTS LEFT</div>
+        </div>
+        <div class="vagas-divider"></div>
+        <div class="vagas-bar-wrap">
+          <div class="vagas-bar-label"><span id="t-fill-lt">FILL RATE</span><span><span id="pctLifetime">0</span>% <span id="t-taken-lt">TAKEN</span></span></div>
+          <div class="vagas-bar-track">
+            <div class="vagas-bar-fill" id="barLifetime" style="width:0%;background:linear-gradient(90deg,#a06820,var(--gold));"></div>
+            <div class="vagas-bar-dot" style="background:var(--gold);box-shadow:0 0 8px rgba(240,176,80,0.8);"></div>
+          </div>
+        </div>
       </div>
+
     </div>
 
     <div class="cd-label-top" id="t-offer-closes">⏱ OFFER CLOSES IN</div>
@@ -290,9 +308,9 @@
   <div class="urgency-banner">
     <div class="urgency-dot-red"></div>
     <div class="urgency-text" id="t-urgency-text">
-      <strong>Warning:</strong> when all 50 spots are taken, the Founders Program closes permanently. No waitlist. No exceptions. Future users will pay full price.
+      <strong>Warning:</strong> 100 monthly spots and 50 lifetime spots. When they're gone, this program closes permanently. No waitlist. No exceptions.
     </div>
-    <div class="urgency-vagas" id="t-urgency-spots">0 SPOTS LEFT</div>
+    <div class="urgency-vagas" id="t-urgency-spots">100 + 50 SPOTS</div>
   </div>
 
   <!-- BENEFITS -->
@@ -541,11 +559,11 @@ const T = {
     'eyebrow':'OPEN SPOTS — EARLY ACCESS',
     'hero-title':'Get in before<br><span class="accent">everyone.</span><br>Pay less <span class="gold">forever.</span>',
     'hero-sub':'The Founders Program is a one-time opportunity to lock in Platinum access to ORION RADAR at a permanent discount — before public launch. When spots are gone, this page closes.',
-    'spots-label':'SPOTS LEFT','fill':'FILL RATE','taken':'TAKEN','secured':'ALREADY SECURED',
+    'spots-label':'MONTHLY — SPOTS LEFT','spots-label-lt':'LIFETIME — SPOTS LEFT','monthly-tag':'MONTHLY PLAN','lifetime-tag':'LIFETIME PLAN','fill':'FILL RATE','taken':'TAKEN','secured':'ALREADY SECURED',
     'offer-closes':'⏱ OFFER CLOSES IN','hours':'HOURS','min':'MIN','sec':'SEC',
     'cta-hero':'Secure my spot now →','disclaimer':'🔒 7-day guarantee · No questions · Cancel anytime',
-    'urgency-text':'<strong>Warning:</strong> when all 50 spots are taken, the Founders Program closes permanently. No waitlist. No exceptions. Future users will pay full price.',
-    'urgency-spots':'13 SPOTS LEFT',
+    'urgency-text':'<strong>Warning:</strong> 100 monthly spots and 50 lifetime spots. When they're gone, this program closes permanently. No waitlist. No exceptions.',
+    'urgency-spots':'100 + 50 SPOTS',
     'benefits-title':'⊕ WHAT\'S INCLUDED',
     'b1t':'FULL PLATINUM ACCESS','b1d':'Live signals, TradingView integration, custom watchlist, Entry/SL/TP1/TP2 — everything, no restrictions.','b1tag':'LIFETIME',
     'b2t':'EXCLUSIVE FOUNDER BADGE','b2d':'Your profile is permanently marked as ORION Founder #001–#050. A badge no future user will ever be able to get.','b2tag':'EXCLUSIVE',
@@ -592,11 +610,11 @@ const T = {
     'eyebrow':'VAGAS ABERTAS — ACESSO ANTECIPADO',
     'hero-title':'Entra antes<br><span class="accent">de todos.</span><br>Paga menos <span class="gold">para sempre.</span>',
     'hero-sub':'O Programa Fundadores é uma oportunidade única de garantir acesso Platinum ao ORION RADAR com desconto permanente — antes do lançamento público. Quando as vagas acabarem, esta página fecha.',
-    'spots-label':'MENSAL � VAGAS','fill':'PREENCHIMENTO','taken':'OCUPADO','secured':'JÁ GARANTIRAM',
+    'spots-label':'MENSAL — VAGAS','spots-label-lt':'VITALÍCIO — VAGAS','monthly-tag':'PLANO MENSAL','lifetime-tag':'PLANO VITALÍCIO','fill':'PREENCHIMENTO','taken':'OCUPADO','secured':'JÁ GARANTIRAM',
     'offer-closes':'⏱ OFERTA ENCERRA EM','hours':'HORAS','min':'MIN','sec':'SEG',
     'cta-hero':'Garantir minha vaga agora →','disclaimer':'🔒 Garantia de 7 dias · Sem perguntas · Cancela quando quiser',
     'urgency-text':'<strong>Atenção:</strong> quando as 50 vagas esgotarem, o programa Fundadores fecha permanentemente. Nenhuma lista de espera. Nenhuma exceção. Os próximos utilizadores pagarão o preço cheio.',
-    'urgency-spots':'13 MENSAL � VAGAS',
+    'urgency-spots':'100 + 50 VAGAS',
     'benefits-title':'⊕ O QUE ESTÁ INCLUÍDO',
     'b1t':'ACESSO PLATINUM COMPLETO','b1d':'Sinais ao vivo, TradingView integrado, watchlist personalizada, Entry/SL/TP1/TP2 — tudo sem restrições.','b1tag':'VITALÍCIO',
     'b2t':'BADGE EXCLUSIVO FUNDADOR','b2d':'O teu perfil fica marcado como Fundador ORION #001–#050. Um selo permanente que nenhum utilizador futuro poderá obter.','b2tag':'EXCLUSIVO',
@@ -643,11 +661,11 @@ const T = {
     'eyebrow':'PLAZAS ABIERTAS — ACCESO ANTICIPADO',
     'hero-title':'Entra antes<br><span class="accent">que todos.</span><br>Paga menos <span class="gold">para siempre.</span>',
     'hero-sub':'El Programa Fundadores es una oportunidad única de asegurar acceso Platinum a ORION RADAR con descuento permanente — antes del lanzamiento público. Cuando se agoten las plazas, esta página cierra.',
-    'spots-label':'PLAZAS RESTANTES','fill':'OCUPACIÓN','taken':'TOMADO','secured':'YA ASEGURADO',
+    'spots-label':'MENSUAL — PLAZAS','spots-label-lt':'VITALICIO — PLAZAS','monthly-tag':'PLAN MENSUAL','lifetime-tag':'PLAN VITALICIO','fill':'OCUPACIÓN','taken':'TOMADO','secured':'YA ASEGURADO',
     'offer-closes':'⏱ OFERTA CIERRA EN','hours':'HORAS','min':'MIN','sec':'SEG',
     'cta-hero':'Asegurar mi plaza ahora →','disclaimer':'🔒 Garantía de 7 días · Sin preguntas · Cancela cuando quieras',
     'urgency-text':'<strong>Atención:</strong> cuando las 50 plazas se agoten, el programa Fundadores cierra permanentemente. Sin lista de espera. Sin excepciones. Los futuros usuarios pagarán el precio completo.',
-    'urgency-spots':'13 PLAZAS RESTANTES',
+    'urgency-spots':'100 + 50 PLAZAS',
     'benefits-title':'⊕ QUÉ ESTÁ INCLUIDO',
     'b1t':'ACCESO PLATINUM COMPLETO','b1d':'Señales en vivo, TradingView integrado, watchlist personalizada, Entry/SL/TP1/TP2 — todo sin restricciones.','b1tag':'DE POR VIDA',
     'b2t':'INSIGNIA EXCLUSIVA FUNDADOR','b2d':'Tu perfil queda marcado como Fundador ORION #001–#050. Una insignia que ningún usuario futuro podrá obtener.','b2tag':'EXCLUSIVO',
@@ -697,7 +715,7 @@ function setLang(lang) {
   currentLang = lang;
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase().includes(lang)));
   const t = T[lang];
-  const ids = ['topbar-badge','back','eyebrow','hero-sub','spots-label','fill','taken','secured',
+  const ids = ['topbar-badge','back','eyebrow','hero-sub','spots-label','spots-label-lt','monthly-tag','lifetime-tag','fill','taken',
     'offer-closes','hours','min','sec','cta-hero','disclaimer','urgency-spots',
     'benefits-title','b1t','b1d','b1tag','b2t','b2d','b2tag','b3t','b3d','b3tag',
     'b4t','b4d','b4tag','b5t','b5d','b5tag','b6t','b6d','b6tag',
@@ -824,5 +842,3 @@ buildFaq('en');
 </script>
 </body>
 </html>
-
-
