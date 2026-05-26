@@ -82,7 +82,11 @@ function assetPassesFilter(sym) {
 // ─── OHLCV — candles reais via backend /ohlcv (Finnhub) ─────────
 async function fetchOHLCV(symbol, tf) {
   try {
-    const url = `${BACKEND_URL}/ohlcv?symbol=${encodeURIComponent(symbol)}&tf=${encodeURIComponent(tf)}`;
+    // TF fallback — M2/M3/M4 não suportados pelo Yahoo Finance
+    const TF_MAP = { 'M1':'M5','M2':'M5','M3':'M5','M4':'M5','M5':'M5',
+                     'M15':'M15','M30':'M30','H1':'H1','H4':'H4','D':'D','W':'W' };
+    const fetchTf = TF_MAP[tf] || 'M5';
+    const url = `${BACKEND_URL}/ohlcv?symbol=${encodeURIComponent(symbol)}&tf=${encodeURIComponent(fetchTf)}`;
     const res = await fetch(url, { cache: 'no-cache' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();

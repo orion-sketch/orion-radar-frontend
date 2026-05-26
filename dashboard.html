@@ -2642,16 +2642,31 @@ async function orionLoadChart(sym, tf, sig) {
   }
 
   let candles = [];
+  // TF fallback — M2/M3/M4 not supported by Yahoo Finance → use M5
+  const TF_MAP = { 'M1':'M5','M2':'M5','M3':'M5','M4':'M5','M5':'M5',
+                   'M15':'M15','M30':'M30','H1':'H1','H4':'H4','D':'D','W':'W' };
+  const fetchTf = TF_MAP[tf] || 'M5';
   try {
-    const res = await fetch(`${BACKEND_URL}/ohlcv?symbol=${encodeURIComponent(sym)}&tf=${encodeURIComponent(tf)}`, { cache:'no-cache' });
+    const res = await fetch(`${BACKEND_URL}/ohlcv?symbol=${encodeURIComponent(sym)}&tf=${encodeURIComponent(fetchTf)}`, { cache:'no-cache' });
     if (res.ok) {
       const data = await res.json();
       if (data.candles?.length) candles = data.candles;
     }
   } catch(e) { console.warn('[ORION] ohlcv error:', e.message); }
 
+  // If still no candles, try M5 as last resort
+  if (!candles.length && fetchTf !== 'M5') {
+    try {
+      const res2 = await fetch(`${BACKEND_URL}/ohlcv?symbol=${encodeURIComponent(sym)}&tf=M5`, { cache:'no-cache' });
+      if (res2.ok) { const d2 = await res2.json(); if (d2.candles?.length) candles = d2.candles; }
+    } catch(e) {}
+  }
+
   if (loadEl) loadEl.style.display = 'none';
-  if (!candles.length) return;
+  if (!candles.length) {
+    if (loadEl) { loadEl.style.display = 'flex'; loadEl.innerHTML = '<span style="color:var(--amber);font-family:var(--mono);font-size:10px;letter-spacing:1px">⚠ SEM CANDLES — ' + sym + ' ' + tf + '</span>'; }
+    return;
+  }
 
   window._orionSeries.applyOptions({ autoscaleInfoProvider: undefined });
   window._orionSeries.setData(candles);
