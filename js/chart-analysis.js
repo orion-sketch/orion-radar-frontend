@@ -79,20 +79,27 @@ function assetPassesFilter(sym) {
   return true;
 }
 
-// ─── OHLCV — candles reais via backend /ohlcv (Finnhub) ─────────
+// ─── OHLCV — candles reais via backend /ohlcv ────────────────────
+let _ohlcvAbort = null; // cancela fetch anterior ao trocar de ativo
+
 async function fetchOHLCV(symbol, tf) {
+  if (_ohlcvAbort) { _ohlcvAbort.abort(); }
+  _ohlcvAbort = new AbortController();
+  const signal = _ohlcvAbort.signal;
+
   try {
     // TF fallback — M2/M3/M4 não suportados pelo Yahoo Finance
-    const TF_MAP = { 'M1':'M5','M2':'M5','M3':'M5','M4':'M5','M5':'M5',
+    const TF_MAP = { 'M1':'M5','M2':'M2','M3':'M5','M4':'M5','M5':'M5',
                      'M15':'M15','M30':'M30','H1':'H1','H4':'H4','D':'D','W':'W' };
     const fetchTf = TF_MAP[tf] || 'M5';
     const url = `${BACKEND_URL}/ohlcv?symbol=${encodeURIComponent(symbol)}&tf=${encodeURIComponent(fetchTf)}`;
-    const res = await fetch(url, { cache: 'no-cache' });
+    const res = await fetch(url, { cache: 'no-cache', signal });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     if (!data.candles || !data.candles.length) throw new Error('sem candles');
     return data.candles;
   } catch(err) {
+    if (err.name === 'AbortError') return []; // troca de ativo — ignorar silenciosamente
     console.warn('[ORION] fetchOHLCV falhou:', err.message, '— sem candles');
     return [];
   }
@@ -216,6 +223,8 @@ async function loadChart(sym,tf){
   updateWatermark();
   showLoading(true);
   const candles=await fetchOHLCV(sym,tf);
+  // Guard: se o utilizador já mudou de ativo enquanto esperava, descartar resultado
+  if(sym!==state.selAsset||tf!==state.selTF){showLoading(false);return;}
   if(candles.length){
     // 1. Reset completo — sem autoscaleInfoProvider residual
     state.candleSeries.applyOptions({autoscaleInfoProvider:undefined});
