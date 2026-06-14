@@ -221,14 +221,15 @@ function plotMarkers(sym,tf,candles){
 async function loadChart(sym,tf){
   if(!state.chart||!state.candleSeries)return;
   updateWatermark();
+  // Reset imediato antes do fetch — evita escala/price-lines do ativo anterior travarem o novo
+  clearPL();
+  state.candleSeries.applyOptions({autoscaleInfoProvider:undefined});
+  state.chart.priceScale('right').applyOptions({autoScale:true});
   showLoading(true);
   const candles=await fetchOHLCV(sym,tf);
   // Guard: se o utilizador já mudou de ativo enquanto esperava, descartar resultado
   if(sym!==state.selAsset||tf!==state.selTF){showLoading(false);return;}
   if(candles.length){
-    // 1. Reset completo — sem autoscaleInfoProvider residual
-    state.candleSeries.applyOptions({autoscaleInfoProvider:undefined});
-    state.chart.priceScale('right').applyOptions({autoScale:true});
     state.candleSeries.setData(candles);
     plotMarkers(sym,tf,candles);
 
