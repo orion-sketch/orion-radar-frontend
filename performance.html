@@ -246,7 +246,8 @@
     <div class="filter-bar">
       <!-- Period -->
       <div class="filter-group">
-        <button class="filter-btn active" data-days="7" onclick="setPeriod(this,7)">7D</button>
+        <button class="filter-btn active" data-days="1" onclick="setPeriod(this,1)">24H</button>
+        <button class="filter-btn" data-days="7" onclick="setPeriod(this,7)">7D</button>
         <button class="filter-btn" data-days="30" onclick="setPeriod(this,30)">30D</button>
         <button class="filter-btn" data-days="90" onclick="setPeriod(this,90)">90D</button>
         <button class="filter-btn" data-days="365" onclick="setPeriod(this,365)" id="t-all">ALL</button>
@@ -403,7 +404,7 @@
 
 <script>
 const BACKEND = 'https://orion-radar-backend.onrender.com';
-let currentDays = 7;
+let currentDays = 1;
 let currentSide = 'ALL';
 let currentSess = 'ALL';
 let rawTrades = [];
@@ -428,7 +429,7 @@ const T = {
     'disclaimer':'⚠ ORION RADAR™ IS NOT A REGISTERED INVESTMENT ADVISOR. ALL SIGNALS ARE FOR INFORMATIONAL PURPOSES ONLY.<br>PAST PERFORMANCE DOES NOT GUARANTEE FUTURE RESULTS. TRADING FINANCIAL INSTRUMENTS INVOLVES SUBSTANTIAL RISK OF LOSS.<br>ORION RADAR™ DOES NOT EXECUTE ORDERS AND HAS NO ACCESS TO YOUR BROKERAGE ACCOUNT.',
     'empty-trades':'NO CLOSED TRADES YET','empty-assets':'NO ASSET DATA YET',
     'updated':'UPDATED','loading':'LOADING...',
-    'period-suffix':d=>`last ${d} days`,'wins-losses':(w,l)=>`${w} wins · ${l} losses`,
+    'period-suffix':d=>d===1?'last 24 hours':`last ${d} days`,'wins-losses':(w,l)=>`${w} wins · ${l} losses`,
     'best-wr':wr=>`${wr}% win rate`,
   },
   pt:{
@@ -448,7 +449,7 @@ const T = {
     'disclaimer':'⚠ O ORION RADAR™ NÃO É UM CONSULTOR DE INVESTIMENTOS REGISTADO. TODOS OS SINAIS SÃO APENAS PARA FINS INFORMATIVOS.<br>RESULTADOS PASSADOS NÃO GARANTEM RESULTADOS FUTUROS. O TRADING ENVOLVE RISCO SUBSTANCIAL DE PERDA.<br>O ORION RADAR™ NÃO EXECUTA ORDENS E NÃO TEM ACESSO À TUA CONTA DE CORRETAGEM.',
     'empty-trades':'NENHUM TRADE FECHADO AINDA','empty-assets':'SEM DADOS DE ATIVOS',
     'updated':'ATUALIZADO','loading':'A CARREGAR...',
-    'period-suffix':d=>`últimos ${d} dias`,'wins-losses':(w,l)=>`${w} wins · ${l} losses`,
+    'period-suffix':d=>d===1?'últimas 24 horas':`últimos ${d} dias`,'wins-losses':(w,l)=>`${w} wins · ${l} losses`,
     'best-wr':wr=>`${wr}% de acerto`,
   },
   es:{
@@ -468,7 +469,7 @@ const T = {
     'disclaimer':'⚠ ORION RADAR™ NO ES UN ASESOR DE INVERSIONES REGISTRADO. TODAS LAS SEÑALES SON SOLO PARA FINES INFORMATIVOS.<br>EL RENDIMIENTO PASADO NO GARANTIZA RESULTADOS FUTUROS. EL TRADING CONLLEVA UN RIESGO SUSTANCIAL DE PÉRDIDA.<br>ORION RADAR™ NO EJECUTA ÓRDENES Y NO TIENE ACCESO A TU CUENTA DE CORRETAJE.',
     'empty-trades':'AÚN NO HAY TRADES CERRADOS','empty-assets':'SIN DATOS DE ACTIVOS',
     'updated':'ACTUALIZADO','loading':'CARGANDO...',
-    'period-suffix':d=>`últimos ${d} días`,'wins-losses':(w,l)=>`${w} wins · ${l} losses`,
+    'period-suffix':d=>d===1?'últimas 24 horas':`últimos ${d} días`,'wins-losses':(w,l)=>`${w} wins · ${l} losses`,
     'best-wr':wr=>`${wr}% de acierto`,
   }
 };
