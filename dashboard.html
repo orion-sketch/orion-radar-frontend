@@ -2528,7 +2528,7 @@ document.addEventListener('DOMContentLoaded', async function(){
     document.getElementById('qMLStatus').style.color = mlConf >= 80 ? '#00e87a' : mlConf >= 60 ? '#c084fc' : '#ffb800';
   }
 
-  function openQuantum() {
+  window.openQuantum = function() {
     const sym   = window._orionCurrentSym || '';
     const tf    = window._orionCurrentTf  || 'H1';
     const sigs  = window._orionSignals || {};
