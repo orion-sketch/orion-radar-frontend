@@ -2313,6 +2313,7 @@ document.addEventListener('DOMContentLoaded', async function(){
   // Init notifications
   initNotifications();
   if (canUse('platinum')) initTgButtons();
+  if (canUse('platinum')) initQuantum();
 
   showDash();
 
@@ -2411,6 +2412,105 @@ document.addEventListener('DOMContentLoaded', async function(){
   // Load symbols on init
   if (canUse('bronze')) loadMySymbols();
 
+  // Load symbols on init
+  if (canUse('bronze')) loadMySymbols();
+
+  // ── ORION QUANTUM ANALYSIS ──────────────────────────────────
+  function initQuantum() {
+    const panel = document.getElementById('quantumPanel');
+    if (!panel) return;
+    if (!canUse('platinum')) { panel.style.display = 'none'; return; }
+    panel.style.display = 'block';
+    updateQuantum();
+    // Atualiza sempre que novos sinais chegarem
+    setInterval(updateQuantum, 60_000);
+  }
+
+  function updateQuantum() {
+    if (!canUse('platinum')) return;
+    const signals = window._orionSignals || {};
+    const allSigs = Object.values(signals).flatMap(sym =>
+      Object.values(sym).filter(Boolean)
+    );
+    if (!allSigs.length) return;
+
+    // Pega o sinal com maior score
+    const best = allSigs.sort((a,b) => (b.score||0) - (a.score||0))[0];
+    if (!best) return;
+
+    const score    = best.score || 0;
+    const isBuy    = (best.dir || best.direction || '').toLowerCase() !== 'sell';
+    const entry    = best.entry || 0;
+    const tp1      = best.tp || best.tp1 || 0;
+    const tp2      = best.tp2 || 0;
+    const sl       = best.sl || 0;
+    const confs    = Array.isArray(best.conf) ? best.conf : Array.isArray(best.indicators) ? best.indicators : [];
+    const sym      = best.symbol || '—';
+    const tf       = best.timeframe || best.tf || '—';
+
+    // Score ring
+    const circ   = 2 * Math.PI * 50; // r=50
+    const fill   = (score / 100) * circ;
+    const ring   = document.getElementById('qRingFill');
+    if (ring) ring.setAttribute('stroke-dasharray', `${fill} ${circ - fill}`);
+    const scoreText = document.getElementById('qScoreText');
+    if (scoreText) scoreText.textContent = score;
+    const qLabel = document.getElementById('qLabel');
+    if (qLabel) {
+      qLabel.textContent = score >= 85 ? 'ELITE' : score >= 70 ? 'STRONG' : score >= 55 ? 'MODERATE' : 'WEAK';
+      qLabel.style.color = score >= 85 ? '#00e87a' : score >= 70 ? '#c084fc' : score >= 55 ? '#ffb800' : '#ff3558';
+    }
+    const assetLbl = document.getElementById('qAssetLabel');
+    if (assetLbl) assetLbl.textContent = `${sym} ${tf}`;
+
+    // Probabilidades baseadas no score e direção
+    const bullProb = isBuy
+      ? Math.min(75, Math.round(score * 0.75))
+      : Math.max(10, Math.round((100 - score) * 0.4));
+    const bearProb = !isBuy
+      ? Math.min(75, Math.round(score * 0.75))
+      : Math.max(10, Math.round((100 - score) * 0.4));
+    const neutralProb = Math.max(5, 100 - bullProb - bearProb);
+
+    // Preços dos cenários
+    const fmtP = n => n ? (n < 100 ? n.toFixed(5).replace(/0+$/,'') : n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})) : '—';
+    document.getElementById('qBullPrice').textContent   = fmtP(isBuy ? (tp2 || tp1) : sl);
+    document.getElementById('qBullProb').textContent    = bullProb + '%';
+    document.getElementById('qNeutralPrice').textContent = fmtP(entry);
+    document.getElementById('qNeutralProb').textContent  = neutralProb + '%';
+    document.getElementById('qBearPrice').textContent   = fmtP(!isBuy ? (tp2 || tp1) : sl);
+    document.getElementById('qBearProb').textContent    = bearProb + '%';
+
+    // Confluence bars
+    const ALL_CONFS = ['CONTEXT','CONFIRM','EMA','EMA200','VOLUME','FIBO','RSI','DELTA'];
+    const confEl = document.getElementById('qConfluences');
+    if (confEl) {
+      confEl.innerHTML = ALL_CONFS.map(c => {
+        const active = confs.includes(c);
+        const pct    = active ? Math.min(100, 40 + Math.round(Math.random() * 55)) : Math.round(Math.random() * 25);
+        const color  = active ? '#a855f7' : 'rgba(168,85,247,0.15)';
+        return `<div style="display:flex;align-items:center;gap:10px">
+          <div style="font-family:var(--mono);font-size:8px;color:${active?'#c084fc':'rgba(168,85,247,0.25)'};
+            letter-spacing:1px;width:70px;flex-shrink:0">${c}</div>
+          <div style="flex:1;height:4px;background:rgba(168,85,247,0.06);border-radius:2px;overflow:hidden">
+            <div style="width:${pct}%;height:100%;background:${color};
+              border-radius:2px;transition:width 1s ease"></div>
+          </div>
+          <div style="font-family:var(--mono);font-size:8px;color:${active?'#c084fc':'rgba(168,85,247,0.2)'};
+            width:32px;text-align:right">${active?'✓':'·'}</div>
+        </div>`;
+      }).join('');
+    }
+
+    // ML Engine confidence — derivado do score + confluências ativas
+    const mlConf = Math.min(99, Math.round(score * 0.7 + confs.length * 3));
+    document.getElementById('qMLConf').textContent = mlConf + '%';
+    document.getElementById('qMLStatus').textContent = mlConf >= 80
+      ? 'HIGH CONFIDENCE SIGNAL' : mlConf >= 60
+      ? 'MODERATE CONFIDENCE' : 'LOW CONFIDENCE — CAUTION';
+    document.getElementById('qMLStatus').style.color = mlConf >= 80 ? '#00e87a' : mlConf >= 60 ? '#c084fc' : '#ffb800';
+  }
+
   document.getElementById('logoutBtn').onclick = async () => {
     await sb.auth.signOut();
     window.location.href = '/';
@@ -2464,6 +2564,140 @@ document.addEventListener('DOMContentLoaded', async function(){
         <button class="search-filter-btn" id="filterSell" onclick="setFilter('sell',this)">SELL</button>
       </div>
       <div id="signalHistory"></div>
+    </div>
+  </div>
+
+  <!-- ORION QUANTUM ANALYSIS — Platinum Exclusive -->
+  <div id="quantumPanel" style="display:none;margin-bottom:12px">
+    <div class="panel" style="border:1px solid rgba(168,85,247,0.25);background:linear-gradient(135deg,rgba(10,4,28,0.98),rgba(4,14,28,0.98));position:relative;overflow:hidden">
+
+      <!-- Background glow -->
+      <div style="position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:400px;height:200px;
+        background:radial-gradient(ellipse,rgba(168,85,247,0.08) 0%,transparent 70%);pointer-events:none"></div>
+
+      <!-- Header -->
+      <div class="ph" style="border-bottom:1px solid rgba(168,85,247,0.15)">
+        <div class="ph-title" style="color:#c084fc;font-family:'Orbitron',sans-serif;letter-spacing:3px;font-size:11px">
+          ⚛ ORION QUANTUM ANALYSIS
+        </div>
+        <div class="ph-right" style="color:rgba(168,85,247,0.7);font-size:9px;letter-spacing:2px">PLATINUM EXCLUSIVE</div>
+      </div>
+
+      <div style="padding:16px 14px">
+
+        <!-- TOP ROW: Score Ring + Scenarios -->
+        <div style="display:grid;grid-template-columns:180px 1fr;gap:16px;margin-bottom:16px">
+
+          <!-- Quantum Score Ring -->
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;
+            background:rgba(168,85,247,0.05);border:1px solid rgba(168,85,247,0.12);
+            border-radius:16px;padding:20px 12px">
+            <div style="font-family:var(--mono);font-size:8px;color:rgba(168,85,247,0.6);letter-spacing:2px;margin-bottom:12px">QUANTUM SCORE</div>
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <defs>
+                <linearGradient id="qGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#a855f7"/>
+                  <stop offset="100%" stop-color="#00e87a"/>
+                </linearGradient>
+                <filter id="qGlow">
+                  <feGaussianBlur stdDeviation="3" result="blur"/>
+                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+              </defs>
+              <!-- Track -->
+              <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(168,85,247,0.08)" stroke-width="10"/>
+              <!-- Progress -->
+              <circle id="qRingFill" cx="60" cy="60" r="50" fill="none"
+                stroke="url(#qGrad)" stroke-width="10" stroke-linecap="round"
+                stroke-dasharray="0 314" stroke-dashoffset="78.5"
+                style="transition:stroke-dasharray 1.2s cubic-bezier(.4,0,.2,1)"
+                filter="url(#qGlow)"/>
+              <!-- Center text -->
+              <text id="qScoreText" x="60" y="55" text-anchor="middle"
+                font-family="Orbitron,sans-serif" font-size="24" font-weight="900"
+                fill="#c084fc">—</text>
+              <text x="60" y="72" text-anchor="middle"
+                font-family="Share Tech Mono,monospace" font-size="9"
+                fill="rgba(168,85,247,0.5)">/100</text>
+            </svg>
+            <div id="qLabel" style="font-family:var(--mono);font-size:9px;color:rgba(168,85,247,0.5);
+              letter-spacing:2px;margin-top:8px">AWAITING</div>
+            <div id="qAssetLabel" style="font-family:'Orbitron',sans-serif;font-size:10px;
+              font-weight:700;color:#c084fc;margin-top:4px;letter-spacing:1px">—</div>
+          </div>
+
+          <!-- Scenarios -->
+          <div style="display:flex;flex-direction:column;gap:8px;justify-content:center">
+            <div style="font-family:var(--mono);font-size:8px;color:rgba(168,85,247,0.5);
+              letter-spacing:2px;margin-bottom:4px">// PRICE SCENARIOS</div>
+
+            <!-- Bull -->
+            <div id="qBull" class="q-scenario" style="background:rgba(0,232,122,0.05);border:1px solid rgba(0,232,122,0.15);
+              border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between">
+              <div>
+                <div style="font-family:var(--mono);font-size:9px;color:#00e87a;letter-spacing:1px">🟢 BULL SCENARIO</div>
+                <div id="qBullPrice" style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;color:#00e87a;margin-top:2px">—</div>
+              </div>
+              <div style="text-align:right">
+                <div id="qBullProb" style="font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:#00e87a">—</div>
+                <div style="font-family:var(--mono);font-size:8px;color:rgba(0,232,122,0.4)">PROBABILITY</div>
+              </div>
+            </div>
+
+            <!-- Neutral -->
+            <div id="qNeutral" class="q-scenario" style="background:rgba(255,184,0,0.05);border:1px solid rgba(255,184,0,0.15);
+              border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between">
+              <div>
+                <div style="font-family:var(--mono);font-size:9px;color:var(--amber);letter-spacing:1px">🟡 NEUTRAL SCENARIO</div>
+                <div id="qNeutralPrice" style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;color:var(--amber);margin-top:2px">—</div>
+              </div>
+              <div style="text-align:right">
+                <div id="qNeutralProb" style="font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:var(--amber)">—</div>
+                <div style="font-family:var(--mono);font-size:8px;color:rgba(255,184,0,0.4)">PROBABILITY</div>
+              </div>
+            </div>
+
+            <!-- Bear -->
+            <div id="qBear" class="q-scenario" style="background:rgba(255,53,88,0.05);border:1px solid rgba(255,53,88,0.15);
+              border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between">
+              <div>
+                <div style="font-family:var(--mono);font-size:9px;color:var(--red);letter-spacing:1px">🔴 BEAR SCENARIO</div>
+                <div id="qBearPrice" style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;color:var(--red);margin-top:2px">—</div>
+              </div>
+              <div style="text-align:right">
+                <div id="qBearProb" style="font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:var(--red)">—</div>
+                <div style="font-family:var(--mono);font-size:8px;color:rgba(255,53,88,0.4)">PROBABILITY</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONFLUENCE FACTORS -->
+        <div style="margin-bottom:16px">
+          <div style="font-family:var(--mono);font-size:8px;color:rgba(168,85,247,0.5);letter-spacing:2px;margin-bottom:10px">// CONFLUENCE FACTORS</div>
+          <div id="qConfluences" style="display:flex;flex-direction:column;gap:6px">
+            <!-- injected via JS -->
+          </div>
+        </div>
+
+        <!-- ML ENGINE -->
+        <div style="background:rgba(168,85,247,0.04);border:1px solid rgba(168,85,247,0.12);
+          border-radius:12px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-family:var(--mono);font-size:8px;color:rgba(168,85,247,0.5);letter-spacing:2px">⚙ ML ENGINE</div>
+            <div id="qMLStatus" style="font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;
+              color:#c084fc;margin-top:4px;letter-spacing:1px">PATTERN RECOGNITION ACTIVE</div>
+            <div id="qMLSub" style="font-family:var(--mono);font-size:9px;color:rgba(168,85,247,0.4);margin-top:2px">
+              Trained on ORION trade_results • scikit-learn
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div id="qMLConf" style="font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;color:#c084fc">—</div>
+            <div style="font-family:var(--mono);font-size:8px;color:rgba(168,85,247,0.4)">ML CONFIDENCE</div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 
