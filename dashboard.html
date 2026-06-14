@@ -2641,6 +2641,13 @@ async function orionLoadChart(sym, tf, sig) {
     if (timeEl && sigData.timestamp) timeEl.textContent = '🕐 ' + orionFmtTime(sigData.timestamp);
   }
 
+  // Reset imediato — evita escala/price-lines do ativo anterior travarem o novo
+  orionClearPL();
+  if (window._orionSeries) {
+    window._orionSeries.applyOptions({ autoscaleInfoProvider: undefined });
+    window._orionChart.priceScale('right').applyOptions({ autoScale: true });
+  }
+
   let candles = [];
   // TF fallback — M2/M3/M4 not supported by Yahoo Finance → use M5
   const TF_MAP = { 'M1':'M5','M2':'M5','M3':'M5','M4':'M5','M5':'M5',
@@ -2707,6 +2714,10 @@ function orionSetTf(tf, btn) {
   window._orionCurrentTf = tf;
   document.querySelectorAll('#orionChartPanel .tf-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
+  // Atualiza watermark sem recriar o chart
+  if (window._orionChart) {
+    window._orionChart.applyOptions({ watermark: { text: tf } });
+  }
   if (window._orionCurrentSym) orionLoadChart(window._orionCurrentSym, tf);
 }
 
