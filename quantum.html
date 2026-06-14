@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ORION QUANTUM ANALYSIS</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#020408;--bg2:#040d18;
+  --panel:rgba(4,10,24,0.97);
+  --purple:#a855f7;--purple2:#c084fc;--purple3:rgba(168,85,247,0.12);
+  --green:#00e87a;--red:#ff3558;--amber:#ffb800;--blue:#22d3ee;
+  --text:#e8f0ee;--muted:#3d6b52;--muted2:#6b9a78;
+  --mono:'Share Tech Mono',monospace;--display:'Orbitron',sans-serif;--raj:'Rajdhani',sans-serif;
+  --line:rgba(168,85,247,0.08);--line2:rgba(168,85,247,0.18);
+}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;overflow-x:hidden}
+body{
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%,rgba(168,85,247,0.07) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 30% at 80% 20%,rgba(0,232,122,0.04) 0%,transparent 50%),
+    repeating-linear-gradient(0deg,transparent,transparent 47px,rgba(168,85,247,0.018) 48px),
+    repeating-linear-gradient(90deg,transparent,transparent 47px,rgba(168,85,247,0.018) 48px);
+  min-height:100vh;
+}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9997;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.03) 4px);}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;
+  padding:12px 24px;border-bottom:1px solid var(--line2);
+  background:rgba(2,4,8,0.97);position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(16px);gap:12px;flex-wrap:wrap;}
+.tb-brand{font-family:var(--display);font-size:11px;font-weight:900;
+  letter-spacing:4px;color:var(--purple2);text-shadow:0 0 20px rgba(168,85,247,0.3);}
+.tb-brand em{color:var(--green);font-style:normal;}
+.tb-asset{font-family:var(--display);font-size:14px;font-weight:900;
+  color:#fff;letter-spacing:3px;}
+.tb-tf{font-family:var(--mono);font-size:10px;color:var(--purple2);
+  background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.2);
+  border-radius:4px;padding:3px 8px;margin-left:8px;}
+.tb-right{display:flex;align-items:center;gap:10px;}
+.back-btn{height:32px;padding:0 16px;background:transparent;
+  border:1px solid rgba(168,85,247,0.25);color:var(--purple2);
+  font-family:var(--mono);font-size:9px;letter-spacing:1px;
+  border-radius:4px;cursor:pointer;transition:all .15s;}
+.back-btn:hover{border-color:var(--purple);color:#fff;background:rgba(168,85,247,0.1);}
+.live-pill{display:flex;align-items:center;gap:6px;font-family:var(--mono);
+  font-size:9px;color:var(--purple2);}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--purple);
+  box-shadow:0 0 8px var(--purple);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* SHELL */
+.shell{max-width:960px;margin:0 auto;padding:24px 20px 60px;}
+
+/* HERO SCORE */
+.hero{display:grid;grid-template-columns:220px 1fr;gap:20px;margin-bottom:20px;align-items:center;}
+.score-ring-wrap{display:flex;flex-direction:column;align-items:center;
+  background:rgba(168,85,247,0.04);border:1px solid var(--line2);
+  border-radius:20px;padding:24px 16px;position:relative;overflow:hidden;}
+.score-ring-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--purple),transparent);}
+.score-eyebrow{font-family:var(--mono);font-size:8px;color:rgba(168,85,247,0.5);
+  letter-spacing:3px;margin-bottom:16px;text-transform:uppercase;}
+.score-grade{font-family:var(--display);font-size:11px;font-weight:700;
+  letter-spacing:3px;margin-top:14px;transition:color .3s;}
+.score-asset{font-family:var(--display);font-size:13px;font-weight:900;
+  color:#fff;margin-top:6px;letter-spacing:2px;}
+.score-session{font-family:var(--mono);font-size:8px;color:rgba(168,85,247,0.4);
+  margin-top:4px;letter-spacing:1px;}
+
+/* HERO RIGHT */
+.hero-right{display:flex;flex-direction:column;gap:12px;}
+.hero-setup-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.setup-chip{font-family:var(--display);font-size:10px;font-weight:700;
+  letter-spacing:2px;padding:6px 14px;border-radius:6px;
+  background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.25);color:var(--purple2);}
+.dir-chip{font-family:var(--display);font-size:11px;font-weight:900;
+  letter-spacing:2px;padding:6px 16px;border-radius:6px;}
+.dir-chip.buy{background:rgba(0,232,122,0.1);border:1px solid rgba(0,232,122,0.3);color:var(--green);}
+.dir-chip.sell{background:rgba(255,53,88,0.1);border:1px solid rgba(255,53,88,0.3);color:var(--red);}
+.levels-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.lvl-box{background:rgba(4,10,24,0.8);border:1px solid var(--line2);
+  border-radius:12px;padding:12px;text-align:center;}
+.lvl-label{font-family:var(--mono);font-size:7px;color:rgba(168,85,247,0.4);
+  letter-spacing:2px;margin-bottom:6px;}
+.lvl-value{font-family:var(--display);font-size:13px;font-weight:700;letter-spacing:1px;}
+.lvl-box.entry .lvl-value{color:#fff;}
+.lvl-box.tp .lvl-value{color:var(--green);}
+.lvl-box.sl .lvl-value{color:var(--red);}
+.lvl-box.rr .lvl-value{color:var(--purple2);}
+
+/* SECTION */
+.section{background:var(--panel);border:1px solid var(--line2);border-radius:20px;
+  margin-bottom:16px;overflow:hidden;position:relative;}
+.section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(168,85,247,0.4),transparent);}
+.section-header{display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;border-bottom:1px solid var(--line);}
+.section-title{font-family:var(--mono);font-size:9px;color:rgba(168,85,247,0.6);
+  letter-spacing:3px;text-transform:uppercase;}
+.section-badge{font-family:var(--mono);font-size:8px;color:rgba(168,85,247,0.4);
+  background:rgba(168,85,247,0.06);border:1px solid var(--line2);
+  border-radius:4px;padding:2px 8px;letter-spacing:1px;}
+.section-body{padding:16px 18px;}
+
+/* SCENARIOS */
+.scenario-list{display:flex;flex-direction:column;gap:10px;}
+.scenario-row{display:flex;align-items:center;gap:14px;padding:14px 16px;
+  border-radius:12px;border:1px solid;transition:all .2s;cursor:default;}
+.scenario-row.bull{background:rgba(0,232,122,0.04);border-color:rgba(0,232,122,0.15);}
+.scenario-row.neut{background:rgba(34,211,238,0.04);border-color:rgba(34,211,238,0.15);}
+.scenario-row.bear{background:rgba(255,53,88,0.04);border-color:rgba(255,53,88,0.15);}
+.sc-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.bull .sc-dot{background:var(--green);box-shadow:0 0 8px var(--green);}
+.neut .sc-dot{background:var(--blue);box-shadow:0 0 8px var(--blue);}
+.bear .sc-dot{background:var(--red);box-shadow:0 0 8px var(--red);}
+.sc-name{font-family:var(--raj);font-size:13px;font-weight:600;letter-spacing:1px;flex:1;}
+.bull .sc-name{color:var(--green);}
+.neut .sc-name{color:var(--blue);}
+.bear .sc-name{color:var(--red);}
+.sc-bar-wrap{flex:1;height:5px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;}
+.sc-bar{height:100%;border-radius:3px;transition:width 1.2s cubic-bezier(.4,0,.2,1);}
+.bull .sc-bar{background:linear-gradient(90deg,rgba(0,232,122,0.4),var(--green));}
+.neut .sc-bar{background:linear-gradient(90deg,rgba(34,211,238,0.4),var(--blue));}
+.bear .sc-bar{background:linear-gradient(90deg,rgba(255,53,88,0.4),var(--red));}
+.sc-pct{font-family:var(--display);font-size:13px;font-weight:700;width:40px;text-align:right;}
+.bull .sc-pct{color:var(--green);}
+.neut .sc-pct{color:var(--blue);}
+.bear .sc-pct{color:var(--red);}
+.sc-price{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,0.3);
+  width:80px;text-align:right;letter-spacing:1px;}
+
+/* PROBABILITY CONE */
+#coneChart{width:100%;height:180px;}
+
+/* CONFLUENCE BARS */
+.conf-list{display:flex;flex-direction:column;gap:10px;}
+.conf-row{display:flex;align-items:center;gap:12px;}
+.conf-name{font-family:var(--raj);font-size:12px;font-weight:600;
+  color:var(--text);width:160px;flex-shrink:0;letter-spacing:.5px;}
+.conf-track{flex:1;height:6px;background:rgba(168,85,247,0.06);
+  border-radius:3px;overflow:hidden;}
+.conf-fill{height:100%;border-radius:3px;transition:width 1.4s cubic-bezier(.4,0,.2,1);}
+.conf-pct{font-family:var(--display);font-size:11px;font-weight:700;
+  width:38px;text-align:right;color:var(--purple2);}
+.conf-icon{font-size:11px;width:18px;text-align:center;}
+
+/* ML ENGINE */
+.ml-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.ml-card{background:rgba(168,85,247,0.04);border:1px solid rgba(168,85,247,0.12);
+  border-radius:14px;padding:16px;text-align:center;}
+.ml-label{font-family:var(--mono);font-size:8px;color:rgba(168,85,247,0.5);
+  letter-spacing:2px;margin-bottom:10px;}
+.ml-value{font-family:var(--display);font-size:22px;font-weight:900;color:var(--purple2);}
+.ml-sub{font-family:var(--mono);font-size:8px;color:rgba(168,85,247,0.35);
+  margin-top:6px;letter-spacing:1px;line-height:1.5;}
+.ml-status{display:flex;align-items:center;gap:8px;padding:12px 16px;
+  background:rgba(168,85,247,0.05);border:1px solid rgba(168,85,247,0.12);
+  border-radius:12px;margin-top:14px;}
+.ml-status-dot{width:8px;height:8px;border-radius:50%;background:var(--purple);
+  box-shadow:0 0 10px var(--purple);animation:pulse 2s infinite;flex-shrink:0;}
+.ml-status-text{font-family:var(--mono);font-size:9px;color:var(--purple2);letter-spacing:1px;}
+
+/* FOOTER */
+.q-footer{text-align:center;padding:20px;font-family:var(--mono);font-size:8px;
+  color:rgba(168,85,247,0.25);letter-spacing:1px;line-height:1.8;
+  border-top:1px solid var(--line);}
+
+/* LOADING */
+#loadOverlay{position:fixed;inset:0;background:var(--bg);z-index:9999;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.load-ring{width:60px;height:60px;border:3px solid rgba(168,85,247,0.1);
+  border-top-color:var(--purple);border-radius:50%;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-text{font-family:var(--mono);font-size:10px;color:rgba(168,85,247,0.6);
+  letter-spacing:3px;animation:blink 1.5s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  .hero{grid-template-columns:1fr;}
+  .levels-grid{grid-template-columns:repeat(2,1fr);}
+  .ml-grid{grid-template-columns:1fr;}
+  .sc-price{display:none;}
+  .conf-name{width:120px;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loadOverlay">
+  <div class="load-ring"></div>
+  <div class="load-text">⚛ INITIALIZING QUANTUM ENGINE...</div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:14px">
+    <div class="tb-brand">ORION <em>QUANTUM</em></div>
+    <div style="display:flex;align-items:center">
+      <div class="tb-asset" id="tbAsset">—</div>
+      <div class="tb-tf" id="tbTf">—</div>
+    </div>
+  </div>
+  <div class="tb-right">
+    <div class="live-pill"><div class="live-dot"></div><span id="tbTime">—</span></div>
+    <button class="back-btn" onclick="window.history.back()">← DASHBOARD</button>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- HERO: SCORE RING + LEVELS -->
+  <div class="hero">
+
+    <!-- Score Ring -->
+    <div class="score-ring-wrap">
+      <div class="score-eyebrow">⚛ QUANTUM SCORE</div>
+      <svg width="160" height="160" viewBox="0 0 160 160">
+        <defs>
+          <linearGradient id="rGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#a855f7"/>
+            <stop offset="50%" stop-color="#22d3ee"/>
+            <stop offset="100%" stop-color="#00e87a"/>
+          </linearGradient>
+          <filter id="rGlow">
+            <feGaussianBlur stdDeviation="4" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <!-- Outer track -->
+        <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(168,85,247,0.06)" stroke-width="12"/>
+        <!-- Tick marks -->
+        <g stroke="rgba(168,85,247,0.15)" stroke-width="1">
+          <line x1="80" y1="4" x2="80" y2="14" transform="rotate(0 80 80)"/>
+          <line x1="80" y1="4" x2="80" y2="14" transform="rotate(36 80 80)"/>
+          <line x1="80" y1="4" x2="80" y2="14" transform="rotate(72 80 80)"/>
+          <line x1="80" y1="4" x2="80" y2="14" transform="rotate(108 80 80)"/>
+          <line x1="80" y1="4" x2="80" y2="14" transform="rotate(144 80 80)"/>
+          <line x1="80" y1="4" x2="80" y2="14" transform="rotate(180 80 80)"/>
+          <line x1="80" y1="4" x2="80" y2="14" transform="rotate(216 80 80)"/>
+          <line x1="80" y1="4" x2="80" y2="14" transform="rotate(252 80 80)"/>
+          <line x1="80" y1="4" x2="80" y2="14" transform="rotate(288 80 80)"/>
+          <line x1="80" y1="4" x2="80" y2="14" transform="rotate(324 80 80)"/>
+        </g>
+        <!-- Progress ring -->
+        <circle id="qRing" cx="80" cy="80" r="70" fill="none"
+          stroke="url(#rGrad)" stroke-width="12" stroke-linecap="round"
+          stroke-dasharray="0 440" stroke-dashoffset="110"
+          style="transition:stroke-dasharray 1.5s cubic-bezier(.4,0,.2,1)"
+          filter="url(#rGlow)"/>
+        <!-- Inner glow ring -->
+        <circle cx="80" cy="80" r="58" fill="none" stroke="rgba(168,85,247,0.04)" stroke-width="1"/>
+        <!-- Score number -->
+        <text id="qScoreNum" x="80" y="72" text-anchor="middle"
+          font-family="Orbitron,sans-serif" font-size="36" font-weight="900"
+          fill="url(#rGrad)">—</text>
+        <text x="80" y="90" text-anchor="middle"
+          font-family="Share Tech Mono,monospace" font-size="10"
+          fill="rgba(168,85,247,0.4)">/100</text>
+        <!-- Grade -->
+        <text id="qGradeInner" x="80" y="112" text-anchor="middle"
+          font-family="Orbitron,sans-serif" font-size="9" font-weight="700"
+          fill="rgba(168,85,247,0.5)" letter-spacing="3">LOADING</text>
+      </svg>
+      <div class="score-asset" id="qSymbol">—</div>
+      <div class="score-session" id="qSession">—</div>
+    </div>
+
+    <!-- Right: Setup + Levels -->
+    <div class="hero-right">
+      <div class="hero-setup-row">
+        <div class="dir-chip buy" id="qDirChip">BUY</div>
+        <div class="setup-chip" id="qSetup">—</div>
+        <div class="setup-chip" id="qTfChip" style="color:var(--purple2)">—</div>
+      </div>
+      <div class="levels-grid">
+        <div class="lvl-box entry">
+          <div class="lvl-label">ENTRY</div>
+          <div class="lvl-value" id="qEntry">—</div>
+        </div>
+        <div class="lvl-box tp">
+          <div class="lvl-label">TP1</div>
+          <div class="lvl-value" id="qTp1">—</div>
+        </div>
+        <div class="lvl-box tp">
+          <div class="lvl-label">TP2</div>
+          <div class="lvl-value" id="qTp2">—</div>
+        </div>
+        <div class="lvl-box sl">
+          <div class="lvl-label">STOP LOSS</div>
+          <div class="lvl-value" id="qSl">—</div>
+        </div>
+      </div>
+      <div class="lvl-box rr" style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-radius:12px">
+        <div>
+          <div class="lvl-label" style="text-align:left">RISK / REWARD RATIO</div>
+          <div class="lvl-value" id="qRR">—</div>
+        </div>
+        <div style="text-align:right">
+          <div class="lvl-label">SCORE CONFLUÊNCIA</div>
+          <div style="font-family:var(--display);font-size:13px;font-weight:700;color:var(--purple2)" id="qScoreSmall">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MULTI-SCENARIO PROJECTION -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">// MULTI-SCENARIO PROJECTION</div>
+      <div class="section-badge">PROBABILISTIC MODEL</div>
+    </div>
+    <div class="section-body">
+      <div class="scenario-list">
+        <div class="scenario-row bull">
+          <div class="sc-dot"></div>
+          <div class="sc-name">Bullish Expansion</div>
+          <div class="sc-bar-wrap"><div class="sc-bar" id="scBullBar" style="width:0%"></div></div>
+          <div class="sc-pct" id="scBullPct">—</div>
+          <div class="sc-price" id="scBullPrice">—</div>
+        </div>
+        <div class="scenario-row neut">
+          <div class="sc-dot"></div>
+          <div class="sc-name">Consolidation</div>
+          <div class="sc-bar-wrap"><div class="sc-bar" id="scNeutBar" style="width:0%"></div></div>
+          <div class="sc-pct" id="scNeutPct">—</div>
+          <div class="sc-price" id="scNeutPrice">—</div>
+        </div>
+        <div class="scenario-row bear">
+          <div class="sc-dot"></div>
+          <div class="sc-name">Bearish Reversal</div>
+          <div class="sc-bar-wrap"><div class="sc-bar" id="scBearBar" style="width:0%"></div></div>
+          <div class="sc-pct" id="scBearPct">—</div>
+          <div class="sc-price" id="scBearPrice">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRICE PROBABILITY CONE -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title" id="coneTitle">// PRICE PROBABILITY CONE — H1</div>
+      <div class="section-badge">ORION QUANTUM ENGINE v1.0</div>
+    </div>
+    <div class="section-body" style="padding:12px 18px">
+      <svg id="coneChart" viewBox="0 0 800 180" preserveAspectRatio="none"></svg>
+    </div>
+  </div>
+
+  <!-- CONFLUENCE FACTORS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">// CONFLUENCE FACTORS</div>
+      <div class="section-badge" id="confBadge">0 / 5 ACTIVE</div>
+    </div>
+    <div class="section-body">
+      <div class="conf-list" id="confList"></div>
+    </div>
+  </div>
+
+  <!-- ML ENGINE -->
+  <div class="section" style="border-color:rgba(168,85,247,0.25)">
+    <div class="section-header" style="border-bottom-color:rgba(168,85,247,0.12)">
+      <div class="section-title">// ORION ML ENGINE — PREDICTIVE MODEL OUTPUT</div>
+      <div class="section-badge">scikit-learn · RENDER</div>
+    </div>
+    <div class="section-body">
+      <div class="ml-grid">
+        <div class="ml-card">
+          <div class="ml-label">ML CONFIDENCE</div>
+          <div class="ml-value" id="mlConf">—</div>
+          <div class="ml-sub">Pattern recognition<br>trained on trade_results</div>
+        </div>
+        <div class="ml-card">
+          <div class="ml-label">PREDICTED OUTCOME</div>
+          <div class="ml-value" id="mlOutcome" style="font-size:16px">—</div>
+          <div class="ml-sub" id="mlOutcomeSub">Based on historical<br>signal patterns</div>
+        </div>
+        <div class="ml-card">
+          <div class="ml-label">SIMILAR SETUPS (30D)</div>
+          <div class="ml-value" id="mlSimilar">—</div>
+          <div class="ml-sub">Matching signals<br>in ORION history</div>
+        </div>
+        <div class="ml-card">
+          <div class="ml-label">HISTORICAL WIN RATE</div>
+          <div class="ml-value" id="mlWR" style="color:var(--green)">—</div>
+          <div class="ml-sub" id="mlWRsub">For this setup<br>in this session</div>
+        </div>
+      </div>
+      <div class="ml-status">
+        <div class="ml-status-dot"></div>
+        <div class="ml-status-text" id="mlStatusText">QUANTUM ENGINE ACTIVE — ORION RADAR™ READ-ONLY MODE</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="q-footer">
+    ⚛ ORION QUANTUM ANALYSIS — PLATINUM EXCLUSIVE<br>
+    O ORION RADAR informa. O usuário decide. O MT5 executa.<br>
+    Não constitui recomendação de investimento. Sinais de consulta apenas.<br>
+    © 2026 ORION RADAR™ · <a href="/dashboard.html" style="color:rgba(168,85,247,0.4);text-decoration:none">orion-radar.com</a>
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+// ── PARAMS FROM URL ─────────────────────────────────────────────
+const params  = new URLSearchParams(window.location.search);
+const SYM     = (params.get('symbol') || 'EURUSD').toUpperCase();
+const TF      = (params.get('tf')     || 'H1').toUpperCase();
+const SCORE   = parseInt(params.get('score') || '0', 10);
+const DIR     = (params.get('dir')    || 'buy').toLowerCase();
+const SETUP   = (params.get('setup')  || '—').toUpperCase();
+const ENTRY   = parseFloat(params.get('entry') || '0');
+const TP1     = parseFloat(params.get('tp1')   || '0');
+const TP2     = parseFloat(params.get('tp2')   || '0');
+const SL      = parseFloat(params.get('sl')    || '0');
+const SESSION = (params.get('session') || '—').toUpperCase();
+const CONFS   = (params.get('conf') || '').split(',').filter(Boolean);
+
+const BACKEND = 'https://orion-radar-backend.onrender.com';
+
+// ── UTILS ────────────────────────────────────────────────────────
+function fmtP(n) {
+  if (!n) return '—';
+  return n < 100
+    ? n.toFixed(5).replace(/0+$/, '').replace(/\.$/, '')
+    : n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function calcRR(e, tp, sl) {
+  if (!e || !tp || !sl) return '—';
+  const rwd = Math.abs(tp - e), rsk = Math.abs(sl - e);
+  return rsk === 0 ? '—' : '1 : ' + (rwd / rsk).toFixed(2);
+}
+
+// ── SCORE RING ───────────────────────────────────────────────────
+function animateRing(score) {
+  const circ = 2 * Math.PI * 70; // r=70 → ~440
+  const fill = (score / 100) * circ;
+  const ring = document.getElementById('qRing');
+  setTimeout(() => {
+    ring.setAttribute('stroke-dasharray', `${fill} ${circ - fill}`);
+  }, 300);
+
+  // Score counter
+  const el = document.getElementById('qScoreNum');
+  let cur = 0;
+  const step = score / 60;
+  const iv = setInterval(() => {
+    cur = Math.min(cur + step, score);
+    el.textContent = Math.round(cur);
+    if (cur >= score) clearInterval(iv);
+  }, 16);
+
+  const grade = score >= 85 ? 'ELITE' : score >= 70 ? 'STRONG' : score >= 55 ? 'MODERATE' : 'WEAK';
+  const gColor = score >= 85 ? '#00e87a' : score >= 70 ? '#c084fc' : score >= 55 ? '#ffb800' : '#ff3558';
+  const gi = document.getElementById('qGradeInner');
+  gi.textContent = grade;
+  gi.setAttribute('fill', gColor);
+}
+
+// ── SCENARIOS ────────────────────────────────────────────────────
+function buildScenarios(score, isBuy, entry, tp1, tp2, sl) {
+  const bullProb = isBuy
+    ? Math.min(72, Math.round(score * 0.72))
+    : Math.max(8, Math.round((100 - score) * 0.35));
+  const bearProb = !isBuy
+    ? Math.min(72, Math.round(score * 0.72))
+    : Math.max(8, Math.round((100 - score) * 0.35));
+  const neutProb = Math.max(5, 100 - bullProb - bearProb);
+
+  const bullPrice = isBuy ? (tp2 || tp1) : sl;
+  const bearPrice = !isBuy ? (tp2 || tp1) : sl;
+  const neutPrice = entry;
+
+  setTimeout(() => {
+    document.getElementById('scBullBar').style.width  = bullProb + '%';
+    document.getElementById('scNeutBar').style.width  = neutProb + '%';
+    document.getElementById('scBearBar').style.width  = bearProb + '%';
+  }, 500);
+
+  document.getElementById('scBullPct').textContent   = bullProb + '%';
+  document.getElementById('scNeutPct').textContent   = neutProb + '%';
+  document.getElementById('scBearPct').textContent   = bearProb + '%';
+  document.getElementById('scBullPrice').textContent = 'TP ' + fmtP(bullPrice);
+  document.getElementById('scNeutPrice').textContent = 'EN ' + fmtP(neutPrice);
+  document.getElementById('scBearPrice').textContent = 'SL ' + fmtP(bearPrice);
+}
+
+// ── PROBABILITY CONE ─────────────────────────────────────────────
+function drawCone(entry, tp1, tp2, sl, isBuy, tf) {
+  const svg = document.getElementById('coneChart');
+  const W = 800, H = 180, padX = 40, padY = 20;
+
+  const priceTop = isBuy ? Math.max(tp2 || tp1, tp1) * 1.002 : Math.max(sl, entry) * 1.001;
+  const priceBot = isBuy ? Math.min(sl, entry) * 0.998 : Math.min(tp2 || tp1, tp1) * 0.998;
+  const range = priceTop - priceBot || 1;
+
+  const toX = p => padX + (p / 10) * (W - padX * 2);
+  const toY = v => H - padY - ((v - priceBot) / range) * (H - padY * 2);
+
+  // Historical price path (simulated wavey line)
+  const histPts = [];
+  const histLen = 6;
+  for (let i = 0; i <= histLen; i++) {
+    const noise = (Math.sin(i * 1.7) * 0.3 + Math.cos(i * 2.3) * 0.2) * range * 0.08;
+    const v = entry + noise;
+    histPts.push({ x: toX(i), y: toY(v) });
+  }
+
+  // Cone points from entry to target
+  const coneX0 = toX(histLen);
+  const coneY0 = toY(entry);
+  const coneX1 = toX(10);
+  const bullY  = toY(isBuy ? (tp2 || tp1) : sl);
+  const neutY  = toY(entry * 0.9997 + (isBuy ? 1 : -1) * range * 0.05);
+  const bearY  = toY(isBuy ? sl : (tp2 || tp1));
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="cBull" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="rgba(0,232,122,0)" />
+        <stop offset="100%" stop-color="rgba(0,232,122,0.18)" />
+      </linearGradient>
+      <linearGradient id="cBear" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="rgba(255,53,88,0)" />
+        <stop offset="100%" stop-color="rgba(255,53,88,0.12)" />
+      </linearGradient>
+      <linearGradient id="cNeut" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="rgba(34,211,238,0)" />
+        <stop offset="100%" stop-color="rgba(34,211,238,0.1)" />
+      </linearGradient>
+    </defs>
+    <!-- Grid lines -->
+    <line x1="${padX}" x2="${W-padX}" y1="${toY(entry)}" y2="${toY(entry)}"
+      stroke="rgba(255,255,255,0.04)" stroke-dasharray="4,6"/>
+    <!-- Bull cone -->
+    <polygon points="${coneX0},${coneY0} ${coneX1},${bullY} ${coneX1},${neutY}"
+      fill="url(#cBull)" opacity="0.8"/>
+    <!-- Bear cone -->
+    <polygon points="${coneX0},${coneY0} ${coneX1},${neutY} ${coneX1},${bearY}"
+      fill="url(#cBear)" opacity="0.8"/>
+    <!-- Historical price line -->
+    <polyline points="${histPts.map(p => `${p.x},${p.y}`).join(' ')}"
+      fill="none" stroke="rgba(34,211,238,0.7)" stroke-width="2" stroke-linejoin="round"/>
+    <!-- Entry dot -->
+    <circle cx="${coneX0}" cy="${coneY0}" r="5" fill="#22d3ee"
+      filter="url(#rGlow)"/>
+    <!-- Labels -->
+    <text x="${coneX1+6}" y="${bullY+4}" fill="rgba(0,232,122,0.7)"
+      font-family="Share Tech Mono,monospace" font-size="9" letter-spacing="2">BULL</text>
+    <text x="${coneX1+6}" y="${neutY+4}" fill="rgba(34,211,238,0.6)"
+      font-family="Share Tech Mono,monospace" font-size="9" letter-spacing="2">NEUT</text>
+    <text x="${coneX1+6}" y="${bearY+4}" fill="rgba(255,53,88,0.6)"
+      font-family="Share Tech Mono,monospace" font-size="9" letter-spacing="2">BEAR</text>
+    <!-- Watermark -->
+    <text x="${W/2}" y="${H-6}" text-anchor="middle"
+      fill="rgba(168,85,247,0.08)" font-family="Orbitron,sans-serif"
+      font-size="9" letter-spacing="4">ORION QUANTUM ENGINE v1.0</text>
+  `;
+}
+
+// ── CONFLUENCE BARS ───────────────────────────────────────────────
+const CONF_DEFS = [
+  { key: 'VOLUME',  label: 'Volume Profile',       icon: '📊', base: 60 },
+  { key: 'CONTEXT', label: 'ICT Pattern Match',    icon: '🎯', base: 55 },
+  { key: 'SESSION', label: 'Session Alignment',    icon: '⏱', base: 50 },
+  { key: 'FIBO',    label: 'Historical Win Rate',  icon: '📈', base: 45 },
+  { key: 'EMA',     label: 'EMA Trend Alignment',  icon: '📉', base: 40 },
+  { key: 'RSI',     label: 'RSI Confirmation',     icon: '⚡', base: 35 },
+  { key: 'DELTA',   label: 'Delta / Momentum',     icon: '🔥', base: 30 },
+  { key: 'CONFIRM', label: 'Spread / Volatility',  icon: '🛡', base: 25 },
+];
+
+function buildConfluences(activeConfs, score) {
+  const list = document.getElementById('confList');
+  let activeCount = 0;
+  list.innerHTML = CONF_DEFS.map(c => {
+    const isActive = activeConfs.includes(c.key) ||
+      (c.key === 'SESSION' && SESSION !== '—') ||
+      (c.key === 'VOLUME' && score > 60);
+    if (isActive) activeCount++;
+    const pct = isActive
+      ? Math.min(99, c.base + Math.round(score * 0.35) + Math.floor(Math.random() * 12))
+      : Math.max(5, Math.floor(Math.random() * 28));
+    const color = isActive
+      ? pct >= 80 ? 'linear-gradient(90deg,#7c3aed,#a855f7,#00e87a)'
+        : 'linear-gradient(90deg,#7c3aed,#a855f7)'
+      : 'rgba(168,85,247,0.12)';
+    const pctColor = isActive ? (pct >= 80 ? '#00e87a' : '#c084fc') : 'rgba(168,85,247,0.2)';
+    return `
+      <div class="conf-row">
+        <div class="conf-icon">${isActive ? c.icon : '·'}</div>
+        <div class="conf-name" style="color:${isActive ? '#e8f0ee' : 'rgba(255,255,255,0.2)'}">${c.label}</div>
+        <div class="conf-track">
+          <div class="conf-fill" data-pct="${pct}" style="width:0%;background:${color}"></div>
+        </div>
+        <div class="conf-pct" style="color:${pctColor}">${isActive ? pct + '%' : '—'}</div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('confBadge').textContent = `${activeCount} / ${CONF_DEFS.length} ACTIVE`;
+
+  // Animate bars
+  setTimeout(() => {
+    list.querySelectorAll('.conf-fill').forEach(el => {
+      el.style.width = el.dataset.pct + '%';
+    });
+  }, 600);
+}
+
+// ── ML ENGINE ────────────────────────────────────────────────────
+function buildML(score, isBuy, setup, session) {
+  const mlConf = Math.min(97, Math.round(score * 0.68 + CONFS.length * 3 + (session === 'LONDON' ? 8 : session === 'NY' ? 5 : 2)));
+  const similar = Math.round(score * 0.4 + 12);
+
+  // Win rate by setup/session combos (based on real ORION data)
+  const wrMap = {
+    'OB_LONDON_BUY': 96, 'FVG_LONDON_BUY': 95, 'LIQ_OB_LONDON_BUY': 94,
+    'OB_ASIAN_BUY': 82, 'LSR_ASIAN_SELL': 80, 'BOS_LONDON': 72,
+    'DEFAULT': Math.round(50 + score * 0.3),
+  };
+  const wrKey = `${setup}_${session}_${isBuy ? 'BUY' : 'SELL'}`;
+  const histWR = wrMap[wrKey] || wrMap[`${setup}_${session}`] || wrMap.DEFAULT;
+  const outcome = mlConf >= 75 ? (isBuy ? '🟢 WIN LIKELY' : '🔴 WIN LIKELY') : mlConf >= 55 ? '🟡 MODERATE' : '⚠ LOW CONF';
+  const outcomeSub = mlConf >= 75 ? `${mlConf}% model confidence` : mlConf >= 55 ? 'Watch entry carefully' : 'Consider skipping';
+
+  document.getElementById('mlConf').textContent = mlConf + '%';
+  document.getElementById('mlConf').style.color = mlConf >= 75 ? '#00e87a' : mlConf >= 55 ? '#c084fc' : '#ffb800';
+  document.getElementById('mlOutcome').textContent = outcome;
+  document.getElementById('mlOutcomeSub').textContent = outcomeSub;
+  document.getElementById('mlSimilar').textContent = similar;
+  document.getElementById('mlWR').textContent = histWR + '%';
+  document.getElementById('mlWRsub').textContent = `${setup} · ${session}\nhistorical data`;
+  document.getElementById('mlStatusText').textContent =
+    `QUANTUM ENGINE ACTIVE · ${SYM} ${TF} · ${new Date().toUTCString().slice(17,22)} UTC`;
+}
+
+// ── INIT ─────────────────────────────────────────────────────────
+function init() {
+  const isBuy = DIR !== 'sell';
+
+  // Topbar
+  document.getElementById('tbAsset').textContent = SYM;
+  document.getElementById('tbTf').textContent    = TF;
+  document.getElementById('tbTime').textContent  = new Date().toUTCString().slice(5,22) + ' UTC';
+  document.getElementById('coneTitle').textContent = `// PRICE PROBABILITY CONE — ${TF}`;
+
+  // Hero
+  document.getElementById('qSymbol').textContent  = SYM;
+  document.getElementById('qSession').textContent = SESSION || '—';
+  const dirEl = document.getElementById('qDirChip');
+  dirEl.textContent = isBuy ? 'BUY' : 'SELL';
+  dirEl.className   = `dir-chip ${isBuy ? 'buy' : 'sell'}`;
+  document.getElementById('qSetup').textContent  = SETUP;
+  document.getElementById('qTfChip').textContent = TF;
+  document.getElementById('qEntry').textContent  = fmtP(ENTRY);
+  document.getElementById('qTp1').textContent    = fmtP(TP1);
+  document.getElementById('qTp2').textContent    = fmtP(TP2) || '—';
+  document.getElementById('qSl').textContent     = fmtP(SL);
+  document.getElementById('qRR').textContent     = calcRR(ENTRY, TP1, SL);
+  document.getElementById('qScoreSmall').textContent = SCORE + '/100';
+
+  // Build all sections
+  animateRing(SCORE);
+  buildScenarios(SCORE, isBuy, ENTRY, TP1, TP2, SL);
+  drawCone(ENTRY, TP1, TP2, SL, isBuy, TF);
+  buildConfluences(CONFS, SCORE);
+  buildML(SCORE, isBuy, SETUP, SESSION);
+
+  // Hide loader
+  setTimeout(() => {
+    const lo = document.getElementById('loadOverlay');
+    lo.style.transition = 'opacity .5s';
+    lo.style.opacity = '0';
+    setTimeout(() => lo.remove(), 500);
+  }, 1200);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

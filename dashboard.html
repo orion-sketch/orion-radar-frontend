@@ -639,6 +639,19 @@
             <span class="score-val" id="liveScore">—</span>
           </div>
 
+          <!-- QUANTUM ANALYSIS BUTTON — Platinum only -->
+          <div id="quantumBtn" style="display:none;margin-top:10px">
+            <button onclick="openQuantum()" style="width:100%;height:38px;
+              background:linear-gradient(135deg,rgba(168,85,247,0.15),rgba(168,85,247,0.08));
+              border:1px solid rgba(168,85,247,0.35);border-radius:8px;
+              color:#c084fc;font-family:var(--mono);font-size:10px;letter-spacing:2px;
+              cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;"
+              onmouseover="this.style.background='linear-gradient(135deg,rgba(168,85,247,0.25),rgba(168,85,247,0.12))';this.style.borderColor='rgba(168,85,247,0.6)'"
+              onmouseout="this.style.background='linear-gradient(135deg,rgba(168,85,247,0.15),rgba(168,85,247,0.08))';this.style.borderColor='rgba(168,85,247,0.35)'">
+              ⚛ VER ANÁLISE QUÂNTICA DESTE ATIVO
+            </button>
+          </div>
+
           <!-- SIGNAL EXPAND — Gold/Platinum only -->
           <div id="sigExpandToggle" style="display:none;margin-top:10px;text-align:center;cursor:pointer;
             font-family:var(--mono);font-size:9px;color:var(--muted2);letter-spacing:1px;
@@ -2314,6 +2327,10 @@ document.addEventListener('DOMContentLoaded', async function(){
   initNotifications();
   if (canUse('platinum')) initTgButtons();
   if (canUse('platinum')) initQuantum();
+  if (canUse('platinum')) {
+    const qBtn = document.getElementById('quantumBtn');
+    if (qBtn) qBtn.style.display = 'block';
+  }
 
   showDash();
 
@@ -2509,6 +2526,27 @@ document.addEventListener('DOMContentLoaded', async function(){
       ? 'HIGH CONFIDENCE SIGNAL' : mlConf >= 60
       ? 'MODERATE CONFIDENCE' : 'LOW CONFIDENCE — CAUTION';
     document.getElementById('qMLStatus').style.color = mlConf >= 80 ? '#00e87a' : mlConf >= 60 ? '#c084fc' : '#ffb800';
+  }
+
+  function openQuantum() {
+    const sym   = window._orionCurrentSym || '';
+    const tf    = window._orionCurrentTf  || 'H1';
+    const sigs  = window._orionSignals || {};
+    const sig   = sigs[sym]?.[tf] || Object.values(sigs[sym] || {})[0] || {};
+    const params = new URLSearchParams({
+      symbol:  sym,
+      tf:      tf,
+      score:   sig.score || 0,
+      dir:     sig.dir || sig.direction || 'buy',
+      setup:   sig.setup || '—',
+      entry:   sig.entry || 0,
+      tp1:     sig.tp || sig.tp1 || 0,
+      tp2:     sig.tp2 || 0,
+      sl:      sig.sl || 0,
+      session: sig.session || '—',
+      conf:    (sig.conf || sig.indicators || []).join(','),
+    });
+    window.open('/quantum.html?' + params.toString(), '_blank');
   }
 
   document.getElementById('logoutBtn').onclick = async () => {
