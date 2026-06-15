@@ -170,6 +170,13 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9997;
   color:rgba(168,85,247,0.25);letter-spacing:1px;line-height:1.8;
   border-top:1px solid var(--line);}
 
+.tf-q-btn{height:26px;padding:0 10px;background:transparent;
+  border:1px solid rgba(168,85,247,0.2);color:rgba(168,85,247,0.5);
+  font-family:var(--mono);font-size:9px;letter-spacing:1px;
+  border-radius:4px;cursor:pointer;transition:all .15s;}
+.tf-q-btn:hover{border-color:var(--purple);color:var(--purple2);}
+.tf-q-btn.active{background:rgba(168,85,247,0.15);border-color:var(--purple);color:var(--purple2);}
+
 /* LOADING */
 #loadOverlay{position:fixed;inset:0;background:var(--bg);z-index:9999;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
@@ -207,9 +214,16 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9997;
       <div class="tb-tf" id="tbTf">—</div>
     </div>
   </div>
+  <!-- TF Selector -->
+  <div style="display:flex;align-items:center;gap:5px" id="tfSelector">
+    <button class="tf-q-btn" data-tf="M2" onclick="switchTF('M2',this)">M2</button>
+    <button class="tf-q-btn" data-tf="M5" onclick="switchTF('M5',this)">M5</button>
+    <button class="tf-q-btn" data-tf="M15" onclick="switchTF('M15',this)">M15</button>
+    <button class="tf-q-btn active" data-tf="H1" onclick="switchTF('H1',this)">H1</button>
+  </div>
   <div class="tb-right">
     <div class="live-pill"><div class="live-dot"></div><span id="tbTime">—</span></div>
-    <button class="back-btn" onclick="window.history.back()">← DASHBOARD</button>
+    <button class="back-btn" onclick="window.location.href='/dashboard.html'">← DASHBOARD</button>
   </div>
 </div>
 
@@ -685,7 +699,26 @@ function init() {
   }, 1200);
 }
 
-document.addEventListener('DOMContentLoaded', init);
+// ── TF SWITCH ─────────────────────────────────────────────────────
+window.switchTF = function(tf, btn) {
+  document.querySelectorAll('.tf-q-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById('tbTf').textContent = tf;
+  document.getElementById('coneTitle').textContent = `// PRICE PROBABILITY CONE — ${tf}`;
+  const newParams = new URLSearchParams(window.location.search);
+  newParams.set('tf', tf);
+  history.replaceState(null, '', '?' + newParams.toString());
+  drawCone(ENTRY, TP1, TP2, SL, DIR !== 'sell', tf);
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  init();
+  // Mark active TF button based on URL param
+  const activeTF = TF || 'H1';
+  document.querySelectorAll('.tf-q-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tf === activeTF);
+  });
+});
 </script>
 </body>
 </html>
