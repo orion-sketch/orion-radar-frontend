@@ -1042,28 +1042,100 @@ const INDICATORS = [
 ];
 
 const ASSETS_ALL = [
-  {sym:'FX:EURUSD',   lbl:'EURUSD',  cat:'Forex'},
-  {sym:'FX:GBPUSD',   lbl:'GBPUSD',  cat:'Forex'},
-  {sym:'OANDA:XAUUSD',lbl:'XAUUSD',  cat:'Metal'},
-  {sym:'FX:USDJPY',   lbl:'USDJPY',  cat:'Forex'},
-  {sym:'BITSTAMP:BTCUSD',lbl:'BTCUSD',cat:'Crypto'},
-  {sym:'FX:AUDUSD',   lbl:'AUDUSD',  cat:'Forex'},
-  {sym:'FX:USDCAD',   lbl:'USDCAD',  cat:'Forex'},
-  {sym:'FX:NZDUSD',   lbl:'NZDUSD',  cat:'Forex'},
-  {sym:'FX:EURJPY',   lbl:'EURJPY',  cat:'Forex'},
-  {sym:'FX:GBPJPY',   lbl:'GBPJPY',  cat:'Forex'},
-  {sym:'FX:EURGBP',   lbl:'EURGBP',  cat:'Forex'},
-  {sym:'FX:USDCHF',   lbl:'USDCHF',  cat:'Forex'},
-  {sym:'OANDA:XAGUSD',lbl:'XAGUSD',  cat:'Metal'},
-  {sym:'TVC:USOIL',   lbl:'WTI Oil', cat:'Commodity'},
-  {sym:'BITSTAMP:ETHUSD',lbl:'ETHUSD',cat:'Crypto'},
-  {sym:'COINBASE:SOLUSD',lbl:'SOLUSD',cat:'Crypto'},
-  {sym:'SP:SPX',      lbl:'S&P 500', cat:'Index'},
-  {sym:'FOREXCOM:NSXUSD',lbl:'NAS100',cat:'Index'},
-  {sym:'TVC:DXY',     lbl:'DXY',     cat:'Index'},
-  {sym:'NASDAQ:AAPL', lbl:'AAPL',    cat:'Stocks'},
-  {sym:'NASDAQ:TSLA', lbl:'TSLA',    cat:'Stocks'},
-  {sym:'NASDAQ:NVDA', lbl:'NVDA',    cat:'Stocks'},
+  // ── MAJORS ──
+  {sym:'FX:EURUSD',    lbl:'EURUSD',   cat:'Forex Major'},
+  {sym:'FX:GBPUSD',    lbl:'GBPUSD',   cat:'Forex Major'},
+  {sym:'FX:USDJPY',    lbl:'USDJPY',   cat:'Forex Major'},
+  {sym:'FX:USDCHF',    lbl:'USDCHF',   cat:'Forex Major'},
+  {sym:'FX:USDCAD',    lbl:'USDCAD',   cat:'Forex Major'},
+  {sym:'FX:AUDUSD',    lbl:'AUDUSD',   cat:'Forex Major'},
+  {sym:'FX:NZDUSD',    lbl:'NZDUSD',   cat:'Forex Major'},
+  // ── CROSSES EUR ──
+  {sym:'FX:EURGBP',    lbl:'EURGBP',   cat:'Forex Cross'},
+  {sym:'FX:EURJPY',    lbl:'EURJPY',   cat:'Forex Cross'},
+  {sym:'FX:EURCHF',    lbl:'EURCHF',   cat:'Forex Cross'},
+  {sym:'FX:EURAUD',    lbl:'EURAUD',   cat:'Forex Cross'},
+  {sym:'FX:EURCAD',    lbl:'EURCAD',   cat:'Forex Cross'},
+  {sym:'FX:EURNZD',    lbl:'EURNZD',   cat:'Forex Cross'},
+  {sym:'FX:EURNOK',    lbl:'EURNOK',   cat:'Forex Cross'},
+  {sym:'FX:EURSEK',    lbl:'EURSEK',   cat:'Forex Cross'},
+  {sym:'FX:EURPLN',    lbl:'EURPLN',   cat:'Forex Cross'},
+  {sym:'FX:EURSGD',    lbl:'EURSGD',   cat:'Forex Cross'},
+  {sym:'FX:EURZAR',    lbl:'EURZAR',   cat:'Forex Cross'},
+  {sym:'FX:EURCZK',    lbl:'EURCZK',   cat:'Forex Cross'},
+  {sym:'FX:EURHUF',    lbl:'EURHUF',   cat:'Forex Cross'},
+  // ── CROSSES GBP ──
+  {sym:'FX:GBPJPY',    lbl:'GBPJPY',   cat:'Forex Cross'},
+  {sym:'FX:GBPCHF',    lbl:'GBPCHF',   cat:'Forex Cross'},
+  {sym:'FX:GBPAUD',    lbl:'GBPAUD',   cat:'Forex Cross'},
+  {sym:'FX:GBPCAD',    lbl:'GBPCAD',   cat:'Forex Cross'},
+  {sym:'FX:GBPNZD',    lbl:'GBPNZD',   cat:'Forex Cross'},
+  {sym:'FX:GBPSEK',    lbl:'GBPSEK',   cat:'Forex Cross'},
+  {sym:'FX:GBPSGD',    lbl:'GBPSGD',   cat:'Forex Cross'},
+  // ── CROSSES AUD ──
+  {sym:'FX:AUDNZD',    lbl:'AUDNZD',   cat:'Forex Cross'},
+  {sym:'FX:AUDCAD',    lbl:'AUDCAD',   cat:'Forex Cross'},
+  {sym:'FX:AUDCHF',    lbl:'AUDCHF',   cat:'Forex Cross'},
+  {sym:'FX:AUDJPY',    lbl:'AUDJPY',   cat:'Forex Cross'},
+  {sym:'FX:AUDSGD',    lbl:'AUDSGD',   cat:'Forex Cross'},
+  // ── CROSSES NZD ──
+  {sym:'FX:NZDCAD',    lbl:'NZDCAD',   cat:'Forex Cross'},
+  {sym:'FX:NZDCHF',    lbl:'NZDCHF',   cat:'Forex Cross'},
+  {sym:'FX:NZDJPY',    lbl:'NZDJPY',   cat:'Forex Cross'},
+  {sym:'FX:NZDSGD',    lbl:'NZDSGD',   cat:'Forex Cross'},
+  // ── CROSSES CAD ──
+  {sym:'FX:CADCHF',    lbl:'CADCHF',   cat:'Forex Cross'},
+  {sym:'FX:CADJPY',    lbl:'CADJPY',   cat:'Forex Cross'},
+  // ── CROSSES CHF ──
+  {sym:'FX:CHFJPY',    lbl:'CHFJPY',   cat:'Forex Cross'},
+  // ── USD EXOTICS ──
+  {sym:'FX:USDSGD',    lbl:'USDSGD',   cat:'Forex Exotic'},
+  {sym:'FX:USDHKD',    lbl:'USDHKD',   cat:'Forex Exotic'},
+  {sym:'FX:USDCNH',    lbl:'USDCNH',   cat:'Forex Exotic'},
+  {sym:'FX:USDSEK',    lbl:'USDSEK',   cat:'Forex Exotic'},
+  {sym:'FX:USDNOK',    lbl:'USDNOK',   cat:'Forex Exotic'},
+  {sym:'FX:USDPLN',    lbl:'USDPLN',   cat:'Forex Exotic'},
+  {sym:'FX:USDDKK',    lbl:'USDDKK',   cat:'Forex Exotic'},
+  {sym:'FX:USDMXN',    lbl:'USDMXN',   cat:'Forex Exotic'},
+  {sym:'FX:USDZAR',    lbl:'USDZAR',   cat:'Forex Exotic'},
+  {sym:'FX:USDCZK',    lbl:'USDCZK',   cat:'Forex Exotic'},
+  {sym:'FX:USDHUF',    lbl:'USDHUF',   cat:'Forex Exotic'},
+  {sym:'FX:USDBRL',    lbl:'USDBRL',   cat:'Forex Exotic'},
+  {sym:'FX:USDKRW',    lbl:'USDKRW',   cat:'Forex Exotic'},
+  // ── METALS ──
+  {sym:'OANDA:XAUUSD', lbl:'XAUUSD',   cat:'Metal'},
+  {sym:'OANDA:XAUEUR', lbl:'XAUEUR',   cat:'Metal'},
+  {sym:'OANDA:XAGUSD', lbl:'XAGUSD',   cat:'Metal'},
+  {sym:'OANDA:XAGEUR', lbl:'XAGEUR',   cat:'Metal'},
+  // ── INDICES ──
+  {sym:'FOREXCOM:NSXUSD',lbl:'US100',  cat:'Index'},
+  {sym:'DJ:DJI',       lbl:'US30',     cat:'Index'},
+  {sym:'FOREXCOM:DEU40',lbl:'GER40',   cat:'Index'},
+  {sym:'SPREADEX:UK100',lbl:'UK100',   cat:'Index'},
+  {sym:'TVC:NI225',    lbl:'JP225',    cat:'Index'},
+  {sym:'ASX:XJO',      lbl:'AUS200',   cat:'Index'},
+  {sym:'EURONEXT:STOXX50E',lbl:'EURO50',cat:'Index'},
+  {sym:'EURONEXT:PX1', lbl:'FRA40',    cat:'Index'},
+  {sym:'HSI:HSI',      lbl:'HK50',     cat:'Index'},
+  {sym:'SSE:000016',   lbl:'CHINA50',  cat:'Index'},
+  {sym:'TVC:DXY',      lbl:'USDX',     cat:'Index'},
+  {sym:'TVC:VIX',      lbl:'VIX',      cat:'Index'},
+  {sym:'BMFBOVESPA:IBOV',lbl:'IBOV',   cat:'Index'},
+  // ── COMMODITIES ──
+  {sym:'TVC:USOIL',    lbl:'XTIUSD',   cat:'Commodity'},
+  {sym:'TVC:UKOIL',    lbl:'XBRUSD',   cat:'Commodity'},
+  {sym:'TVC:NGAS',     lbl:'XNGUSD',   cat:'Commodity'},
+  // ── CRYPTO ──
+  {sym:'BITSTAMP:BTCUSD',lbl:'BTCUSD', cat:'Crypto'},
+  {sym:'BITSTAMP:ETHUSD',lbl:'ETHUSD', cat:'Crypto'},
+  // ── STOCKS (universais) ──
+  {sym:'NASDAQ:AAPL',  lbl:'AAPL',     cat:'Stocks'},
+  {sym:'NASDAQ:TSLA',  lbl:'TSLA',     cat:'Stocks'},
+  {sym:'NASDAQ:NVDA',  lbl:'NVDA',     cat:'Stocks'},
+  {sym:'NASDAQ:MSFT',  lbl:'MSFT',     cat:'Stocks'},
+  {sym:'NASDAQ:AMZN',  lbl:'AMZN',     cat:'Stocks'},
+  {sym:'NASDAQ:GOOGL', lbl:'GOOGL',    cat:'Stocks'},
+  {sym:'NASDAQ:META',  lbl:'META',     cat:'Stocks'},
 ];
 
 // ── Helpers ──────────────────────────────────────────────────────
@@ -1462,14 +1534,35 @@ function renderFeed(signals){
     el.innerHTML = `<div class="feed-empty"><div class="radar" style="width:34px;height:34px"><div class="sweep"></div></div><span>${msg}</span></div>`;
     return;
   }
+
   // Apply TF filter
   let tfFilt = currentTfFilter || 'ALL';
   let toShow = filtered;
   if (tfFilt !== 'ALL') toShow = filtered.filter(s => (s.tf||'M5') === tfFilt);
 
-  el.innerHTML = toShow.slice(0, 12).map((s, i) => {
+  // ── AGRUPAR por symbol + side ──
+  const groups = {};
+  toShow.forEach(s => {
+    const key = (s.symbol||'') + '|' + String(s.side||'').toUpperCase();
+    if (!groups[key]) {
+      groups[key] = { best: s, tfs: [], scores: [] };
+    }
+    groups[key].tfs.push(s.tf || 'M5');
+    groups[key].scores.push(parseInt(s.score)||0);
+    // mantém o sinal com maior score como representante
+    if ((parseInt(s.score)||0) > (parseInt(groups[key].best.score)||0)) {
+      groups[key].best = s;
+    }
+  });
+
+  const grouped = Object.values(groups);
+
+  window._filteredSignals = grouped.map(g => g.best);
+
+  el.innerHTML = grouped.slice(0, 12).map((g, i) => {
+    const s    = g.best;
     const sell = String(s.side||'').toUpperCase() === 'SELL';
-    const sc = parseInt(s.score)||0;
+    const sc   = Math.max(...g.scores); // score mais alto do grupo
     let scoreColor, scoreBg, scoreBorder;
     if (sc >= 90) { scoreColor='#c084fc'; scoreBg='rgba(168,85,247,0.10)'; scoreBorder='rgba(168,85,247,0.28)'; }
     else if (sc >= 80) { scoreColor='var(--green)'; scoreBg='rgba(0,232,122,0.09)'; scoreBorder='rgba(0,232,122,0.28)'; }
@@ -1477,23 +1570,30 @@ function renderFeed(signals){
     else if (sc >= 60) { scoreColor='var(--amber)'; scoreBg='rgba(255,184,0,0.08)'; scoreBorder='rgba(255,184,0,0.25)'; }
     else { scoreColor='#ff8c5a'; scoreBg='rgba(255,100,50,0.08)'; scoreBorder='rgba(255,100,50,0.25)'; }
     const rank = sc>=90?'ELITE':sc>=80?'STRONG':sc>=70?'GOOD':sc>=60?'WATCH':'RISKY';
-    // TF badge
-    const tf = s.tf || 'M5';
+
+    // TF badges — todos os TFs do grupo
     const tfColors = {H1:'#a855f7',M30:'#00c8a0',M15:'#ffb800',M5:'#00e87a',M2:'#22d3ee'};
-    const tfColor = tfColors[tf] || '#00e87a';
-    // Aligned TFs chips
-    const alignedHtml = Array.isArray(s.aligned_tfs) && s.aligned_tfs.length
-      ? s.aligned_tfs.map(t => `<span class="aligned-chip">${t}</span>`).join('')
+    const tfBadges = [...new Set(g.tfs)].sort().map(tf =>
+      `<span class="tf-badge ${tf}" style="color:${tfColors[tf]||'#00e87a'}">${tf}</span>`
+    ).join('');
+
+    // Confluência multi-TF — destaque se 2+ TFs
+    const multiTF = g.tfs.length >= 2;
+    const multiLabel = multiTF
+      ? `<span style="font-family:var(--mono);font-size:7px;color:var(--green);
+          background:rgba(0,232,122,0.08);border:1px solid rgba(0,232,122,0.2);
+          border-radius:3px;padding:1px 5px;letter-spacing:1px">⚡ ${g.tfs.length}× MTF</span>`
       : '';
-    const realIdx = filtered.indexOf(s);
-    return `<div class="fi ${i===0?'on':''}" data-sym="${fv(s.symbol)}" data-tf="${s.tf||s.timeframe||'M5'}" onclick="selectSignal(${realIdx});orionLoadChartWithSig('${(s.symbol||'').toUpperCase()}','${(s.tf||s.timeframe||'M5').toUpperCase()}',window._filteredSignals[${realIdx}])">
+
+    return `<div class="fi ${i===0?'on':''}" data-sym="${fv(s.symbol)}" data-tf="${s.tf||'M5'}"
+      onclick="selectSignal(${i});orionLoadChartWithSig('${(s.symbol||'').toUpperCase()}','${(s.tf||s.timeframe||'M5').toUpperCase()}',window._filteredSignals[${i}])">
       <div class="fi-l">
-        <div class="fi-sym" style="display:flex;align-items:center;gap:5px">
+        <div class="fi-sym" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
           ${fv(s.symbol)}
-          <span class="tf-badge ${tf}">${tf}</span>
+          ${tfBadges}
+          ${multiLabel}
         </div>
         <div class="fi-setup">${fv(s.setup||'—')}</div>
-        ${alignedHtml ? `<div class="aligned-chips">${alignedHtml}</div>` : ''}
         ${s.timestamp ? `<div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:3px;letter-spacing:.5px;">🕐 ${orionFmtTime(s.timestamp)}</div>` : ''}
       </div>
       <div class="fi-r">
@@ -1506,7 +1606,6 @@ function renderFeed(signals){
       </div>
     </div>`;
   }).join('') || '<div style="padding:20px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--muted)">No signals for this timeframe</div>';
-  window._filteredSignals = filtered;
 }
 
 window.selectSignal = function(i){
