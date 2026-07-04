@@ -215,11 +215,11 @@
 const SUPABASE_URL='https://eyawmevqfeaeioistrqk.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5YXdtZXZxZmVhZWlvaXN0cnFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNjE3MDMsImV4cCI6MjA4OTYzNzcwM30.zFT0i5XKwYEbtF6oWKdBtSNvDI8mo48zy-ucsVTWOoQ';
 const BACKEND_URL='https://orion-radar-backend.onrender.com';
-const PADDLE_PRICES={
-  bronze:'pri_01ks66newf5g6n9kns4mqe8w41',
-  silver:'pri_01ks66pge7jn23y5frna5s0xfs',
-  gold:'pri_01ks66q9px6vdc26e5sv2ht44n',
-  platinum:'pri_01ks66k2r3te49h2qn0x3bvj7j'
+const HOTMART_CHECKOUT={
+  bronze:'https://pay.hotmart.com/R106606986G?off=bf47iea8',
+  silver:'https://pay.hotmart.com/R106606986G?off=ypbysapw',
+  gold:'https://pay.hotmart.com/R106606986G?off=mn7e9m4f',
+  platinum:'https://pay.hotmart.com/R106606986G?off=yiqduag5'
 };
 
 // Initialize Paddle
@@ -482,53 +482,16 @@ document.addEventListener('DOMContentLoaded',async function(){
 
   document.getElementById('logoutBtn').onclick=async()=>{await sb.auth.signOut();window.location.href='/'};
 
-  document.getElementById('checkoutBtn').onclick=async function(){
+  document.getElementById('checkoutBtn').onclick=function(){
     clearMsg();
     if(!selectedPlan){showMsg('Select a plan first.','err');return;}
-    this.textContent='Loading...';
+    const link = HOTMART_CHECKOUT[selectedPlan];
+    if(!link){showMsg('Checkout not available for this plan yet.','err');return;}
+    this.textContent='Redirecting...';
     this.disabled=true;
-    try{
-      // Use backend checkout session — passes userId correctly for webhook
-      const resp = await fetch(BACKEND_URL+'/create-checkout-session',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          plan: selectedPlan,
-          userId: currentSession.user.id,
-          email: currentSession.user.email
-        })
-      });
-      const data = await resp.json();
-      if(data.url){
-        window.location.href = data.url;
-        return;
-      }
-      // Fallback to Payment Link if backend checkout fails
-      const link = PADDLE_PRICES[selectedPlan];
-      if(link){
-        const url = new URL(link);
-        url.searchParams.set('prefilled_email', currentSession.user.email);
-        url.searchParams.set('client_reference_id', currentSession.user.id);
-        window.location.href = url.toString();
-        return;
-      }
-      showMsg(data.error||'Could not start checkout. Try again.','err');
-    }catch(e){
-      // Fallback to Payment Link
-      const link = PADDLE_PRICES[selectedPlan];
-      if(link){
-        const url = new URL(link);
-        url.searchParams.set('prefilled_email', currentSession.user.email);
-        url.searchParams.set('client_reference_id', currentSession.user.id);
-        window.location.href = url.toString();
-        return;
-      }
-      showMsg('Connection error. Try again.','err');
-    }finally{
-      this.textContent='Continue with this plan →';
-      this.disabled=false;
-    }
+    window.location.href = link;
   };
+
 
   document.getElementById('manageBtn').onclick=async function(){
     this.textContent='Loading...';
