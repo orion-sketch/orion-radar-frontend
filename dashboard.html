@@ -56,29 +56,44 @@
     #orionChartPanel.orion-chart-premium::before{
       content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
       background:
-        radial-gradient(ellipse 90% 38% at 50% 0%,rgba(0,232,122,.055),transparent 62%),
-        linear-gradient(180deg,rgba(0,232,122,.025),transparent 34%);
+        radial-gradient(ellipse 90% 38% at 50% 0%,rgba(0,232,122,.060),transparent 62%),
+        linear-gradient(180deg,rgba(0,232,122,.026),transparent 34%);
+      transition:background .25s ease;
+    }
+    #orionChartPanel[data-side="SELL"]::before{
+      background:
+        radial-gradient(ellipse 90% 38% at 50% 0%,rgba(255,53,88,.050),transparent 62%),
+        linear-gradient(180deg,rgba(255,53,88,.020),transparent 34%);
     }
     #orionChartPanel.orion-chart-premium > *{position:relative;z-index:1;}
     .oc-head-title{display:flex;align-items:center;gap:8px;}
     .oc-live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 9px var(--green);animation:blink 2s infinite;}
-    .oc-side-chip{font-family:var(--display);font-size:8px;font-weight:900;letter-spacing:1.4px;padding:3px 8px;border-radius:4px;border:1px solid rgba(0,232,122,.24);color:var(--green);background:rgba(0,232,122,.07);}
-    #orionChartPanel[data-side="SELL"] .oc-side-chip{color:var(--red);border-color:rgba(255,53,88,.24);background:rgba(255,53,88,.07);}
-    .oc-levels{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(0,232,122,.025),rgba(0,0,0,.02));}
-    .oc-level-card{padding:8px 12px;border-right:1px solid var(--line);min-width:0;position:relative;}
+    .oc-side-chip{font-family:var(--display);font-size:8px;font-weight:900;letter-spacing:1.4px;padding:4px 10px;border-radius:5px;border:1px solid rgba(0,232,122,.28);color:var(--green);background:rgba(0,232,122,.085);box-shadow:0 0 14px rgba(0,232,122,.08);}
+    #orionChartPanel[data-side="SELL"] .oc-side-chip{color:var(--red);border-color:rgba(255,53,88,.28);background:rgba(255,53,88,.085);box-shadow:0 0 14px rgba(255,53,88,.08);}
+    .oc-score-chip{font-family:var(--mono);font-size:8px;letter-spacing:1px;color:var(--muted2);border:1px solid var(--line2);background:rgba(0,0,0,.18);border-radius:4px;padding:3px 7px;white-space:nowrap;}
+    .oc-levels{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(0,232,122,.025),rgba(0,0,0,.02));}
+    .oc-level-card{padding:8px 10px;border-right:1px solid var(--line);min-width:0;position:relative;}
     .oc-level-card:last-child{border-right:none;}
-    .oc-level-card::after{content:'';position:absolute;left:12px;right:12px;bottom:0;height:1px;opacity:.28;}
+    .oc-level-card::after{content:'';position:absolute;left:10px;right:10px;bottom:0;height:2px;opacity:.42;border-radius:3px;}
     .oc-level-card.entry::after{background:var(--text);box-shadow:0 0 10px rgba(255,255,255,.24);}
     .oc-level-card.tp::after{background:var(--green);box-shadow:0 0 12px rgba(0,232,122,.28);}
     .oc-level-card.sl::after{background:var(--red);box-shadow:0 0 12px rgba(255,53,88,.28);}
     .oc-level-card.rr::after{background:var(--blue);box-shadow:0 0 12px rgba(34,211,238,.22);}
     .oc-lbl{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:1.6px;text-transform:uppercase;margin-bottom:3px;}
-    .oc-val{font-family:var(--mono);font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .oc-val{font-family:var(--mono);font-size:clamp(9px,.62vw,12px);color:var(--text);white-space:nowrap;overflow:visible;text-overflow:clip;letter-spacing:.2px;}
     .oc-level-card.tp .oc-val{color:var(--green);}
     .oc-level-card.sl .oc-val{color:var(--red);}
-    .oc-level-card.rr .oc-val{color:var(--blue);}
-    #orion-mini-chart{isolation:isolate;background:linear-gradient(180deg,rgba(0,232,122,.018),transparent 24%);}
-    #orion-mini-chart::after{content:'ORION';position:absolute;left:18px;bottom:18px;z-index:1;pointer-events:none;font-family:var(--display);font-size:10px;font-weight:900;letter-spacing:4px;color:rgba(0,232,122,.075);}
+    .oc-level-card.rr .oc-val{color:var(--blue);font-weight:700;}
+    .oc-confidence{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:7px 12px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,rgba(0,232,122,.035),rgba(0,0,0,.02));}
+    .oc-confidence-label{font-family:var(--mono);font-size:7px;letter-spacing:1.8px;color:var(--muted2);white-space:nowrap;}
+    .oc-confidence-track{height:4px;background:rgba(0,232,122,.07);border:1px solid rgba(0,232,122,.10);border-radius:99px;overflow:hidden;box-shadow:inset 0 0 10px rgba(0,0,0,.2);}
+    .oc-confidence-fill{height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,var(--green3),var(--green2));box-shadow:0 0 14px rgba(0,232,122,.45);transition:width .28s ease;}
+    #orionChartPanel[data-side="SELL"] .oc-confidence-fill{background:linear-gradient(90deg,#b91c35,var(--red));box-shadow:0 0 14px rgba(255,53,88,.40);}
+    .oc-confidence-value{font-family:var(--display);font-size:9px;font-weight:900;letter-spacing:1px;color:var(--green);white-space:nowrap;}
+    #orionChartPanel[data-side="SELL"] .oc-confidence-value{color:var(--red);}
+    #orion-mini-chart{isolation:isolate;background:linear-gradient(180deg,rgba(0,232,122,.014),transparent 20%);}
+    #orion-mini-chart::after{content:'ORION';position:absolute;left:20px;bottom:20px;z-index:1;pointer-events:none;font-family:var(--display);font-size:12px;font-weight:900;letter-spacing:5px;color:rgba(0,232,122,.065);}
+    #orionChartPanel[data-side="SELL"] #orion-mini-chart::after{color:rgba(255,53,88,.055);}
     .oc-legend{padding:7px 12px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;background:rgba(0,232,122,.012);}
     .oc-legend span{font-family:var(--mono);font-size:8px;color:var(--muted2);letter-spacing:.8px;}
     .oc-legend strong{color:var(--text);font-weight:400;}
@@ -86,7 +101,8 @@
     .oc-chip-entry{background:var(--text);box-shadow:0 0 8px rgba(255,255,255,.4);}
     .oc-chip-tp{background:var(--green);box-shadow:0 0 8px rgba(0,232,122,.45);}
     .oc-chip-sl{background:var(--red);box-shadow:0 0 8px rgba(255,53,88,.45);}
-    @media(max-width:900px){.oc-levels{grid-template-columns:repeat(2,1fr)}.oc-level-card.rr{grid-column:1/-1}}
+    @media(max-width:1100px){.oc-val{font-size:9px}.oc-level-card{padding-left:8px;padding-right:8px}}
+    @media(max-width:900px){.oc-levels{grid-template-columns:repeat(2,1fr)}.oc-level-card.rr{grid-column:1/-1}.oc-confidence{grid-template-columns:1fr}.oc-confidence-value{text-align:right}}
 
     html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden}
     body{
@@ -808,6 +824,7 @@
         <div class="ph-title oc-head-title">ORION CHART <span class="oc-live-dot"></span><span class="oc-side-chip" id="oc-side-chip">—</span></div>
         <div class="ph-right" style="display:flex;align-items:center;gap:8px;">
           <span id="orionChartLabel" style="font-family:var(--mono);font-size:9px;color:var(--muted2)">— / —</span>
+          <span class="oc-score-chip" id="oc-score-chip">SCORE —</span>
           <span id="orionChartTime" style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.5px;"></span>
           <div style="display:flex;gap:3px;">
             <button class="tf-btn" data-tf="M5"  onclick="orionSetTf('M5',this)">M5</button>
@@ -838,6 +855,11 @@
           <div class="oc-lbl">RR</div>
           <div class="oc-val" id="oc-rr">—</div>
         </div>
+      </div>
+      <div class="oc-confidence" aria-label="ORION confidence score">
+        <div class="oc-confidence-label">ORION CONFIDENCE</div>
+        <div class="oc-confidence-track"><div class="oc-confidence-fill" id="oc-confidence-fill"></div></div>
+        <div class="oc-confidence-value" id="oc-confidence-value">AWAITING</div>
       </div>
       <div style="flex:1;position:relative;min-height:300px;" id="orion-mini-chart">
         <div id="orion-mini-chart-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);gap:8px;z-index:5;">
@@ -3076,6 +3098,16 @@ async function orionLoadChart(sym, tf, sig) {
     if (sideChip) sideChip.textContent = side;
     const panel = document.getElementById('orionChartPanel');
     if (panel) panel.setAttribute('data-side', side === 'SELL' ? 'SELL' : 'BUY');
+    const scoreNum = Number(sigData.score || sigData.confidence || 0);
+    const scoreChip = document.getElementById('oc-score-chip');
+    if (scoreChip) scoreChip.textContent = scoreNum ? ('SCORE ' + Math.round(scoreNum)) : 'SCORE —';
+    const confFill = document.getElementById('oc-confidence-fill');
+    const confValue = document.getElementById('oc-confidence-value');
+    if (confFill) confFill.style.width = Math.max(0, Math.min(100, scoreNum || 0)) + '%';
+    if (confValue) {
+      const grade = scoreNum >= 90 ? 'ELITE' : scoreNum >= 80 ? 'HIGH' : scoreNum >= 70 ? 'GOOD' : scoreNum >= 60 ? 'WATCH' : 'LOW';
+      confValue.textContent = scoreNum ? (grade + ' · ' + Math.round(scoreNum) + '%') : 'AWAITING';
+    }
     const timeEl = document.getElementById('orionChartTime');
     if (timeEl && sigData.timestamp) timeEl.textContent = '🕐 ' + orionFmtTime(sigData.timestamp);
   }
