@@ -507,6 +507,205 @@
 
     @media(max-width:1100px){.row1,.row3{grid-template-columns:1fr}}
     @media(max-width:640px){.sig-grid{grid-template-columns:repeat(2,1fr)}.topbar{flex-wrap:wrap}}
+  
+
+    /* ============================================================
+       ORION RADAR Dashboard v4.2 — Visual Polish Only
+       Scope: CSS overrides only. No JavaScript, API, auth, plan,
+       Telegram, Supabase, chart, performance, or server logic changed.
+       ============================================================ */
+    :root{
+      --orion-radius-lg:14px;
+      --orion-radius-xl:18px;
+      --orion-panel-hi:rgba(5,18,38,.985);
+      --orion-hairline:rgba(0,232,122,.16);
+      --orion-hairline-soft:rgba(0,232,122,.075);
+      --orion-card-shadow:0 18px 60px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.025);
+      --orion-card-shadow-hover:0 22px 80px rgba(0,0,0,.42), 0 0 42px rgba(0,232,122,.035), inset 0 1px 0 rgba(255,255,255,.035);
+    }
+
+    body{
+      background-image:
+        radial-gradient(ellipse 70% 35% at 50% -10%,rgba(0,232,122,0.065) 0%,transparent 65%),
+        radial-gradient(ellipse 28% 24% at 84% 8%,rgba(34,211,238,0.035) 0%,transparent 60%),
+        repeating-linear-gradient(0deg,transparent,transparent 47px,rgba(0,210,110,0.018) 48px),
+        repeating-linear-gradient(90deg,transparent,transparent 47px,rgba(0,210,110,0.018) 48px);
+    }
+
+    .shell{max-width:1580px;padding:16px 20px 28px;}
+
+    /* Top command area */
+    .sess-bar{
+      height:40px;border-radius:12px;margin-bottom:10px;
+      border-color:rgba(0,232,122,.18);
+      box-shadow:0 12px 40px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.025);
+    }
+    .topbar{
+      border-radius:14px;margin-bottom:16px;padding:12px 18px;
+      background:linear-gradient(180deg,rgba(4,16,34,.985),rgba(2,10,20,.965));
+      border-color:rgba(0,232,122,.18);
+      box-shadow:var(--orion-card-shadow);
+    }
+    .logo-main{font-size:15px;letter-spacing:5.5px;}
+    .logo-sub{opacity:.9;letter-spacing:3.4px;}
+    .user-email{color:var(--muted3);}
+    .plan-chip,.feed-pill,.theme-toggle-btn,.btn{
+      border-radius:7px;
+    }
+    .theme-toggle-btn.active,.btn-outline:hover{
+      box-shadow:0 0 18px rgba(0,232,122,.055);
+    }
+
+    /* Layout breathing */
+    .row1{gap:14px;margin-bottom:14px;grid-template-columns:minmax(360px,1fr) minmax(270px,300px) minmax(390px,430px);}
+    .row3{gap:14px;}
+
+    /* Institutional cards */
+    .panel{
+      border-radius:var(--orion-radius-lg);
+      background:linear-gradient(180deg,rgba(4,16,34,.985),rgba(2,10,20,.965));
+      border-color:var(--orion-hairline-soft);
+      box-shadow:var(--orion-card-shadow);
+      transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+    .panel:hover{
+      border-color:rgba(0,232,122,.13);
+      box-shadow:var(--orion-card-shadow-hover);
+    }
+    .ph{
+      min-height:43px;padding:11px 15px;
+      background:linear-gradient(90deg,rgba(0,232,122,.026),rgba(34,211,238,.012),transparent);
+      border-bottom-color:rgba(0,232,122,.085);
+    }
+    .ph-title{font-size:9.5px;letter-spacing:2.8px;color:var(--muted3);}
+    .ph-title::before{opacity:.9;text-shadow:0 0 12px var(--glow2);}
+    .ph-right{color:var(--muted2);}
+    .pb{padding:15px;}
+
+    /* Live Market Preview — make this feel like the command card */
+    #livePreviewWrap{
+      position:relative;
+      background:
+        radial-gradient(ellipse 85% 70% at 50% 0%,rgba(0,232,122,.055),transparent 68%),
+        linear-gradient(180deg,rgba(0,0,0,.10),rgba(0,0,0,.0));
+    }
+    #livePreviewWrap::before{
+      content:'MARKET INTELLIGENCE';
+      position:absolute;top:10px;left:14px;
+      font-family:var(--mono);font-size:7px;letter-spacing:2px;
+      color:rgba(155,191,168,.28);pointer-events:none;
+    }
+    .sigbox.on{display:block;animation:orionSoftIn .28s ease-out;}
+    @keyframes orionSoftIn{from{opacity:.55;transform:translateY(4px)}to{opacity:1;transform:none}}
+    .sig-hd{padding-top:12px;padding-bottom:13px;border-bottom-color:rgba(0,232,122,.10);}
+    .sig-sym{font-size:31px;letter-spacing:4px;text-shadow:0 0 28px rgba(0,232,122,.08);}
+    .sig-ts{font-size:9.5px;color:var(--muted2);}
+    .sig-side{border-radius:999px;padding:5px 13px;}
+    .sig-side.buy{box-shadow:0 0 20px rgba(0,232,122,.045);}
+    .sig-side.sell{box-shadow:0 0 20px rgba(255,53,88,.045);}
+    .sig-tf,.sig-setup{font-size:9.5px;}
+    .sig-grid{gap:8px;margin-bottom:12px;}
+    .sc{
+      border-radius:10px;padding:9px 10px;
+      background:linear-gradient(180deg,rgba(255,255,255,.026),rgba(0,0,0,.20));
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+    }
+    .sc-l{font-size:8.5px;letter-spacing:1.4px;}
+    .sc-v{font-size:13px;}
+    .score-track{height:5px;background:rgba(0,232,122,.075);}
+    .score-fill{background:linear-gradient(90deg,var(--green3),var(--green2),#9affc9);}
+    .score-val{font-size:15px;}
+
+    /* Empty/scanning states */
+    .live-empty,.feed-empty{
+      min-height:218px;border-radius:12px;
+      background:radial-gradient(ellipse 70% 55% at 50% 35%,rgba(0,232,122,.035),transparent 72%);
+    }
+    .live-empty p,.feed-empty span{
+      color:var(--muted3);letter-spacing:2.6px;
+    }
+    .radar{box-shadow:0 0 32px rgba(0,232,122,.05), inset 0 0 20px rgba(0,232,122,.035);}
+
+    /* Signals Feed */
+    #signalFeedWrap .pb{padding:12px;}
+    #signalsFeed{scrollbar-width:thin;scrollbar-color:rgba(0,232,122,.25) transparent;}
+    .tf-filter-row{padding:10px 12px 2px!important;}
+    .tf-btn{
+      border-radius:8px!important;
+      transition:background .16s ease,border-color .16s ease,color .16s ease,transform .12s ease;
+    }
+    .tf-btn:hover{transform:translateY(-1px);}
+
+    /* Common signal-card styles without relying on exact structure */
+    #signalsFeed > div:not(.feed-empty){
+      border-radius:11px!important;
+      border-color:rgba(0,232,122,.10)!important;
+      background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(0,0,0,.16))!important;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+      transition:transform .14s ease,border-color .14s ease,box-shadow .14s ease;
+    }
+    #signalsFeed > div:not(.feed-empty):hover{
+      transform:translateY(-2px);
+      border-color:rgba(0,232,122,.22)!important;
+      box-shadow:0 12px 36px rgba(0,0,0,.22),0 0 24px rgba(0,232,122,.045);
+    }
+
+    /* ORION Chart */
+    #orionChartPanel{
+      border-color:rgba(34,211,238,.10)!important;
+      background:linear-gradient(180deg,rgba(4,16,34,.99),rgba(1,8,18,.98))!important;
+    }
+    #orion-mini-chart{
+      background:radial-gradient(ellipse 70% 60% at 50% 0%,rgba(34,211,238,.035),transparent 70%);
+    }
+    #orion-mini-chart-loading{
+      color:var(--muted3)!important;
+      background:linear-gradient(180deg,rgba(0,0,0,.16),rgba(0,0,0,.02));
+    }
+    #oc-entry,#oc-tp1,#oc-tp2,#oc-sl{font-size:13px!important;}
+
+    /* Ranking: less game, more institutional */
+    .score-ranking-panel{padding:15px!important;}
+    .score-rank{
+      border-radius:12px!important;
+      background:linear-gradient(180deg,rgba(255,255,255,.022),rgba(0,0,0,.14))!important;
+      border-color:rgba(0,232,122,.08)!important;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+    }
+    .score-rank-label{letter-spacing:1.6px!important;}
+
+    /* Tables/cards deeper in dashboard */
+    .news-item,.mover-item,.perf-card,.quantum-card,.q-card,.stat-card,.asset-card{
+      border-radius:12px!important;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.02);
+    }
+
+    /* Buttons and inputs */
+    input,select,textarea{
+      border-radius:9px!important;
+    }
+    button{transition:transform .12s ease,filter .12s ease,border-color .14s ease,background .14s ease;}
+    button:hover{filter:brightness(1.05);}
+    button:active{transform:translateY(1px);}
+
+    /* Slightly more polished mobile/tablet behavior */
+    @media(max-width:1180px){
+      .row1{grid-template-columns:1fr;}
+      #orionChartPanel{min-height:500px!important;}
+      .topbar{align-items:flex-start;}
+      .tb-right{justify-content:flex-start;flex-wrap:wrap;}
+    }
+    @media(max-width:760px){
+      .shell{padding:12px 10px 24px;}
+      .topbar{padding:12px;}
+      .tb-left{width:100%;align-items:flex-start;gap:12px;}
+      .sep{display:none;}
+      .logo-main{font-size:13px;letter-spacing:3.5px;}
+      .sig-grid{grid-template-columns:repeat(2,1fr);}
+      .sig-sym{font-size:25px;}
+      .ph{padding:10px 12px;}
+    }
+
   </style>
 </head>
 <body>
