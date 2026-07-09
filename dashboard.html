@@ -304,6 +304,14 @@
       background:rgba(0,0,0,0.20);border:1px solid transparent;cursor:pointer;transition:all .13s;}
     .fi:hover{border-color:var(--line2);background:rgba(0,232,122,0.025);}
     .fi.on{border-color:rgba(0,232,122,0.26);background:rgba(0,232,122,0.04);}
+/* ORION Chart Engine v2 — selected signal synchronization */
+body[data-orion-side="BUY"]{--orion-active:#00e87a;--orion-active-soft:rgba(0,232,122,.10);--orion-active-line:rgba(0,232,122,.28)}
+body[data-orion-side="SELL"]{--orion-active:#ff3558;--orion-active-soft:rgba(255,53,88,.10);--orion-active-line:rgba(255,53,88,.30)}
+.fi.on{border-color:var(--orion-active-line)!important;background:var(--orion-active-soft)!important;box-shadow:0 0 0 1px var(--orion-active-line),0 10px 30px rgba(0,0,0,.20)}
+.fi.on .fi-sym{color:var(--orion-active)!important;text-shadow:0 0 16px var(--orion-active-soft)}
+#orionChartPanel[data-side="SELL"]{--green:#ff3558;--green2:#ff6b82;--green3:#d91f42;}
+#orionChartPanel[data-side="BUY"]{--green:#00e87a;--green2:#00ff90;--green3:#00c462;}
+
     .fi-l{display:flex;flex-direction:column;gap:2px;}
     .fi-sym{font-family:var(--display);font-size:11px;font-weight:700;color:var(--text);}
     .fi-setup{font-family:var(--mono);font-size:9px;color:var(--muted2);}
@@ -1721,6 +1729,81 @@ function filterSignals(signals) {
   return signals.filter(s => watchlist.includes(s.symbol));
 }
 
+
+// ── ORION state: one selected signal drives every panel ───────────
+window._orionSelectedSignal = null;
+window._orionSelectedSignalKey = null;
+window._orionUserSelectedSignal = false;
+window._orionLastChartKey = null;
+
+function orionSignalSide(sig) {
+  return String(sig?.side || sig?.direction || 'BUY').toUpperCase() === 'SELL' ? 'SELL' : 'BUY';
+}
+
+function orionSignalTf(sig) {
+  return String(sig?.tf || sig?.timeframe || 'M5').toUpperCase();
+}
+
+function orionSignalKey(sig) {
+  if (!sig) return '';
+  return [
+    String(sig.symbol || '').toUpperCase(),
+    orionSignalTf(sig),
+    orionSignalSide(sig),
+    String(sig.entry ?? ''),
+    String(sig.sl ?? ''),
+    String(sig.tp1 || sig.tp || ''),
+    String(sig.tp2 || '')
+  ].join('|');
+}
+
+function orionApplySideTheme(sig) {
+  const side = orionSignalSide(sig);
+  document.body.setAttribute('data-orion-side', side);
+  const panel = document.getElementById('orionChartPanel');
+  if (panel) panel.setAttribute('data-side', side);
+  const sideChip = document.getElementById('oc-side-chip');
+  if (sideChip) sideChip.textContent = side;
+}
+
+function orionResolveSelectedSignal(filtered) {
+  if (!Array.isArray(filtered) || !filtered.length) return null;
+  if (window._orionSelectedSignalKey) {
+    const found = filtered.find(s => orionSignalKey(s) === window._orionSelectedSignalKey);
+    if (found) return found;
+  }
+  return filtered[0];
+}
+
+function orionSyncSelectedSignal(sig, opts = {}) {
+  if (!sig) {
+    window._orionSelectedSignal = null;
+    window._orionSelectedSignalKey = null;
+    renderSignal(null, opts.updatedAt || null);
+    return;
+  }
+
+  window._orionSelectedSignal = sig;
+  window._orionSelectedSignalKey = orionSignalKey(sig);
+  if (opts.user) window._orionUserSelectedSignal = true;
+
+  orionApplySideTheme(sig);
+  renderSignal(sig, opts.updatedAt || null);
+
+  const sym = String(sig.symbol || '').toUpperCase();
+  const tf = orionSignalTf(sig);
+  const chartKey = window._orionSelectedSignalKey + '|chart';
+
+  if (typeof orionLoadChartWithSig === 'function' && sym) {
+    if (opts.forceChart || window._orionLastChartKey !== chartKey || window._orionCurrentSym !== sym || window._orionCurrentTf !== tf) {
+      window._orionLastChartKey = chartKey;
+      orionLoadChartWithSig(sym, tf, sig);
+    } else if (typeof orionPositionVisualOverlays === 'function') {
+      orionPositionVisualOverlays(sig);
+    }
+  }
+}
+
 function renderSignal(sig, updatedAt){
   const box  = document.getElementById('signalBox');
   const emp  = document.getElementById('signalEmpty');
@@ -1728,7 +1811,7 @@ function renderSignal(sig, updatedAt){
   if (!sig) { box.classList.remove('on'); emp.style.display='flex'; return; }
   box.classList.add('on'); emp.style.display='none';
   document.getElementById('liveSym').textContent = fv(sig.symbol);
-  const side = String(sig.side||'').toUpperCase();
+  const side = orionSignalSide(sig);
   const sideEl = document.getElementById('liveSide');
   sideEl.textContent = side || '—';
   sideEl.className = 'sig-side ' + (side === 'SELL' ? 'sell' : 'buy');
@@ -1793,7 +1876,7 @@ function renderFeed(signals){
   // ── AGRUPAR por symbol + side ──
   const groups = {};
   toShow.forEach(s => {
-    const key = (s.symbol||'') + '|' + String(s.side||'').toUpperCase();
+    const key = (s.symbol||'') + '|' + orionSignalSide(s);
     if (!groups[key]) {
       groups[key] = { best: s, tfs: [], scores: [] };
     }
@@ -1811,7 +1894,7 @@ function renderFeed(signals){
 
   el.innerHTML = grouped.slice(0, 12).map((g, i) => {
     const s    = g.best;
-    const sell = String(s.side||'').toUpperCase() === 'SELL';
+    const sell = orionSignalSide(s) === 'SELL';
     const sc   = Math.max(...g.scores); // score mais alto do grupo
     let scoreColor, scoreBg, scoreBorder;
     if (sc >= 90) { scoreColor='#c084fc'; scoreBg='rgba(168,85,247,0.10)'; scoreBorder='rgba(168,85,247,0.28)'; }
@@ -1835,8 +1918,8 @@ function renderFeed(signals){
           border-radius:3px;padding:1px 5px;letter-spacing:1px">⚡ ${g.tfs.length}× MTF</span>`
       : '';
 
-    return `<div class="fi ${i===0?'on':''}" data-sym="${fv(s.symbol)}" data-tf="${s.tf||'M5'}"
-      onclick="selectSignal(${i});orionLoadChartWithSig('${(s.symbol||'').toUpperCase()}','${(s.tf||s.timeframe||'M5').toUpperCase()}',window._filteredSignals[${i}])">
+    return `<div class="fi ${orionSignalKey(s)===window._orionSelectedSignalKey?'on':''}" data-side="${sell?'SELL':'BUY'}" data-key="${orionSignalKey(s)}" data-sym="${fv(s.symbol)}" data-tf="${s.tf||s.timeframe||'M5'}"
+      onclick="selectSignal(${i})">
       <div class="fi-l">
         <div class="fi-sym" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
           ${fv(s.symbol)}
@@ -1847,7 +1930,7 @@ function renderFeed(signals){
         ${s.timestamp ? `<div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:3px;letter-spacing:.5px;">🕐 ${orionFmtTime(s.timestamp)}</div>` : ''}
       </div>
       <div class="fi-r">
-        <span class="fi-side ${sell?'sell':'buy'}">${fv(s.side)}</span>
+        <span class="fi-side ${sell?'sell':'buy'}">${orionSignalSide(s)}</span>
         <span style="font-family:var(--mono);font-size:8px;padding:2px 7px;border-radius:3px;
           color:${scoreColor};background:${scoreBg};border:1px solid ${scoreBorder};
           white-space:nowrap;letter-spacing:.5px">
@@ -1860,8 +1943,13 @@ function renderFeed(signals){
 
 window.selectSignal = function(i){
   const sigs = window._filteredSignals || [];
-  if (sigs[i]) renderSignal(sigs[i], null);
-  document.querySelectorAll('.fi').forEach((el,j) => el.classList.toggle('on', j===i));
+  const sig = sigs[i];
+  if (!sig) return;
+  orionSyncSelectedSignal(sig, { user:true, forceChart:true });
+  document.querySelectorAll('.fi').forEach((el,j) => {
+    const on = j === i || el.getAttribute('data-key') === window._orionSelectedSignalKey;
+    el.classList.toggle('on', on);
+  });
 };
 
 // ── Notifications ─────────────────────────────────────────────────
@@ -2011,17 +2099,23 @@ async function loadSignals(){
     const d = await r.json();
     allSignals = Array.isArray(d) ? d : (Array.isArray(d.signals) ? d.signals : []);
     const filtered = filterSignals(allSignals);
-    renderSignal(filtered[0]||null, d.updated_at||null);
+
+    // Keep a single selected signal across the whole dashboard.
+    // If the selected signal still exists after polling, preserve it.
+    // Otherwise fall back to the first available signal.
+    const selected = orionResolveSelectedSignal(filtered);
+    if (selected) {
+      window._orionSelectedSignal = selected;
+      window._orionSelectedSignalKey = orionSignalKey(selected);
+      orionApplySideTheme(selected);
+    }
+
     renderFeed(allSignals);
+    orionSyncSelectedSignal(selected || null, { updatedAt:d.updated_at||null, forceChart:!window._orionCurrentSym });
     checkNewSignal(allSignals);
     setFeed(filtered.length ? 'LIVE · '+filtered.length+' SIGNALS' : 'SCANNING...', filtered.length ? 'ok' : 'waiting');
     // Feed _orionSignals for chart
     if (typeof patchSignalsIntoOrion === 'function') patchSignalsIntoOrion(allSignals);
-    // Auto-load first signal into orion chart
-    if (filtered.length && !window._orionCurrentSym && typeof orionLoadChartWithSig === 'function') {
-      const first = filtered[0];
-      orionLoadChartWithSig((first.symbol||'').toUpperCase(), (first.tf||first.timeframe||'M5').toUpperCase(), first);
-    }
   }catch(err){ 
     console.error('[ORION] loadSignals error:', err.message || err);
     setFeed('CONNECTION ERROR','err'); 
@@ -2577,7 +2671,7 @@ async function loadMarket(){
       return;
     }
     el.innerHTML = signals.map(s => {
-      const sell = String(s.side||'').toUpperCase() === 'SELL';
+      const sell = orionSignalSide(s) === 'SELL';
       const sc = parseInt(s.score)||0;
       const scColor = sc>=90?'#c084fc':sc>=80?'var(--green)':sc>=70?'#00c8a0':sc>=60?'var(--amber)':'#ff8c5a';
       return `<div class="asset-row" onclick="selectSignalById('${s.id}')" style="cursor:pointer">
@@ -3134,6 +3228,8 @@ window._orionSeries  = null;
 window._orionCurrentSym = null;
 window._orionCurrentTf  = 'H1';
 window._orionSignals = {};   // populated by loadSignals patch
+window._orionChartOverlaySig = null;
+window._orionOverlayRaf = null;
 const _oc_pl = [];
 
 function orionChartColors() {
@@ -3179,10 +3275,17 @@ function orionInitChart() {
   window._orionSeries = window._orionChart.addCandlestickSeries({
     upColor:c.up, downColor:c.dn, borderUpColor:c.up, borderDownColor:c.dn, wickUpColor:c.up, wickDownColor:c.dn,
   });
+  if (window._orionChart.timeScale?.().subscribeVisibleLogicalRangeChange) {
+    window._orionChart.timeScale().subscribeVisibleLogicalRangeChange(orionScheduleOverlaySync);
+  }
+  if (window._orionChart.subscribeCrosshairMove) {
+    window._orionChart.subscribeCrosshairMove(orionScheduleOverlaySync);
+  }
   new ResizeObserver(e => {
     if (!window._orionChart) return;
     const {width,height} = e[0].contentRect;
     window._orionChart.applyOptions({width,height});
+    orionScheduleOverlaySync();
   }).observe(el);
 }
 
@@ -3253,8 +3356,19 @@ function orionHideVisualOverlays() {
   ids.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
 }
 
+
+function orionScheduleOverlaySync() {
+  if (window._orionOverlayRaf) cancelAnimationFrame(window._orionOverlayRaf);
+  window._orionOverlayRaf = requestAnimationFrame(() => {
+    window._orionOverlayRaf = null;
+    if (window._orionChartOverlaySig) orionPositionVisualOverlays(window._orionChartOverlaySig);
+  });
+}
+
 function orionPositionVisualOverlays(sigData) {
-  if (!window._orionSeries || !sigData) return;
+  if (!sigData) { window._orionChartOverlaySig = null; orionHideVisualOverlays(); return; }
+  window._orionChartOverlaySig = sigData;
+  if (!window._orionSeries) return;
   const ov = orionEnsureVisualOverlays();
   const entry = Number(sigData.entry);
   const tp1 = Number(sigData.tp1 || sigData.tp);
@@ -3268,7 +3382,7 @@ function orionPositionVisualOverlays(sigData) {
   const yTp1 = window._orionSeries.priceToCoordinate(tp1);
   const yTp2 = window._orionSeries.priceToCoordinate(target);
   const ySl = window._orionSeries.priceToCoordinate(sl);
-  if ([yEntry,yTp1,yTp2,ySl].some(v => typeof v !== 'number')) return;
+  if ([yEntry,yTp1,yTp2,ySl].some(v => typeof v !== 'number' || Number.isNaN(v))) { orionHideVisualOverlays(); return; }
   const setZone = (node, a, b) => {
     const top = Math.min(a,b);
     const h = Math.max(2, Math.abs(a-b));
@@ -3360,7 +3474,9 @@ async function orionLoadChart(sym, tf, sig) {
     if (timeEl && sigData.timestamp) timeEl.textContent = '🕐 ' + orionFmtTime(sigData.timestamp);
   }
 
-  // Reset imediato — evita escala/price-lines do ativo anterior travarem o novo
+  // Reset imediato — evita escala/price-lines/overlays do ativo anterior travarem o novo
+  window._orionChartOverlaySig = null;
+  orionHideVisualOverlays();
   orionClearPL();
   if (window._orionSeries) {
     window._orionSeries.applyOptions({ autoscaleInfoProvider: undefined });
@@ -3428,7 +3544,9 @@ async function orionLoadChart(sym, tf, sig) {
     });
   }
   window._orionChart.timeScale().fitContent();
-  setTimeout(() => orionPositionVisualOverlays(sigData), 120);
+  window._orionChartOverlaySig = sigData || null;
+  setTimeout(orionScheduleOverlaySync, 60);
+  setTimeout(orionScheduleOverlaySync, 180);
 }
 
 
@@ -3441,7 +3559,8 @@ function orionSetTf(tf, btn) {
     window._orionChart.applyOptions({ watermark: { text: 'ORION  •  ' + tf } });
     const wm = document.getElementById('orion-mini-chart'); if (wm) wm.setAttribute('data-watermark', 'ORION\A ' + tf);
   }
-  if (window._orionCurrentSym) orionLoadChart(window._orionCurrentSym, tf);
+  if (window._orionSelectedSignal) orionLoadChartWithSig(String(window._orionSelectedSignal.symbol||window._orionCurrentSym).toUpperCase(), tf, window._orionSelectedSignal);
+  else if (window._orionCurrentSym) orionLoadChart(window._orionCurrentSym, tf);
 }
 
 // ── SESSION CLOCK BAR ─────────────────────────────────────────────
