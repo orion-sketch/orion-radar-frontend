@@ -754,110 +754,78 @@ body[data-orion-side="SELL"]{--orion-active:#ff3558;--orion-active-soft:rgba(255
 .oc-tools{display:flex;gap:12px;align-items:center;color:rgba(223,242,234,.55);font-size:14px;}
 .oc-tools span{opacity:.72;}
 
+/* ═══════════════════════ ORION SIDEBAR LAYOUT (v6) ═══════════════════════ */
+.orion-app{ display:flex; min-height:100vh; }
+.orion-sidebar{
+  width:222px; flex-shrink:0; background:var(--panel,#0a0f12); border-right:1px solid var(--line,#1c2529);
+  display:flex; flex-direction:column; position:fixed; left:0; top:0; height:100vh; z-index:50; overflow-y:auto;
+}
+.orion-main{ margin-left:222px; flex:1; min-width:0; }
+.orion-brand{ display:flex; align-items:center; gap:8px; padding:18px 16px 14px; }
+.orion-brand b{ font-family:var(--display); font-size:13px; letter-spacing:1px; color:var(--text); }
+.orion-brand span{ color:var(--green); }
+.orion-nav{ padding:6px 8px; display:flex; flex-direction:column; gap:2px; }
+.orion-nav-item{
+  display:flex; align-items:center; gap:10px; padding:9px 11px; border-radius:6px; border:none; background:none;
+  color:var(--muted); font-family:var(--sans,inherit); font-size:12.5px; font-weight:600; width:100%; text-align:left; cursor:pointer;
+}
+.orion-nav-item svg{ width:15px;height:15px;flex-shrink:0; }
+.orion-nav-item:hover{ background:rgba(255,255,255,0.04); color:var(--text); }
+.orion-nav-item.active{ background:rgba(0,232,122,0.10); color:var(--green); }
+.orion-side-block{ margin:12px 10px 0; padding:12px 11px; background:rgba(255,255,255,0.02); border:1px solid var(--line); border-radius:8px; }
+.orion-side-title{ font-family:var(--mono); font-size:8.5px; letter-spacing:1.5px; color:var(--muted2); margin-bottom:9px; }
+.orion-conf-row{
+  display:flex; align-items:center; justify-content:space-between; padding:5px 2px; font-size:11px; color:var(--muted);
+  cursor:pointer; border-radius:4px;
+}
+.orion-conf-row:hover{ background:rgba(255,255,255,0.03); }
+.orion-conf-row.on{ color:var(--text); }
+.orion-conf-row.selected{ color:var(--green); }
+.orion-conf-check{ width:14px;height:14px;border-radius:4px;border:1px solid var(--line); display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+.orion-conf-row.on .orion-conf-check{ background:rgba(0,232,122,0.5); border-color:var(--green); }
+.orion-conf-row.selected .orion-conf-check{ background:var(--green); border-color:var(--green); box-shadow:0 0 0 2px rgba(0,232,122,0.25); }
+.orion-conf-check svg{ width:9px;height:9px;stroke:#04140d;display:none; }
+.orion-conf-row.on .orion-conf-check svg, .orion-conf-row.selected .orion-conf-check svg{ display:block; }
+.orion-conf-hint{ font-family:var(--mono); font-size:8px; color:var(--muted2); margin-top:8px; line-height:1.5; }
+.orion-tier{ font-size:20px; font-weight:800; color:var(--green); margin-bottom:10px; font-family:var(--display); }
+.orion-bars{ display:flex; align-items:flex-end; gap:3px; height:30px; margin-bottom:8px; }
+.orion-bars i{ flex:1; background:var(--line); border-radius:2px; display:block; }
+.orion-bars i.filled{ background:var(--green); }
+.orion-pct{ font-family:var(--mono); font-size:22px; font-weight:700; color:var(--text); }
+.orion-desc{ font-size:9.5px; color:var(--muted); margin-top:2px; letter-spacing:.3px; }
+.orion-profile{ margin-top:auto; padding:12px 14px; border-top:1px solid var(--line); position:relative; cursor:pointer; }
+.orion-profile-row{ display:flex; align-items:center; gap:9px; }
+.orion-avatar{ width:28px;height:28px;border-radius:7px;background:rgba(0,232,122,0.12);color:var(--green);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0; }
+.orion-profile-name{ font-size:11.5px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:130px; }
+.orion-profile-plan{ font-size:9.5px; color:var(--muted); }
+.orion-profile-menu{ position:absolute; bottom:52px; left:10px; right:10px; background:var(--panel2,#0d1317); border:1px solid var(--line); border-radius:8px; padding:5px; display:none; flex-direction:column; z-index:60; }
+.orion-profile-menu.open{ display:flex; }
+.orion-profile-menu button{ background:none;border:none;color:var(--muted);font-size:11px;text-align:left;padding:8px 9px;border-radius:5px;font-family:inherit;cursor:pointer; }
+.orion-profile-menu button:hover{ background:rgba(255,255,255,0.05); color:var(--text); }
 
+[data-orion-view]{ display:none; }
+[data-orion-view].orion-view-active{ display:block; }
 
-/* =========================================================
-   ORION RADAR v6.1 — Institutional Chart Workspace
-   Scope: dashboard UI + chart engine behavior only.
-   No backend/API/Auth/Supabase/Telegram changes.
-   ========================================================= */
-:root{
-  --orion-profit:#00e87a;
-  --orion-sell:#ff3558;
-  --orion-neutral:#ffb800;
-  --orion-chart-bg:#06111f;
-  --orion-grid:rgba(120,170,190,.055);
-  --orion-axis:rgba(190,220,220,.55);
-}
-.row1{
-  grid-template-columns:minmax(210px,250px) minmax(860px,1fr) minmax(260px,310px)!important;
-  gap:12px!important;
-}
-.row1>.panel:nth-child(1),.row1>.panel:nth-child(2),#orionChartPanel{min-height:760px!important;}
-#orionChartPanel.orion-chart-premium{
-  border-radius:18px!important;
-  border-color:rgba(0,232,122,.20)!important;
-  box-shadow:0 26px 110px rgba(0,0,0,.48), inset 0 1px 0 rgba(255,255,255,.035)!important;
-}
-#orionChartPanel[data-side="SELL"]{border-color:rgba(255,53,88,.24)!important;}
-#orionChartPanel>.ph{
-  min-height:70px!important;
-  padding:14px 18px!important;
-  grid-template-columns:auto minmax(0,1fr)!important;
-}
-#orionChartPanel .ph-title.oc-head-title{
-  min-width:220px;
-  font-size:10px!important;
-  letter-spacing:3px!important;
-}
-#orionChartPanel .ph-right{
-  display:grid!important;
-  grid-template-columns:minmax(100px,auto) auto auto auto!important;
-  justify-content:end!important;
-  align-items:center!important;
-  column-gap:10px!important;
-}
-#orionChartLabel{
-  justify-self:end!important;
-  max-width:150px!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-}
-#orionChartTime{min-width:72px!important;text-align:left!important;}
-#orionChartPanel .ph-right > div:last-child{display:flex!important;gap:5px!important;}
-#orionChartPanel .tf-btn{height:30px!important;min-width:42px!important;}
-.oc-levels{grid-template-columns:1.1fr 1.1fr 1.1fr 1.1fr .9fr!important;}
-.oc-level-card{min-height:82px!important;padding:15px 18px!important;}
-.oc-lbl{font-size:9px!important;color:rgba(155,191,168,.78)!important;}
-.oc-val{font-size:18px!important;letter-spacing:.25px!important;line-height:1.1!important;}
-.oc-level-card.entry .oc-val{color:rgba(255,255,255,.96)!important;}
-.oc-confidence{height:38px!important;padding:0 18px!important;grid-template-columns:auto minmax(180px,360px) auto!important;justify-content:start!important;}
-.oc-confidence-track{height:5px!important;}
-#orion-mini-chart{
-  min-height:565px!important;
-  background:
-    radial-gradient(circle at 52% 50%,rgba(0,232,122,.028),transparent 48%),
-    linear-gradient(180deg,rgba(255,255,255,.006),rgba(0,0,0,.03))!important;
-}
-#orion-mini-chart::after{
-  font-size:96px!important;
-  opacity:.72!important;
-  color:rgba(0,232,122,.040)!important;
-}
-#orionChartPanel[data-side="SELL"] #orion-mini-chart::after{color:rgba(255,53,88,.035)!important;}
-.oc-zone{right:96px!important;width:auto!important;left:58%!important;max-width:520px!important;opacity:.66!important;border-radius:0!important;}
-.oc-zone.profit{background:linear-gradient(90deg,rgba(0,232,122,.18),rgba(0,232,122,.055),rgba(0,232,122,.018))!important;}
-.oc-zone.risk{background:linear-gradient(90deg,rgba(255,53,88,.16),rgba(255,53,88,.052),rgba(255,53,88,.018))!important;}
-.oc-price-badge{right:18px!important;font-size:11px!important;filter:drop-shadow(0 8px 18px rgba(0,0,0,.36));}
-.oc-price-badge .btag,.oc-price-badge .bval{height:27px!important;}
-.oc-price-badge.entry .btag{background:rgba(250,250,252,.95)!important;color:#07101a!important;border-color:rgba(255,255,255,.80)!important;}
-.oc-price-badge.entry .bval{background:#fff!important;color:#07101a!important;}
-.oc-chart-toolbar{height:48px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;padding:0 18px!important;border-top:1px solid rgba(160,210,220,.10)!important;background:rgba(255,255,255,.014)!important;}
-.oc-quick-tfs{display:flex!important;gap:8px!important;align-items:center!important;}
-.oc-quick-tfs button{height:30px;min-width:38px;border:1px solid rgba(160,210,220,.12);background:transparent;color:rgba(223,242,234,.75);border-radius:7px;font-family:var(--mono);font-size:10px;cursor:pointer;transition:all .14s;}
-.oc-quick-tfs button:hover{border-color:rgba(0,232,122,.32);color:#fff;background:rgba(0,232,122,.045);}
-.oc-quick-tfs button.active{border-color:rgba(0,232,122,.42);background:rgba(0,232,122,.11);color:var(--green);box-shadow:0 0 18px rgba(0,232,122,.08);}
-.oc-tools{display:flex!important;gap:8px!important;align-items:center!important;}
-.oc-tool-btn{height:30px;min-width:30px;padding:0 9px;border:1px solid rgba(160,210,220,.11);background:rgba(255,255,255,.018);color:rgba(223,242,234,.62);border-radius:7px;font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .14s;}
-.oc-tool-btn:hover{border-color:rgba(0,232,122,.35);color:var(--green);background:rgba(0,232,122,.06);}
-.oc-tool-btn.active{border-color:rgba(0,232,122,.45);color:var(--green);background:rgba(0,232,122,.10);}
-.oc-legend{height:34px!important;padding:0 18px!important;}
-.fi.on{transform:translateX(2px);}
-.row1>.panel:nth-child(1) .pb{padding:15px!important;}
-.row1>.panel:nth-child(2) #signalsFeed{min-height:590px!important;}
-@media(max-width:1280px){
-  .row1{grid-template-columns:minmax(200px,240px) minmax(680px,1fr) minmax(245px,300px)!important;}
-  .oc-val{font-size:15px!important;}
-  #orion-mini-chart{min-height:500px!important;}
-}
-@media(max-width:980px){
-  .row1{grid-template-columns:1fr!important;grid-template-areas:"chart" "feed" "preview"!important;}
-  .row1>.panel:nth-child(1),.row1>.panel:nth-child(2),#orionChartPanel{min-height:auto!important;}
-  #orion-mini-chart{min-height:420px!important;}
-  #orionChartPanel .ph-right{grid-template-columns:1fr!important;justify-content:start!important;}
-  .oc-chart-toolbar{overflow-x:auto;}
-}
+.orion-resources-list a{ display:flex; align-items:center; justify-content:space-between; padding:13px 16px; border-bottom:1px solid var(--line); font-size:12.5px; color:var(--text); text-decoration:none; }
+.orion-resources-list a:hover{ color:var(--green); }
+.orion-perf-cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; padding:14px; }
+.orion-perf-card{ background:rgba(255,255,255,0.02); border:1px solid var(--line); border-radius:8px; padding:14px; }
+.orion-perf-card .k{ font-family:var(--mono); font-size:8.5px; color:var(--muted2); letter-spacing:1px; margin-bottom:8px; }
+.orion-perf-card .v{ font-size:22px; font-weight:800; color:var(--text); }
 
+/* ── DRAWING TOOLBAR (custom, on top of Orion Chart) ── */
+.orion-draw-toolbar{ display:flex; align-items:center; gap:4px; padding:6px 10px; border-bottom:1px solid var(--line); }
+.orion-draw-btn{ background:none;border:1px solid transparent; color:var(--muted); border-radius:5px; padding:5px 8px; cursor:pointer; font-size:11px; }
+.orion-draw-btn svg{ width:14px;height:14px; }
+.orion-draw-btn:hover{ background:rgba(255,255,255,0.05); color:var(--text); }
+.orion-draw-btn.active{ background:rgba(0,232,122,0.12); border-color:rgba(0,232,122,0.3); color:var(--green); }
+.orion-draw-canvas{ position:absolute; inset:0; pointer-events:none; z-index:5; }
+.orion-draw-canvas.drawing-active{ pointer-events:auto; cursor:crosshair; }
+
+@media (max-width:900px){
+  .orion-sidebar{ display:none; }
+  .orion-main{ margin-left:0; }
+}
 </style>
 </head>
 <body>
@@ -909,7 +877,77 @@ body[data-orion-side="SELL"]{--orion-active:#ff3558;--orion-active-soft:rgba(255
 
 <div class="notif-badge" id="notifBadge">🛰 NEW SIGNAL</div>
 
+<div class="orion-app">
+  <aside class="orion-sidebar">
+    <div class="orion-brand"><span style="color:var(--green);font-family:var(--mono)">//</span> <b>ORION <span>RADAR</span></b></div>
+    <nav class="orion-nav" id="orionNav">
+      <button class="orion-nav-item active" data-orion-nav="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        Dashboard
+      </button>
+      <button class="orion-nav-item" data-orion-nav="signals">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h4l2-7 4 14 3-10 2 3h5"/></svg>
+        Signals
+      </button>
+      <button class="orion-nav-item" data-orion-nav="watchlist">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15 9 22 10 17 15 18 22 12 18 6 22 7 15 2 10 9 9"/></svg>
+        Watchlist
+      </button>
+      <button class="orion-nav-item" data-orion-nav="performance">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+        Performance
+      </button>
+      <button class="orion-nav-item" data-orion-nav="quantum">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2.2"/><ellipse cx="12" cy="12" rx="9" ry="4"/><ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(120 12 12)"/></svg>
+        Quantum
+      </button>
+      <button class="orion-nav-item" data-orion-nav="news">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="15" height="16" rx="1"/><path d="M18 9h3v9a2 2 0 0 1-2 2"/><line x1="7" y1="9" x2="14" y2="9"/><line x1="7" y1="13" x2="14" y2="13"/></svg>
+        News
+      </button>
+      <button class="orion-nav-item" data-orion-nav="resources">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h13a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3V4z"/><line x1="4" y1="4" x2="4" y2="17"/></svg>
+        Resources
+      </button>
+      <button class="orion-nav-item" data-orion-nav="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        Settings
+      </button>
+    </nav>
+
+    <div class="orion-side-block">
+      <div class="orion-side-title">CONFLUENCES <span style="float:right;color:var(--muted2)">clique p/ filtrar</span></div>
+      <div id="orionConfList"></div>
+      <div class="orion-conf-hint" id="orionConfHint">Mostrando todos os sinais</div>
+    </div>
+
+    <div class="orion-side-block">
+      <div class="orion-side-title">ORION CONFIDENCE</div>
+      <div class="orion-tier" id="orionTier">—</div>
+      <div class="orion-bars" id="orionBars"></div>
+      <div class="orion-pct" id="orionPct">—</div>
+      <div class="orion-desc" id="orionDesc">Aguardando sinal…</div>
+    </div>
+
+    <div class="orion-profile" id="orionProfile">
+      <div class="orion-profile-row">
+        <div class="orion-avatar" id="orionAvatar">D</div>
+        <div>
+          <div class="orion-profile-name" id="orionProfileName">—</div>
+          <div class="orion-profile-plan" id="orionProfilePlan">—</div>
+        </div>
+      </div>
+      <div class="orion-profile-menu" id="orionProfileMenu">
+        <button id="orionMenuManage">Manage plan</button>
+        <button id="orionMenuLogout">Log out</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="orion-main">
+
 <div class="shell" id="mainContent" style="display:none">
+
 
   <!-- TOPBAR -->
   <!-- SESSION CLOCK BAR -->
@@ -954,7 +992,7 @@ body[data-orion-side="SELL"]{--orion-active:#ff3558;--orion-active-soft:rgba(255
   </div>
 
   <!-- ROW 1: Signal + Feed -->
-  <div class="row1">
+  <div class="row1" data-orion-view="dashboard">
     <!-- Live Signal — locked for Bronze/Silver -->
     <div class="panel">
       <div class="ph">
@@ -1077,20 +1115,6 @@ body[data-orion-side="SELL"]{--orion-active:#ff3558;--orion-active-soft:rgba(255
         <div class="ph-title"><span id="ph-feed">SIGNALS FEED</span></div>
         <div class="ph-right" id="feedCount">0 ACTIVE</div>
       </div>
-      <!-- SYMBOL SELECTOR (Bronze/Silver/Gold) -->
-      <div id="symbolSelectorWrap" style="display:none;padding:8px 12px;border-bottom:1px solid var(--line);">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-          <span style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:1px;">MY ASSETS</span>
-          <span style="font-family:var(--mono);font-size:8px;color:var(--muted2);" id="symSlotsLabel"></span>
-        </div>
-        <div id="symSelectedChips" style="margin-bottom:6px;min-height:20px;"></div>
-        <div style="display:flex;gap:5px;align-items:center;">
-          <input id="symSearchInput" type="text" placeholder="Add asset: EURUSD, XAUUSD..." style="flex:1;font-family:var(--mono);font-size:9px;padding:4px 8px;border-radius:3px;border:1px solid var(--line);background:var(--bg);color:var(--text);outline:none;" />
-          <button onclick="symAdd()" style="font-family:var(--mono);font-size:8px;padding:4px 10px;border-radius:3px;border:1px solid var(--green);color:var(--green);background:transparent;cursor:pointer;letter-spacing:1px;white-space:nowrap;">+ ADD</button>
-        </div>
-        <div class="cooldown-bar" id="symCooldownBar" style="margin-top:4px;"></div>
-      </div>
-
       <!-- TF Filter -->
       <div class="tf-filter-row" style="padding:8px 10px 0;display:flex;gap:5px;flex-wrap:wrap">
         <button class="tf-btn active" data-tf="ALL" onclick="setTfFilter('ALL',this)">ALL</button>
@@ -1161,23 +1185,6 @@ body[data-orion-side="SELL"]{--orion-active:#ff3558;--orion-active-soft:rgba(255
         <!-- Signal level overlay — floats above the TV chart -->
         <div id="orion-sig-overlay" style="display:none;position:absolute;right:0;top:0;bottom:0;width:90px;pointer-events:none;z-index:10;"></div>
       </div>
-      <div class="oc-chart-toolbar" aria-label="ORION chart tools">
-        <div class="oc-quick-tfs" id="ocQuickTfs">
-          <button data-tf="M1" onclick="orionSetTf('M1',this)">M1</button>
-          <button data-tf="M5" onclick="orionSetTf('M5',this)">M5</button>
-          <button class="active" data-tf="M15" onclick="orionSetTf('M15',this)">M15</button>
-          <button data-tf="M30" onclick="orionSetTf('M30',this)">M30</button>
-          <button data-tf="H1" onclick="orionSetTf('H1',this)">H1</button>
-          <button data-tf="H4" onclick="orionSetTf('H4',this)">H4</button>
-          <button data-tf="D" onclick="orionSetTf('D',this)">D1</button>
-        </div>
-        <div class="oc-tools">
-          <button class="oc-tool-btn" title="Fit chart" onclick="orionFitChart()">↔</button>
-          <button class="oc-tool-btn active" id="ocAutoBtn" title="Auto scale" onclick="orionToggleAutoScale(this)">AUTO</button>
-          <button class="oc-tool-btn" id="ocLogBtn" title="Log scale" onclick="orionToggleLogScale(this)">LOG</button>
-          <button class="oc-tool-btn" title="Clear visual objects" onclick="orionClearVisualObjects()">⌫</button>
-        </div>
-      </div>
       <div class="oc-legend">
         <span><i class="oc-chip-dot oc-chip-entry"></i><strong>ENTRY</strong></span>
         <span><i class="oc-chip-dot oc-chip-tp"></i>TAKE PROFIT ZONE</span>
@@ -1187,8 +1194,27 @@ body[data-orion-side="SELL"]{--orion-active:#ff3558;--orion-active-soft:rgba(255
   </div><!-- /row1 -->
 
 
+  <!-- WATCHLIST VIEW (My Assets — relocado do painel Signals Feed) -->
+  <div class="panel" style="margin-bottom:12px" data-orion-view="watchlist">
+    <div class="ph">
+      <div class="ph-title"><span>MY ASSETS</span></div>
+    </div>
+    <div id="symbolSelectorWrap" style="padding:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;">ATIVOS SELECIONADOS</span>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--muted2);" id="symSlotsLabel"></span>
+      </div>
+      <div id="symSelectedChips" style="margin-bottom:8px;min-height:24px;"></div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <input id="symSearchInput" type="text" placeholder="Add asset: EURUSD, XAUUSD..." style="flex:1;font-family:var(--mono);font-size:11px;padding:8px 10px;border-radius:5px;border:1px solid var(--line);background:var(--bg);color:var(--text);outline:none;" />
+        <button onclick="symAdd()" style="font-family:var(--mono);font-size:10px;padding:8px 14px;border-radius:5px;border:1px solid var(--green);color:var(--green);background:transparent;cursor:pointer;letter-spacing:1px;white-space:nowrap;">+ ADD</button>
+      </div>
+      <div class="cooldown-bar" id="symCooldownBar" style="margin-top:8px;"></div>
+    </div>
+  </div>
+
   <!-- SCORE RANKING -->
-  <div class="panel" style="margin-bottom:12px">
+  <div class="panel" style="margin-bottom:12px" data-orion-view="dashboard">
     <div class="ph">
       <div class="ph-title"><span id="ph-ranking">SIGNAL QUALITY RANKING</span></div>
       <div class="ph-right">CONFLUENCE SCORE GUIDE</div>
@@ -1240,7 +1266,7 @@ body[data-orion-side="SELL"]{--orion-active:#ff3558;--orion-active-soft:rgba(255
   </div>
 
   <!-- WATCHLIST + TRADINGVIEW -->
-  <div class="panel" style="margin-bottom:12px">
+  <div class="panel" style="margin-bottom:12px" data-orion-view="dashboard">
     <div class="ph">
       <div class="ph-title"><span id="ph-chart">CHART ANALYSIS</span></div>
       <span class="ph-right" id="tvCurrentLbl">EURUSD · M5</span>
@@ -1287,7 +1313,7 @@ body[data-orion-side="SELL"]{--orion-active:#ff3558;--orion-active-soft:rgba(255
   </div>
 
   <!-- NOTIFICATIONS -->
-  <div class="panel" style="margin-bottom:12px">
+  <div class="panel" style="margin-bottom:12px" data-orion-view="settings">
     <div class="ph">
       <div class="ph-title"><span id="ph-notif">NOTIFICATIONS</span></div>
       <div class="ph-right" id="notifPlanNote"></div>
@@ -1355,7 +1381,7 @@ body[data-orion-side="SELL"]{--orion-active:#ff3558;--orion-active-soft:rgba(255
   </div>
 
   <!-- ROW 3: Market data -->
-  <div class="row3">
+  <div class="row3" data-orion-view="news">
     <div class="panel">
       <div class="ph"><div class="ph-title"><span id="ph-news">MARKET NEWS</span></div></div>
       <div class="locked-overlay" id="newsWrap">
@@ -1844,10 +1870,21 @@ function initTfButtons(){
 // ── Signals ───────────────────────────────────────────────────────
 function filterSignals(signals) {
   if (!Array.isArray(signals)) return [];
+  let out = signals;
   // Platinum sees all; others see only watchlist
-  if (currentPlan === 'platinum') return signals;
-  if (!watchlist.length) return [];
-  return signals.filter(s => watchlist.includes(s.symbol));
+  if (currentPlan !== 'platinum') {
+    out = watchlist.length ? out.filter(s => watchlist.includes(s.symbol)) : [];
+  }
+  // Filtro por confluências selecionadas na sidebar (flags clicáveis)
+  const sel = window._orionSelectedConfluences;
+  if (sel && sel.size > 0) {
+    out = out.filter(s => {
+      const tags = new Set((s.indicators || s.confluences || []).map(x => String(x).toUpperCase()));
+      for (const t of sel) { if (!tags.has(t)) return false; }
+      return true;
+    });
+  }
+  return out;
 }
 
 
@@ -1977,6 +2014,10 @@ function renderSignal(sig, updatedAt){
     const found = ASSETS_ALL.find(a => a.lbl === sig.symbol || a.sym.endsWith(':' + sig.symbol));
     if (found && tvSymbol !== found.sym) setSymbol(found.sym, found.lbl);
   }
+  // ── Sidebar: confluências + confidence do sinal em destaque ──
+  window._orionActiveSignal = sig;
+  if (typeof renderOrionConfluences === 'function') renderOrionConfluences(sig);
+  if (typeof renderOrionConfidence === 'function') renderOrionConfidence(parseInt(sig.score)||0);
 }
 
 function renderFeed(signals){
@@ -3137,23 +3178,50 @@ document.addEventListener('DOMContentLoaded', async function(){
 
 
   <!-- PERFORMANCE DASHBOARD — Gold/Platinum -->
-  <div class="panel" id="perfPanel" style="margin-bottom:12px;display:none">
+  <div class="panel" id="perfPanel" style="margin-bottom:12px;display:none" data-orion-view="performance">
     <div class="ph">
       <div class="ph-title">📊 SIGNAL PERFORMANCE</div>
-    </div>
-    <div style="padding:24px 14px;text-align:center;">
-      <div style="font-size:28px;margin-bottom:12px;">📈</div>
-      <div style="font-family:var(--mono);font-size:11px;color:var(--text);letter-spacing:1px;margin-bottom:8px;">COMING SOON</div>
-      <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);line-height:1.7;max-width:280px;margin:0 auto;">
-        Real performance tracking is being built.<br>
-        Only verified live signal results will be shown here.<br>
-        <span style="color:var(--amber);">No simulated or backtested data.</span>
+      <div class="ph-right">
+        <button class="tf-btn active" onclick="loadOrionPerf(7,this)">7D</button>
+        <button class="tf-btn" onclick="loadOrionPerf(30,this)">30D</button>
       </div>
     </div>
+    <div class="orion-perf-cards">
+      <div class="orion-perf-card"><div class="k">WIN RATE</div><div class="v" id="opWinRate" style="color:var(--green)">—</div></div>
+      <div class="orion-perf-card"><div class="k">TOTAL TRADES</div><div class="v" id="opTotal">—</div></div>
+      <div class="orion-perf-card"><div class="k">WINS</div><div class="v" id="opWins" style="color:var(--green)">—</div></div>
+      <div class="orion-perf-card"><div class="k">LOSSES</div><div class="v" id="opLosses" style="color:var(--red,#ff4d5e)">—</div></div>
+    </div>
+    <div id="opAssets" style="padding:0 14px 16px;"></div>
   </div>
+  <script>
+  async function loadOrionPerf(days, btn){
+    if (btn){ btn.parentElement.querySelectorAll('.tf-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+    try{
+      const r = await fetch(BACKEND_URL + '/performance?days=' + days);
+      const d = await r.json();
+      if (!d.ok) return;
+      document.getElementById('opWinRate').textContent = (d.winRate||0) + '%';
+      document.getElementById('opTotal').textContent = d.total||0;
+      document.getElementById('opWins').textContent = d.wins||0;
+      document.getElementById('opLosses').textContent = d.losses||0;
+      const assetsEl = document.getElementById('opAssets');
+      if (Array.isArray(d.assets) && d.assets.length){
+        assetsEl.innerHTML = d.assets.map(a => {
+          const c = a.winRate>=70?'var(--green)':(a.winRate>=50?'var(--amber)':'#ff4d5e');
+          return `<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:12px;">
+            <span>${a.symbol}</span><span style="color:${c};font-family:var(--mono)">${a.winRate}%</span></div>`;
+        }).join('');
+      } else { assetsEl.innerHTML = ''; }
+    }catch(e){ console.error('[ORION] erro ao carregar performance', e); }
+  }
+  document.addEventListener('DOMContentLoaded', () => loadOrionPerf(7));
+  // Também carrega ao abrir a aba, mesmo se DOMContentLoaded já passou
+  window.addEventListener('load', () => loadOrionPerf(7));
+  </script>
 
   <!-- SIGNAL SEARCH — Gold/Platinum -->
-  <div class="panel" id="searchPanel" style="margin-bottom:12px;display:none">
+  <div class="panel" id="searchPanel" style="margin-bottom:12px;display:none" data-orion-view="signals">
     <div class="ph">
       <div class="ph-title">🔍 SIGNAL HISTORY</div>
       <div class="ph-right">LAST 10 SIGNALS</div>
@@ -3170,7 +3238,7 @@ document.addEventListener('DOMContentLoaded', async function(){
   </div>
 
   <!-- ORION QUANTUM ANALYSIS — Platinum Exclusive -->
-  <div id="quantumPanel" style="display:none;margin-bottom:12px">
+  <div id="quantumPanel" style="display:none;margin-bottom:12px" data-orion-view="quantum">
     <div class="panel" style="border:1px solid rgba(168,85,247,0.25);background:linear-gradient(135deg,rgba(10,4,28,0.98),rgba(4,14,28,0.98));position:relative;overflow:hidden">
 
       <!-- Background glow -->
@@ -3303,6 +3371,18 @@ document.addEventListener('DOMContentLoaded', async function(){
     </div>
   </div>
 
+  <!-- RESOURCES VIEW -->
+  <div class="panel" style="margin-bottom:12px" data-orion-view="resources">
+    <div class="ph"><div class="ph-title"><span>RESOURCES</span></div></div>
+    <div class="orion-resources-list">
+      <a href="/terms.html" target="_blank">Terms of Service <span>→</span></a>
+      <a href="/privacy.html" target="_blank">Privacy Policy <span>→</span></a>
+      <a href="/legal.html" target="_blank">Legal / Risk Disclaimer <span>→</span></a>
+      <a href="/refund.html" target="_blank">Refund Policy <span>→</span></a>
+      <a href="/plans.html" target="_blank">Plans &amp; Pricing <span>→</span></a>
+    </div>
+  </div>
+
   <!-- LEGAL FOOTER -->
   <footer style="margin-top:40px;padding:24px 20px;border-top:1px solid rgba(0,210,110,0.08);
     background:rgba(2,8,16,0.6);text-align:center;">
@@ -3330,6 +3410,9 @@ document.addEventListener('DOMContentLoaded', async function(){
       </div>
     </div>
   </footer>
+
+  </div><!-- /orion-main -->
+</div><!-- /orion-app -->
 
 <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 <script>
@@ -3509,21 +3592,6 @@ function orionPositionVisualOverlays(sigData) {
     const h = Math.max(2, Math.abs(a-b));
     node.style.top = top + 'px';
     node.style.height = h + 'px';
-    // Anchor the risk/reward zone to the signal candle when possible.
-    // This keeps the visual box moving with pan/zoom instead of feeling pasted on the screen.
-    let leftPx = null;
-    try {
-      const t = sigData.__entryTime || window._orionLastEntryTime;
-      const x = t && window._orionChart?.timeScale?.().timeToCoordinate(t);
-      if (typeof x === 'number' && Number.isFinite(x)) leftPx = Math.max(0, x + 10);
-    } catch(_) {}
-    if (leftPx !== null) {
-      node.style.left = leftPx + 'px';
-      node.style.right = '96px';
-    } else {
-      node.style.left = '58%';
-      node.style.right = '96px';
-    }
     node.style.display = 'block';
   };
   setZone(ov.profit, yEntry, yTp2);
@@ -3572,7 +3640,6 @@ async function orionLoadChart(sym, tf, sig) {
 
   const lbl = document.getElementById('orionChartLabel');
   if (lbl) lbl.textContent = sym + ' / ' + tf;
-  orionSyncTfButtons(tf);
 
   const sigData = sig || window._orionSignals?.[sym]?.[tf] || null;
 
@@ -3648,10 +3715,6 @@ async function orionLoadChart(sym, tf, sig) {
     return;
   }
 
-  window._orionLastCandles = candles;
-  window._orionLastEntryTime = candles.length ? candles[candles.length-1].time : null;
-  if (sigData && window._orionLastEntryTime) sigData.__entryTime = window._orionLastEntryTime;
-
   window._orionSeries.applyOptions({ autoscaleInfoProvider: undefined });
   window._orionSeries.setData(candles);
 
@@ -3671,10 +3734,18 @@ async function orionLoadChart(sym, tf, sig) {
       { time:last, position:isBuy?'belowBar':'aboveBar', color:c.dn,      shape:isBuy?'arrowDown':'arrowUp', text:'SL',    size:2 },
     ]);
 
-    window._orionAutoScaleProvider = orionBuildAutoScaleProvider(sigData, candles);
-    if (window._orionAutoScaleEnabled !== false) {
-      window._orionSeries.applyOptions({ autoscaleInfoProvider: window._orionAutoScaleProvider });
-    }
+    const sigPrices = [sigData.entry, sigData.tp1||sigData.tp, sigData.tp2, sigData.sl].filter(Boolean).map(Number);
+    const recent    = candles.slice(-40);
+    const allP      = [...sigPrices, ...recent.flatMap(c=>[c.high,c.low])];
+    const minP      = Math.min(...allP);
+    const maxP      = Math.max(...allP);
+    const pad       = (maxP-minP)*0.25;
+    window._orionSeries.applyOptions({
+      autoscaleInfoProvider: () => ({
+        priceRange: { minValue:minP-pad, maxValue:maxP+pad },
+        margins: { above:15, below:15 }
+      })
+    });
   }
   window._orionChart.timeScale().fitContent();
   window._orionChartOverlaySig = sigData || null;
@@ -3685,7 +3756,7 @@ async function orionLoadChart(sym, tf, sig) {
 
 function orionSetTf(tf, btn) {
   window._orionCurrentTf = tf;
-  orionSyncTfButtons(tf);
+  document.querySelectorAll('#orionChartPanel .tf-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   // Atualiza watermark sem recriar o chart
   if (window._orionChart) {
@@ -3694,68 +3765,6 @@ function orionSetTf(tf, btn) {
   }
   if (window._orionSelectedSignal) orionLoadChartWithSig(String(window._orionSelectedSignal.symbol||window._orionCurrentSym).toUpperCase(), tf, window._orionSelectedSignal);
   else if (window._orionCurrentSym) orionLoadChart(window._orionCurrentSym, tf);
-}
-
-
-
-// ── ORION Chart Workspace v6.1 tools ──────────────────────────────
-window._orionAutoScaleEnabled = true;
-window._orionLogScaleEnabled = false;
-window._orionLastCandles = [];
-window._orionLastEntryTime = null;
-
-function orionSyncTfButtons(tf) {
-  const wanted = String(tf || window._orionCurrentTf || 'M15').toUpperCase();
-  document.querySelectorAll('#orionChartPanel .tf-btn, #ocQuickTfs button').forEach(btn => {
-    btn.classList.toggle('active', String(btn.dataset.tf || '').toUpperCase() === wanted);
-  });
-}
-
-function orionFitChart() {
-  try { if (window._orionChart) window._orionChart.timeScale().fitContent(); } catch(_) {}
-  orionScheduleOverlaySync();
-}
-
-function orionToggleAutoScale(btn) {
-  window._orionAutoScaleEnabled = !window._orionAutoScaleEnabled;
-  if (btn) btn.classList.toggle('active', window._orionAutoScaleEnabled);
-  try {
-    if (window._orionSeries) window._orionSeries.applyOptions({ autoscaleInfoProvider: window._orionAutoScaleEnabled ? window._orionAutoScaleProvider : undefined });
-    if (window._orionChart) window._orionChart.priceScale('right').applyOptions({ autoScale: true });
-  } catch(_) {}
-  if (window._orionSelectedSignal) orionPositionVisualOverlays(window._orionSelectedSignal);
-}
-
-function orionToggleLogScale(btn) {
-  window._orionLogScaleEnabled = !window._orionLogScaleEnabled;
-  if (btn) btn.classList.toggle('active', window._orionLogScaleEnabled);
-  try {
-    if (window._orionChart && window.LightweightCharts?.PriceScaleMode) {
-      window._orionChart.priceScale('right').applyOptions({
-        mode: window._orionLogScaleEnabled ? LightweightCharts.PriceScaleMode.Logarithmic : LightweightCharts.PriceScaleMode.Normal
-      });
-    }
-  } catch(e) { console.warn('[ORION] log scale not supported:', e.message); }
-  orionScheduleOverlaySync();
-}
-
-function orionClearVisualObjects() {
-  orionClearPL();
-  orionHideVisualOverlays();
-  try { if (window._orionSeries) window._orionSeries.setMarkers([]); } catch(_) {}
-}
-
-function orionBuildAutoScaleProvider(sigData, candles) {
-  return () => {
-    const sigPrices = sigData ? [sigData.entry, sigData.tp1 || sigData.tp, sigData.tp2, sigData.sl].filter(Boolean).map(Number) : [];
-    const recent = Array.isArray(candles) ? candles.slice(-70) : [];
-    const prices = [...sigPrices, ...recent.flatMap(c => [Number(c.high), Number(c.low)])].filter(Number.isFinite);
-    if (!prices.length) return null;
-    const minP = Math.min(...prices);
-    const maxP = Math.max(...prices);
-    const pad = Math.max((maxP - minP) * 0.22, Math.abs(maxP || 1) * 0.0008);
-    return { priceRange: { minValue: minP - pad, maxValue: maxP + pad }, margins: { above: 12, below: 12 } };
-  };
 }
 
 // ── SESSION CLOCK BAR ─────────────────────────────────────────────
@@ -3854,6 +3863,266 @@ function updateSessBar() {
 buildSessBar();
 updateSessBar();
 setInterval(updateSessBar, 1000);
+</script>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   ORION SIDEBAR v6 — navegação, confluências, confidence, perfil,
+   ferramentas de desenho. Não altera nenhuma função pré-existente.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Registro completo de confluências (v5.00 do EA) ── */
+const ORION_CONF_REGISTRY = [
+  {tag:'EMA200',   label:'EMA 200'},
+  {tag:'EMA',      label:'EMA 9/20'},
+  {tag:'CONTEXT',  label:'Contexto H1'},
+  {tag:'CONFIRM',  label:'Confirmação M30'},
+  {tag:'FIBO',     label:'Fibonacci'},
+  {tag:'VOLUME',   label:'Volume'},
+  {tag:'RSI',      label:'RSI'},
+  {tag:'DELTA',    label:'Momentum'},
+  {tag:'MACD',     label:'MACD'},
+  {tag:'BB',       label:'Bollinger'},
+  {tag:'ADX',      label:'ADX'},
+  {tag:'STOCH',    label:'Stochastic'},
+  {tag:'ATR',      label:'Filtro ATR'},
+  {tag:'VWAP',     label:'VWAP'},
+  {tag:'ICHIMOKU', label:'Ichimoku'},
+  {tag:'H1BIAS',   label:'H1 Bias'},
+];
+window._orionSelectedConfluences = new Set();
+
+function renderOrionConfluences(sig){
+  const active = new Set((sig?.indicators || sig?.confluences || []).map(x => String(x).toUpperCase()));
+  const sel = window._orionSelectedConfluences;
+  const html = ORION_CONF_REGISTRY.map(c => {
+    const on = active.has(c.tag);
+    const isSel = sel.has(c.tag);
+    return `<div class="orion-conf-row ${on?'on':''} ${isSel?'selected':''}" data-conf-tag="${c.tag}">
+      <span>${c.label}</span>
+      <span class="orion-conf-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg></span>
+    </div>`;
+  }).join('');
+  const list = document.getElementById('orionConfList');
+  if (list) list.innerHTML = html;
+  updateOrionConfHint();
+}
+document.addEventListener('click', (e) => {
+  const row = e.target.closest('.orion-conf-row');
+  if (!row) return;
+  const tag = row.dataset.confTag;
+  const sel = window._orionSelectedConfluences;
+  if (sel.has(tag)) sel.delete(tag); else sel.add(tag);
+  renderOrionConfluences(window._orionActiveSignal);
+  // Reaplica o filtro na feed já carregada
+  if (typeof renderFeed === 'function' && window._orionLastSignalsPayload) {
+    renderFeed(window._orionLastSignalsPayload);
+  }
+});
+function updateOrionConfHint(){
+  const hint = document.getElementById('orionConfHint');
+  if (!hint) return;
+  const n = window._orionSelectedConfluences.size;
+  hint.textContent = n>0 ? `Filtrando por ${n} confluência(s) selecionada(s)` : 'Mostrando todos os sinais';
+}
+
+/* ── Orion Confidence gauge ── */
+function renderOrionConfidence(score){
+  const s = score||0;
+  const tierEl = document.getElementById('orionTier');
+  const descEl = document.getElementById('orionDesc');
+  let tier='LOW';
+  if (s>=90) tier='ELITE'; else if (s>=80) tier='HIGH'; else if (s>=70) tier='GOOD'; else if (s>=60) tier='WATCH';
+  if (tierEl){ tierEl.textContent = tier; tierEl.style.color = s>=70?'var(--green)':(s>=60?'var(--amber)':'#ff8c5a'); }
+  if (descEl) descEl.textContent = s>=80 ? 'HIGH PROBABILITY SETUP' : (s>=60?'SETUP VÁLIDO':'BAIXA CONFLUÊNCIA');
+  const pctEl = document.getElementById('orionPct');
+  if (pctEl) pctEl.textContent = s + '%';
+  const bars = document.getElementById('orionBars');
+  if (bars){
+    const levels=[20,35,50,65,80,95];
+    bars.innerHTML = levels.map((lv,i)=>`<i style="height:${30+i*12}%" class="${s>=lv?'filled':''}"></i>`).join('');
+  }
+}
+
+/* ── Navegação da sidebar (view switching, plan-aware) ── */
+function orionApplyView(view){
+  document.querySelectorAll('.orion-nav-item').forEach(b => b.classList.toggle('active', b.dataset.orionNav===view));
+  document.querySelectorAll('[data-orion-view]').forEach(el => {
+    if (el.dataset.orionView !== view) { el.style.display = 'none'; el.classList.remove('orion-view-active'); }
+  });
+  const active = document.querySelectorAll(`[data-orion-view="${view}"]`);
+  active.forEach(el => el.classList.add('orion-view-active'));
+
+  // Cada view respeita o mesmo gating de plano que o app já usa
+  if (view === 'performance') {
+    const p = document.getElementById('perfPanel');
+    if (p) p.style.display = (typeof canUse==='function' && canUse('gold')) ? 'block' : 'none';
+  } else if (view === 'quantum') {
+    const p = document.getElementById('quantumPanel');
+    if (p) p.style.display = (typeof canUse==='function' && canUse('platinum')) ? 'block' : 'none';
+    if (typeof updateQuantum === 'function') updateQuantum();
+  } else if (view === 'watchlist') {
+    const p = document.getElementById('symbolSelectorWrap');
+    if (p) p.style.display = (typeof canUse==='function' && canUse('bronze')) ? 'block' : 'none';
+  } else {
+    active.forEach(el => { el.style.display = 'block'; });
+  }
+  window.scrollTo({top:0, behavior:'instant'});
+}
+document.getElementById('orionNav').addEventListener('click', (e) => {
+  const btn = e.target.closest('.orion-nav-item');
+  if (!btn) return;
+  orionApplyView(btn.dataset.orionNav);
+});
+orionApplyView('dashboard');
+
+/* ── Perfil (sidebar) — espelha userName/planBadge já existentes ── */
+function syncOrionProfile(){
+  const name = document.getElementById('userName')?.textContent?.trim();
+  const plan = document.getElementById('planBadge')?.textContent?.trim();
+  if (name){
+    document.getElementById('orionProfileName').textContent = name;
+    document.getElementById('orionAvatar').textContent = name[0].toUpperCase();
+  }
+  if (plan) document.getElementById('orionProfilePlan').textContent = plan + ' PLAN';
+}
+setInterval(syncOrionProfile, 1000);
+
+document.getElementById('orionProfile').addEventListener('click', (e) => {
+  if (e.target.closest('.orion-profile-menu')) return;
+  document.getElementById('orionProfileMenu').classList.toggle('open');
+});
+document.getElementById('orionMenuManage').addEventListener('click', (e) => {
+  e.stopPropagation();
+  document.getElementById('manageBtn')?.click();
+});
+document.getElementById('orionMenuLogout').addEventListener('click', (e) => {
+  e.stopPropagation();
+  document.getElementById('logoutBtn')?.click();
+});
+
+/* ── Guarda o último payload de sinais para reaplicar filtro de confluências ── */
+(function hookSignalsPayload(){
+  const origRenderFeed = window.renderFeed;
+  if (typeof origRenderFeed === 'function') {
+    window.renderFeed = function(signals){
+      window._orionLastSignalsPayload = signals;
+      return origRenderFeed(signals);
+    };
+  }
+})();
+
+/* ═══════════════════════════════════════════════════════════════
+   FERRAMENTAS DE DESENHO — Orion Chart (trendline, texto, borracha)
+   Camada simples em canvas sobre o gráfico lightweight-charts.
+   Limitação conhecida: os desenhos ficam fixos em pixels e não
+   acompanham pan/zoom do gráfico (não há plugin oficial de drawing
+   no lightweight-charts free) — servem para marcação rápida/pontual.
+   ═══════════════════════════════════════════════════════════════ */
+(function initOrionDrawTools(){
+  const chartPanel = document.getElementById('orionChartPanel');
+  if (!chartPanel) return;
+  const chartHost = document.getElementById('orion-mini-chart');
+  if (!chartHost) return;
+
+  // Toolbar
+  const toolbar = document.createElement('div');
+  toolbar.className = 'orion-draw-toolbar';
+  toolbar.innerHTML = `
+    <button class="orion-draw-btn" data-tool="cursor" title="Cursor">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l7 17 2-7 7-2z"/></svg>
+    </button>
+    <button class="orion-draw-btn" data-tool="trend" title="Linha de tendência">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="20" x2="20" y2="4"/></svg>
+    </button>
+    <button class="orion-draw-btn" data-tool="text" title="Texto">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="5" x2="20" y2="5"/><line x1="12" y1="5" x2="12" y2="19"/></svg>
+    </button>
+    <button class="orion-draw-btn" data-tool="eraser" title="Borracha">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 20H8l-6-6 10-10 8 8z"/></svg>
+    </button>
+    <button class="orion-draw-btn" data-tool="clear" title="Limpar tudo">🗑</button>
+  `;
+  chartHost.parentElement.insertBefore(toolbar, chartHost);
+
+  // Canvas overlay
+  const host = chartHost;
+  host.style.position = host.style.position || 'relative';
+  const canvas = document.createElement('canvas');
+  canvas.className = 'orion-draw-canvas';
+  host.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+
+  let drawings = []; // {type:'trend'|'text', x1,y1,x2,y2, text}
+  let activeTool = 'cursor';
+  let dragging = false, startX=0, startY=0;
+
+  function resizeCanvas(){
+    canvas.width = host.clientWidth;
+    canvas.height = host.clientHeight;
+    redraw();
+  }
+  new ResizeObserver(resizeCanvas).observe(host);
+  setTimeout(resizeCanvas, 300);
+
+  function redraw(){
+    if (!ctx) return;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    drawings.forEach(d => {
+      if (d.type==='trend'){
+        ctx.strokeStyle = '#00e87a'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(d.x1,d.y1); ctx.lineTo(d.x2,d.y2); ctx.stroke();
+      } else if (d.type==='text'){
+        ctx.fillStyle = '#eef2f1'; ctx.font = '11px "Share Tech Mono",monospace';
+        ctx.fillText(d.text, d.x1, d.y1);
+      }
+    });
+  }
+
+  toolbar.addEventListener('click', (e) => {
+    const btn = e.target.closest('.orion-draw-btn');
+    if (!btn) return;
+    const tool = btn.dataset.tool;
+    if (tool === 'clear'){ drawings=[]; redraw(); return; }
+    activeTool = tool;
+    toolbar.querySelectorAll('.orion-draw-btn').forEach(b=>b.classList.toggle('active', b.dataset.tool===tool));
+    canvas.classList.toggle('drawing-active', tool !== 'cursor');
+  });
+
+  canvas.addEventListener('mousedown', (e) => {
+    if (activeTool==='cursor') return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX-rect.left, y = e.clientY-rect.top;
+    if (activeTool==='trend'){ dragging=true; startX=x; startY=y; }
+    else if (activeTool==='text'){
+      const text = prompt('Texto da anotação:');
+      if (text) { drawings.push({type:'text', x1:x, y1:y, text}); redraw(); }
+    } else if (activeTool==='eraser'){
+      const idx = drawings.findIndex(d => {
+        if (d.type==='text') return Math.hypot(d.x1-x, d.y1-y) < 20;
+        const midX=(d.x1+d.x2)/2, midY=(d.y1+d.y2)/2;
+        return Math.hypot(midX-x, midY-y) < 20;
+      });
+      if (idx>=0){ drawings.splice(idx,1); redraw(); }
+    }
+  });
+  canvas.addEventListener('mousemove', (e) => {
+    if (!dragging || activeTool!=='trend') return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX-rect.left, y = e.clientY-rect.top;
+    redraw();
+    ctx.strokeStyle = '#00e87a'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(startX,startY); ctx.lineTo(x,y); ctx.stroke();
+  });
+  canvas.addEventListener('mouseup', (e) => {
+    if (!dragging || activeTool!=='trend') return;
+    dragging=false;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX-rect.left, y = e.clientY-rect.top;
+    drawings.push({type:'trend', x1:startX, y1:startY, x2:x, y2:y});
+    redraw();
+  });
+})();
 </script>
 </body>
 </html>
