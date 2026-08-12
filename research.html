@@ -42,28 +42,28 @@
         <div class="field"><label for="study">STUDY</label><select id="study"><option value="ma_rejection">Moving Average Rejection</option><option disabled>MA Breakout · Planned</option><option disabled>First Touch · Planned</option><option disabled>BOS · Planned</option><option disabled>CHOCH · Planned</option><option disabled>FVG · Planned</option><option disabled>SRR · Planned</option><option disabled>Session Breakout · Planned</option><option disabled>Fibonacci · Planned</option><option disabled>Confluence Study · Planned</option></select></div>
         <div class="field"><label for="maType">MA TYPE</label><select id="maType"><option>EMA</option><option>SMA</option><option>WMA</option></select></div>
         <div class="field"><label for="period">PERIOD</label><input id="period" type="number" min="2" max="500" value="50"></div>
-        <div class="field"><label for="history">HISTORY</label><select id="history"><option value="30">Last 30 days</option><option value="90" selected>Last 90 days</option><option value="180">Last 180 days</option><option value="365">Last 12 months</option></select></div>
+        <div class="field"><label for="history">HISTORY</label><select id="history"><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="180">Last 180 days</option><option value="365" selected>Last 12 months</option><option value="730">Last 2 years</option><option value="1825">Last 5 years</option></select></div>
         <div class="field"><label for="direction">DIRECTION</label><select id="direction"><option value="both">Both</option><option value="bullish">Bullish</option><option value="bearish">Bearish</option></select></div>
         <button id="run" class="run" type="submit">RUN RESEARCH</button>
       </form><div class="state"><span id="status">Configuration ready. Historical provider not connected.</span><span class="ready">READ-ONLY</span></div>
     </section>
 
     <section class="metrics" aria-label="Research metrics">
-      <article class="panel metric"><div class="k">OCCURRENCES</div><div class="v empty">—</div><div class="s">Awaiting backend result</div></article>
-      <article class="panel metric"><div class="k">VALID REJECTIONS</div><div class="v empty">—</div><div class="s">Awaiting backend result</div></article>
-      <article class="panel metric"><div class="k">REJECTION RATE</div><div class="v empty">—%</div><div class="s">No sample available</div></article>
-      <article class="panel metric"><div class="k">AVERAGE MFE</div><div class="v empty">—</div><div class="s">Unit follows asset</div></article>
-      <article class="panel metric"><div class="k">MEDIAN MFE</div><div class="v empty">—</div><div class="s">Unit follows asset</div></article>
-      <article class="panel metric"><div class="k">AVERAGE MAE</div><div class="v empty">—</div><div class="s">Unit follows asset</div></article>
-      <article class="panel metric"><div class="k">AVG TIME TO MOVE</div><div class="v empty">—</div><div class="s">No timing data</div></article>
-      <article class="panel metric"><div class="k">RESULT STATUS</div><div class="v empty" style="font-size:17px">EMPTY</div><div class="s">Clearly identified placeholder</div></article>
+      <article class="panel metric"><div class="k">OCCURRENCES</div><div id="mOccurrences" class="v empty">—</div><div class="s">Detected MA touches</div></article>
+      <article class="panel metric"><div class="k">VALID REJECTIONS</div><div id="mValid" class="v empty">—</div><div class="s">Target reached before adverse limit</div></article>
+      <article class="panel metric"><div class="k">REJECTION RATE</div><div id="mRate" class="v empty">—%</div><div class="s">Historical sample only</div></article>
+      <article class="panel metric"><div class="k">AVERAGE MFE</div><div id="mAvgMfe" class="v empty">—</div><div class="s">Price units</div></article>
+      <article class="panel metric"><div class="k">MEDIAN MFE</div><div id="mMedianMfe" class="v empty">—</div><div class="s">Price units</div></article>
+      <article class="panel metric"><div class="k">AVERAGE MAE</div><div id="mAvgMae" class="v empty">—</div><div class="s">Price units</div></article>
+      <article class="panel metric"><div class="k">AVG TIME TO MOVE</div><div id="mTime" class="v empty">—</div><div class="s">Minutes</div></article>
+      <article class="panel metric"><div class="k">RESULT STATUS</div><div id="mStatus" class="v empty" style="font-size:17px">EMPTY</div><div id="mCandleCount" class="s">No imported sample</div></article>
     </section>
 
-    <section class="content-grid"><article class="panel insight"><div class="insight-mark">// ORION INSIGHT</div><h2>No conclusion yet.</h2><p>Once the backend returns a valid research sample, this area will summarize the strongest observed session, direction and evidence strength. It will describe historical behavior—not tell you to buy or sell.</p><div class="empty-visual"><div><b>INSIGHT EVIDENCE MAP</b>Waiting for verified research output</div></div></article>
-      <article class="panel summary"><div class="title">OCCURRENCES BY SESSION</div><div class="subtitle">Empty distribution</div><div class="bar-row"><span>ASIA</span><div class="track"><div class="fill"></div></div><span>—</span></div><div class="bar-row"><span>LONDON</span><div class="track"><div class="fill"></div></div><span>—</span></div><div class="bar-row"><span>NEW YORK</span><div class="track"><div class="fill"></div></div><span>—</span></div><div class="direction"><div>BULLISH<b>—</b></div><div>BEARISH<b>—</b></div></div></article>
+    <section class="content-grid"><article class="panel insight"><div class="insight-mark">// ORION INSIGHT</div><h2 id="insightTitle">No conclusion yet.</h2><p id="insightText">Run a verified study to summarize the historical sample. It will describe behavior—not tell you to buy or sell.</p><div class="empty-visual"><div><b>METHOD v1</b><span id="methodText">Waiting for verified research output</span></div></div></article>
+      <article class="panel summary"><div class="title">OCCURRENCES BY SESSION</div><div class="subtitle">UTC methodology</div><div class="bar-row"><span>ASIA</span><div class="track"><div id="barAsia" class="fill"></div></div><span id="nAsia">—</span></div><div class="bar-row"><span>LONDON</span><div class="track"><div id="barLondon" class="fill"></div></div><span id="nLondon">—</span></div><div class="bar-row"><span>NEW YORK</span><div class="track"><div id="barNewYork" class="fill"></div></div><span id="nNewYork">—</span></div><div class="direction"><div>BULLISH<b id="nBullish">—</b></div><div>BEARISH<b id="nBearish">—</b></div></div></article>
     </section>
 
-    <section class="panel explorer"><div class="panel-head"><div><div class="title">EVENT EXPLORER</div><div class="subtitle">Every validated occurrence will remain inspectable</div></div><div class="actions"><button id="save" class="save" type="button" disabled>SAVE RESEARCH</button></div></div><div class="table-wrap"><table><thead><tr><th>DATE / TIME</th><th>ASSET</th><th>DIRECTION</th><th>MA TOUCH</th><th>MFE</th><th>MAE</th><th>TIME TO MOVE</th><th>VALIDATION</th></tr></thead><tbody><tr class="empty-row"><td colspan="8">NO EVENTS — RUN A STUDY WHEN THE HISTORICAL PROVIDER IS AVAILABLE</td></tr></tbody></table></div></section>
+    <section class="panel explorer"><div class="panel-head"><div><div class="title">EVENT EXPLORER</div><div class="subtitle">Every detected occurrence remains inspectable</div></div><div class="actions"><button id="save" class="save" type="button" disabled>SAVE RESEARCH</button></div></div><div class="table-wrap"><table><thead><tr><th>DATE / TIME</th><th>ASSET</th><th>DIRECTION</th><th>MA TOUCH</th><th>MFE</th><th>MAE</th><th>TIME TO MOVE</th><th>VALIDATION</th></tr></thead><tbody id="eventsBody"><tr class="empty-row"><td colspan="8">NO EVENTS — RUN A STUDY AFTER IMPORTING MT5 HISTORY</td></tr></tbody></table></div></section>
 
     <section class="panel future"><div class="panel-head" style="padding:0 0 16px;border:0"><div><div class="title">RESEARCH ROADMAP</div><div class="subtitle">Registry-ready studies; inactive until implemented and validated</div></div></div><div id="studyChips" class="chips"><span class="chip available">MA REJECTION · V1</span><span class="chip">MA BREAKOUT</span><span class="chip">FIRST TOUCH</span><span class="chip">BOS</span><span class="chip">CHOCH</span><span class="chip">FVG</span><span class="chip">SRR</span><span class="chip">SESSION BREAKOUT</span><span class="chip">FIBONACCI</span><span class="chip">CONFLUENCE STUDY</span><span class="chip ask">ASK ORION · PLANNED</span></div></section>
     <footer>ORION RADAR™ PROVIDES INFORMATIONAL, HISTORICAL RESEARCH ONLY. PAST MARKET BEHAVIOR DOES NOT GUARANTEE FUTURE RESULTS.<br>NO ORDER EXECUTION · NO BROKER ACCESS · NO MT5 CREDENTIALS</footer>
@@ -74,7 +74,22 @@
     const SUPABASE_URL='https://eyawmevqfeaeioistrqk.supabase.co';
     const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmVhc2UiLCJyZWYiOiJleWF3bWV2cWZlYWVpb2lzdHJxayIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzc0MDYxNzAzLCJleHAiOjIwODk2Mzc3MDN9.zFT0i5XKwYEbtF6oWKdBtSNvDI8mo48zy-ucsVTWOoQ';
     const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-    let accessToken='';
+    let accessToken='';let lastResearch=null;let lastParameters=null;
+    const setMetric=(id,value,suffix='')=>{const el=document.getElementById(id);el.textContent=value===null||value===undefined?'—':value+suffix;el.classList.remove('empty')};
+    function renderResearch(payload){
+      const result=payload.result;const metrics=result.metrics;lastResearch=result;
+      setMetric('mOccurrences',metrics.occurrences);setMetric('mValid',metrics.validRejections);setMetric('mRate',metrics.rejectionRate,'%');
+      setMetric('mAvgMfe',metrics.averageMfe);setMetric('mMedianMfe',metrics.medianMfe);setMetric('mAvgMae',metrics.averageMae);setMetric('mTime',metrics.averageTimeToMoveMinutes);
+      setMetric('mStatus','VERIFIED');document.getElementById('mCandleCount').textContent=payload.candleCount+' MT5 candles · not mock data';
+      const sessions=result.summaries.bySession||{};const total=Math.max(1,metrics.occurrences);
+      for(const [name,id,countId] of [['ASIA','barAsia','nAsia'],['LONDON','barLondon','nLondon'],['NEW_YORK','barNewYork','nNewYork']]){const count=sessions[name]||0;document.getElementById(id).style.width=(count/total*100)+'%';document.getElementById(countId).textContent=count}
+      document.getElementById('nBullish').textContent=result.summaries.byDirection?.bullish||0;document.getElementById('nBearish').textContent=result.summaries.byDirection?.bearish||0;
+      const best=Object.entries(sessions).sort((a,b)=>b[1]-a[1])[0];document.getElementById('insightTitle').textContent=metrics.occurrences?`${metrics.rejectionRate}% historical rejection rate.`:'No occurrences found.';
+      document.getElementById('insightText').textContent=metrics.occurrences?`${metrics.validRejections} of ${metrics.occurrences} occurrences met the versioned validation rule. Highest occurrence count: ${best?.[0]?.replace('_',' ')||'n/a'}. This is historical evidence, not a trade recommendation.`:'The selected configuration produced no occurrences in the imported sample.';
+      const md=result.methodology;document.getElementById('methodText').textContent=`Touch ${md.toleranceAtr} ATR · Target ${md.targetAtr} ATR · Adverse ${md.stopAtr} ATR · Horizon ${md.horizonCandles} candles`;
+      const rows=result.events.slice(0,500).map(event=>`<tr><td>${new Date(event.timestamp).toLocaleString()}</td><td>${payload.symbol}</td><td>${event.direction.toUpperCase()}</td><td>${event.touchPrice}</td><td>${event.mfe}</td><td>${event.mae}</td><td>${event.timeToMoveCandles===null?'—':event.timeToMoveCandles+' candles'}</td><td>${event.outcome}</td></tr>`).join('');
+      document.getElementById('eventsBody').innerHTML=rows||'<tr class="empty-row"><td colspan="8">NO EVENTS IN THIS VERIFIED SAMPLE</td></tr>';document.getElementById('save').disabled=false;
+    }
     function showLock(message){document.getElementById('loading').classList.add('hide');document.getElementById('lockMessage').textContent=message;document.getElementById('lock').classList.add('show')}
     async function verifyAccess(){
       const {data}=await client.auth.getSession();
@@ -93,8 +108,10 @@
       button.disabled=true;status.textContent='Requesting verified historical research...';
       const value=(id)=>document.getElementById(id).value;
       const payload={study:'ma_rejection',asset:value('asset'),timeframe:value('timeframe'),ma:{type:value('maType'),period:Number(value('period'))},historyDays:Number(value('history')),direction:value('direction')};
-      try{const response=await fetch(BACKEND+'/research/run',{method:'POST',headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},body:JSON.stringify(payload)});const body=await response.json().catch(()=>({}));status.textContent=response.ok?'Research complete.':(body.code==='RESEARCH_PROVIDER_UNAVAILABLE'?'Historical provider not connected — no mock data displayed.':body.error||'Research unavailable.')}catch(_error){status.textContent='Research service unavailable — no mock data displayed.'}finally{button.disabled=false}
+      lastParameters=payload;
+      try{const response=await fetch(BACKEND+'/research/run',{method:'POST',headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},body:JSON.stringify(payload)});const body=await response.json().catch(()=>({}));if(response.ok){renderResearch(body);status.textContent=`Verified research complete · ${body.candleCount} MT5 candles analyzed.`}else{status.textContent=body.code==='INSUFFICIENT_HISTORY'?`Import MT5 history first (${body.candles||0} candles available).`:body.error||'Research unavailable.'}}catch(_error){status.textContent='Research service unavailable — no mock data displayed.'}finally{button.disabled=false}
     });
+    document.getElementById('save').addEventListener('click',async()=>{if(!lastResearch||!lastParameters)return;const button=document.getElementById('save');button.disabled=true;button.textContent='SAVING...';try{const response=await fetch(BACKEND+'/research/save',{method:'POST',headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},body:JSON.stringify({parameters:lastParameters,result:lastResearch})});const body=await response.json();button.textContent=response.ok?'SAVED':'SAVE FAILED';if(!response.ok)document.getElementById('status').textContent=body.error||'Could not save research.'}catch(_error){button.textContent='SAVE FAILED'}finally{setTimeout(()=>{button.disabled=false;button.textContent='SAVE RESEARCH'},1800)}});
     verifyAccess();
   </script>
 </body>
