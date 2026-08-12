@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ORION RESEARCH — Historical Market Intelligence</title>
+  <meta name="description" content="Platinum-exclusive historical market research inside ORION RADAR.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#050607;--panel:#0b0d10;--panel2:#101318;--line:#252a31;--line2:#343a43;--text:#f5f7f8;--muted:#9199a5;--gold:#d5ae5e;--gold2:#f2d28d;--green:#30d98b;--red:#ff5a6f;--radius:16px}
+    *{box-sizing:border-box}html{color-scheme:dark}body{margin:0;background:radial-gradient(circle at 80% -10%,rgba(213,174,94,.12),transparent 32%),var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;min-height:100vh}.mono{font-family:"Share Tech Mono",monospace}.orbit{font-family:Orbitron,sans-serif}.shell{width:min(1600px,100%);margin:auto;padding:0 28px 48px}
+    .topbar{height:72px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:18px;position:sticky;top:0;background:rgba(5,6,7,.9);backdrop-filter:blur(18px);z-index:20}.brand{font:800 15px Orbitron;letter-spacing:.18em}.brand b{color:var(--gold)}.nav{display:flex;align-items:center;gap:10px}.nav a,.ghost{color:#d2d6dc;border:1px solid var(--line);background:#0b0d10;padding:10px 14px;border-radius:10px;text-decoration:none;font:600 11px Orbitron;letter-spacing:.05em}.nav a.active{border-color:rgba(213,174,94,.55);color:var(--gold2)}
+    .hero{padding:48px 0 28px;display:flex;justify-content:space-between;align-items:end;gap:28px}.eyebrow{color:var(--gold);font:700 11px Orbitron;letter-spacing:.2em;margin-bottom:15px}.hero h1{font:800 clamp(32px,5vw,68px) Orbitron;margin:0;letter-spacing:-.04em;line-height:.95}.hero h1 span{color:var(--gold)}.hero p{margin:18px 0 0;color:var(--muted);max-width:670px;line-height:1.65}.badge{border:1px solid rgba(213,174,94,.48);background:rgba(213,174,94,.08);color:var(--gold2);padding:10px 13px;border-radius:999px;font:700 10px Orbitron;letter-spacing:.12em;white-space:nowrap}
+    .notice{display:flex;gap:12px;align-items:center;border:1px solid #31353c;border-radius:12px;background:rgba(255,255,255,.025);color:#bbc1c9;padding:13px 15px;margin-bottom:22px;font-size:12px}.notice strong{color:#fff}.dot{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 16px var(--gold);flex:0 0 auto}
+    .panel{border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.012));overflow:hidden}.panel-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:14px}.title{font:700 12px Orbitron;letter-spacing:.1em}.subtitle{font:12px "Share Tech Mono";color:var(--muted)}
+    .builder{padding:20px;display:grid;grid-template-columns:1.15fr .8fr 1.65fr .8fr .65fr .9fr .85fr auto;gap:12px;align-items:end}.field label{display:block;color:#929aa5;font:10px Orbitron;letter-spacing:.08em;margin:0 0 8px}.field select,.field input{width:100%;height:44px;border:1px solid var(--line2);border-radius:9px;background:#090b0e;color:white;padding:0 11px;font:12px Inter;outline:none}.field select:focus,.field input:focus{border-color:var(--gold)}.run{height:44px;border:1px solid var(--gold);border-radius:9px;background:linear-gradient(135deg,#e8c474,#ad8134);color:#100d07;padding:0 20px;font:800 11px Orbitron;letter-spacing:.06em;cursor:pointer}.run:disabled{opacity:.42;cursor:not-allowed}
+    .state{padding:14px 20px;border-top:1px solid var(--line);font:12px "Share Tech Mono";color:var(--muted);display:flex;justify-content:space-between;gap:14px}.state .ready{color:var(--gold2)}
+    .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.metric{padding:17px 18px;min-height:112px}.metric .k{font:10px Orbitron;letter-spacing:.1em;color:#8f97a2}.metric .v{font:700 30px Orbitron;color:#e9edf1;margin-top:15px}.metric .v.empty{color:#646b74}.metric .s{font:11px "Share Tech Mono";color:#707883;margin-top:7px}.mock-chip{font:700 9px Orbitron;color:var(--gold);border:1px solid rgba(213,174,94,.35);padding:5px 7px;border-radius:6px}
+    .content-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}.insight{padding:23px}.insight-mark{color:var(--gold);font:700 11px Orbitron;letter-spacing:.12em}.insight h2{font:700 21px Orbitron;margin:17px 0 10px}.insight p{color:var(--muted);line-height:1.7;margin:0}.empty-visual{height:188px;margin:18px 0 0;border:1px dashed #353a42;border-radius:12px;display:grid;place-items:center;background:repeating-linear-gradient(90deg,transparent 0,transparent 59px,rgba(255,255,255,.025) 60px),repeating-linear-gradient(0deg,transparent 0,transparent 44px,rgba(255,255,255,.025) 45px);text-align:center;color:#78808b;font:12px "Share Tech Mono"}.empty-visual b{display:block;color:#aeb5bd;margin-bottom:7px;font:600 12px Inter}
+    .summary{padding:22px}.bar-row{display:grid;grid-template-columns:90px 1fr 42px;gap:10px;align-items:center;margin:17px 0;color:#89919b;font:11px "Share Tech Mono"}.track{height:8px;background:#171a1f;border-radius:9px;overflow:hidden}.fill{height:100%;width:0;background:linear-gradient(90deg,#846426,var(--gold2))}.direction{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:25px}.direction div{border:1px solid var(--line);padding:14px;border-radius:10px;color:#8b939e;font:11px Orbitron}.direction b{display:block;color:#666e78;font-size:19px;margin-top:8px}
+    .explorer{margin-top:16px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:820px}th,td{text-align:left;padding:14px 17px;border-bottom:1px solid #20242a}th{font:700 9px Orbitron;letter-spacing:.09em;color:#7f8791}td{font:12px "Share Tech Mono";color:#9ca4ae}.empty-row td{text-align:center;padding:52px 20px;color:#717984}.actions{display:flex;gap:11px;align-items:center}.save{border:1px solid var(--line2);border-radius:9px;background:#14171b;color:#8a919a;padding:10px 14px;font:700 10px Orbitron}.save:disabled{cursor:not-allowed}.future{margin-top:16px;padding:20px}.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.chip{border:1px solid #2c3138;color:#858d98;border-radius:99px;padding:8px 11px;font:10px "Share Tech Mono"}.chip.available{border-color:rgba(213,174,94,.45);color:var(--gold2)}.ask{border-style:dashed}.lock{position:fixed;inset:0;background:rgba(3,4,5,.88);backdrop-filter:blur(9px);z-index:80;display:none;place-items:center;padding:22px}.lock.show{display:grid}.lock-card{width:min(510px,100%);text-align:center;border:1px solid rgba(213,174,94,.45);border-radius:20px;background:#0a0c0f;padding:38px}.crown{font-size:38px}.lock h2{font:800 25px Orbitron;margin:16px 0 10px}.lock p{color:#959da8;line-height:1.6}.lock a{display:inline-block;margin-top:12px;color:#171006;background:var(--gold2);padding:12px 18px;border-radius:9px;text-decoration:none;font:800 10px Orbitron}.loading{position:fixed;inset:0;background:#050607;z-index:90;display:grid;place-items:center;color:var(--gold);font:700 12px Orbitron;letter-spacing:.15em}.loading.hide{display:none}
+    footer{color:#686f78;font:10px "Share Tech Mono";text-align:center;padding:32px 10px 0;line-height:1.7}
+    @media(max-width:1200px){.builder{grid-template-columns:repeat(4,1fr)}.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:760px){.shell{padding:0 15px 34px}.topbar{height:auto;padding:14px 0;align-items:flex-start}.nav{flex-wrap:wrap;justify-content:flex-end}.nav a{padding:8px 10px}.hero{padding-top:32px;display:block}.badge{display:inline-block;margin-top:22px}.builder{grid-template-columns:1fr 1fr}.content-grid{grid-template-columns:1fr}.metrics{gap:9px}.metric{min-height:100px}.metric .v{font-size:23px}.notice{align-items:flex-start}}@media(max-width:480px){.brand{font-size:12px}.nav a:not(.active){display:none}.builder,.metrics{grid-template-columns:1fr}.hero h1{font-size:34px}}
+  </style>
+</head>
+<body>
+  <div id="loading" class="loading">VERIFYING PLATINUM ACCESS...</div>
+  <div id="lock" class="lock" role="dialog" aria-modal="true" aria-labelledby="lockTitle">
+    <div class="lock-card"><div class="crown">♛</div><div class="eyebrow">PLATINUM EXCLUSIVE</div><h2 id="lockTitle">Unlock ORION Research</h2><p id="lockMessage">Historical market intelligence is available to active Platinum members.</p><a href="/">VIEW PLATINUM ACCESS</a></div>
+  </div>
+  <main class="shell">
+    <header class="topbar"><div class="brand">ORION <b>RADAR</b></div><nav class="nav" aria-label="Primary"><a href="/">RADAR</a><a href="/performance.html">PERFORMANCE</a><a href="/research.html" class="active">RESEARCH</a></nav></header>
+    <section class="hero"><div><div class="eyebrow">// HISTORICAL MARKET INTELLIGENCE</div><h1>ORION <span>RESEARCH</span></h1><p>Turn a market question into measurable evidence. Configure a study, inspect every occurrence and evaluate behavior without trade execution.</p></div><div class="badge">♛ PLATINUM EXCLUSIVE</div></section>
+    <div class="notice"><span class="dot"></span><span><strong>Research-only environment.</strong> ORION RADAR remains read-only and never requests MT5 or broker credentials. Results stay empty until the historical research service is connected.</span></div>
+
+    <section class="panel" aria-labelledby="builderTitle"><div class="panel-head"><div><div id="builderTitle" class="title">RESEARCH BUILDER</div><div class="subtitle">V1 · Moving Average Rejection</div></div><span class="mock-chip">NO LIVE RESULTS</span></div>
+      <form id="builder" class="builder">
+        <div class="field"><label for="asset">ASSET</label><select id="asset"><option>US100</option><option>XAUUSD</option><option>EURUSD</option><option>GBPUSD</option><option>BTCUSD</option></select></div>
+        <div class="field"><label for="timeframe">TIMEFRAME</label><select id="timeframe"><option>M5</option><option selected>M15</option><option>M30</option><option>H1</option><option>H4</option></select></div>
+        <div class="field"><label for="study">STUDY</label><select id="study"><option value="ma_rejection">Moving Average Rejection</option><option disabled>MA Breakout · Planned</option><option disabled>First Touch · Planned</option><option disabled>BOS · Planned</option><option disabled>CHOCH · Planned</option><option disabled>FVG · Planned</option><option disabled>SRR · Planned</option><option disabled>Session Breakout · Planned</option><option disabled>Fibonacci · Planned</option><option disabled>Confluence Study · Planned</option></select></div>
+        <div class="field"><label for="maType">MA TYPE</label><select id="maType"><option>EMA</option><option>SMA</option><option>WMA</option></select></div>
+        <div class="field"><label for="period">PERIOD</label><input id="period" type="number" min="2" max="500" value="50"></div>
+        <div class="field"><label for="history">HISTORY</label><select id="history"><option value="30">Last 30 days</option><option value="90" selected>Last 90 days</option><option value="180">Last 180 days</option><option value="365">Last 12 months</option></select></div>
+        <div class="field"><label for="direction">DIRECTION</label><select id="direction"><option value="both">Both</option><option value="bullish">Bullish</option><option value="bearish">Bearish</option></select></div>
+        <button id="run" class="run" type="submit">RUN RESEARCH</button>
+      </form><div class="state"><span id="status">Configuration ready. Historical provider not connected.</span><span class="ready">READ-ONLY</span></div>
+    </section>
+
+    <section class="metrics" aria-label="Research metrics">
+      <article class="panel metric"><div class="k">OCCURRENCES</div><div class="v empty">—</div><div class="s">Awaiting backend result</div></article>
+      <article class="panel metric"><div class="k">VALID REJECTIONS</div><div class="v empty">—</div><div class="s">Awaiting backend result</div></article>
+      <article class="panel metric"><div class="k">REJECTION RATE</div><div class="v empty">—%</div><div class="s">No sample available</div></article>
+      <article class="panel metric"><div class="k">AVERAGE MFE</div><div class="v empty">—</div><div class="s">Unit follows asset</div></article>
+      <article class="panel metric"><div class="k">MEDIAN MFE</div><div class="v empty">—</div><div class="s">Unit follows asset</div></article>
+      <article class="panel metric"><div class="k">AVERAGE MAE</div><div class="v empty">—</div><div class="s">Unit follows asset</div></article>
+      <article class="panel metric"><div class="k">AVG TIME TO MOVE</div><div class="v empty">—</div><div class="s">No timing data</div></article>
+      <article class="panel metric"><div class="k">RESULT STATUS</div><div class="v empty" style="font-size:17px">EMPTY</div><div class="s">Clearly identified placeholder</div></article>
+    </section>
+
+    <section class="content-grid"><article class="panel insight"><div class="insight-mark">// ORION INSIGHT</div><h2>No conclusion yet.</h2><p>Once the backend returns a valid research sample, this area will summarize the strongest observed session, direction and evidence strength. It will describe historical behavior—not tell you to buy or sell.</p><div class="empty-visual"><div><b>INSIGHT EVIDENCE MAP</b>Waiting for verified research output</div></div></article>
+      <article class="panel summary"><div class="title">OCCURRENCES BY SESSION</div><div class="subtitle">Empty distribution</div><div class="bar-row"><span>ASIA</span><div class="track"><div class="fill"></div></div><span>—</span></div><div class="bar-row"><span>LONDON</span><div class="track"><div class="fill"></div></div><span>—</span></div><div class="bar-row"><span>NEW YORK</span><div class="track"><div class="fill"></div></div><span>—</span></div><div class="direction"><div>BULLISH<b>—</b></div><div>BEARISH<b>—</b></div></div></article>
+    </section>
+
+    <section class="panel explorer"><div class="panel-head"><div><div class="title">EVENT EXPLORER</div><div class="subtitle">Every validated occurrence will remain inspectable</div></div><div class="actions"><button id="save" class="save" type="button" disabled>SAVE RESEARCH</button></div></div><div class="table-wrap"><table><thead><tr><th>DATE / TIME</th><th>ASSET</th><th>DIRECTION</th><th>MA TOUCH</th><th>MFE</th><th>MAE</th><th>TIME TO MOVE</th><th>VALIDATION</th></tr></thead><tbody><tr class="empty-row"><td colspan="8">NO EVENTS — RUN A STUDY WHEN THE HISTORICAL PROVIDER IS AVAILABLE</td></tr></tbody></table></div></section>
+
+    <section class="panel future"><div class="panel-head" style="padding:0 0 16px;border:0"><div><div class="title">RESEARCH ROADMAP</div><div class="subtitle">Registry-ready studies; inactive until implemented and validated</div></div></div><div id="studyChips" class="chips"><span class="chip available">MA REJECTION · V1</span><span class="chip">MA BREAKOUT</span><span class="chip">FIRST TOUCH</span><span class="chip">BOS</span><span class="chip">CHOCH</span><span class="chip">FVG</span><span class="chip">SRR</span><span class="chip">SESSION BREAKOUT</span><span class="chip">FIBONACCI</span><span class="chip">CONFLUENCE STUDY</span><span class="chip ask">ASK ORION · PLANNED</span></div></section>
+    <footer>ORION RADAR™ PROVIDES INFORMATIONAL, HISTORICAL RESEARCH ONLY. PAST MARKET BEHAVIOR DOES NOT GUARANTEE FUTURE RESULTS.<br>NO ORDER EXECUTION · NO BROKER ACCESS · NO MT5 CREDENTIALS</footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const BACKEND='https://orion-radar-backend.onrender.com';
+    const SUPABASE_URL='https://eyawmevqfeaeioistrqk.supabase.co';
+    const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmVhc2UiLCJyZWYiOiJleWF3bWV2cWZlYWVpb2lzdHJxayIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzc0MDYxNzAzLCJleHAiOjIwODk2Mzc3MDN9.zFT0i5XKwYEbtF6oWKdBtSNvDI8mo48zy-ucsVTWOoQ';
+    const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+    let accessToken='';
+    function showLock(message){document.getElementById('loading').classList.add('hide');document.getElementById('lockMessage').textContent=message;document.getElementById('lock').classList.add('show')}
+    async function verifyAccess(){
+      const {data}=await client.auth.getSession();
+      accessToken=data.session?.access_token||'';
+      if(!accessToken){showLock('Sign in to your ORION account to verify Platinum access.');return}
+      try{
+        const response=await fetch(BACKEND+'/research/config',{headers:{Authorization:'Bearer '+accessToken},cache:'no-store'});
+        const body=await response.json().catch(()=>({}));
+        if(!response.ok){showLock(body.code==='PLATINUM_REQUIRED'?'ORION Research is available to active Platinum members.':'We could not verify your Research access right now.');return}
+        document.getElementById('loading').classList.add('hide');
+      }catch(_error){showLock('We could not verify your Research access right now. Please try again shortly.')}
+    }
+    document.getElementById('builder').addEventListener('submit',async(event)=>{
+      event.preventDefault();
+      const button=document.getElementById('run');const status=document.getElementById('status');
+      button.disabled=true;status.textContent='Requesting verified historical research...';
+      const value=(id)=>document.getElementById(id).value;
+      const payload={study:'ma_rejection',asset:value('asset'),timeframe:value('timeframe'),ma:{type:value('maType'),period:Number(value('period'))},historyDays:Number(value('history')),direction:value('direction')};
+      try{const response=await fetch(BACKEND+'/research/run',{method:'POST',headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},body:JSON.stringify(payload)});const body=await response.json().catch(()=>({}));status.textContent=response.ok?'Research complete.':(body.code==='RESEARCH_PROVIDER_UNAVAILABLE'?'Historical provider not connected — no mock data displayed.':body.error||'Research unavailable.')}catch(_error){status.textContent='Research service unavailable — no mock data displayed.'}finally{button.disabled=false}
+    });
+    verifyAccess();
+  </script>
+</body>
+</html>
