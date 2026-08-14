@@ -857,7 +857,7 @@
           <div id="feedStatus" class="feed-status waiting">Feed status: waiting for live signals</div>
         </div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
-          <a href="/research.html" class="btn logout-mini" style="display:grid;place-items:center;text-decoration:none;border:1px solid #d5ae5e;background:#15130e;color:#f2d28d">Research</a>
+          <a class='btn logout-mini' href='/research' style='display:grid;place-items:center;text-decoration:none;border:1px solid #d5ae5e;background:#15130e;color:#f2d28d'>Research</a>
           <button id="logoutTopBtn" class="btn btn-red logout-mini" type="button">Logout</button>
         </div>
       </div>
@@ -1235,7 +1235,6 @@
 
       async function enterAuthenticatedApp(session) {
         fillUserBox(session);
-        showDashboard();
         try {
           await fetch(BACKEND_URL + '/claim-entitlement', {
             method: 'POST',
@@ -1250,15 +1249,22 @@
           const plan = String(statusData?.subscription?.plan || '').toLowerCase();
           const status = String(statusData?.subscription?.status || '').toLowerCase();
           if (statusResp.ok && ['active', 'trialing'].includes(status) && PLAN_DATA[plan]) {
-            renderPlan(plan);
-            startSignalsPolling();
-            startMarketPolling();
+            window.location.replace('/dashboard.html');
             return true;
           }
-        } catch (_) {}
-        stopSignalsPolling();
-        startMarketPolling();
-        showMessage('Choose a plan to activate your real-time ORION access.', 'info');
+          if (statusResp.status === 401 || statusResp.status === 403) {
+            await supabase.auth.signOut();
+            showAuthSection(loginSection);
+            showMessage('Your session expired. Please sign in again.', 'info');
+            return false;
+          }
+          window.location.replace('/plans.html');
+          return false;
+        } catch (error) {
+          console.error('[AUTH] Subscription check failed:', error);
+          showAuthSection(loginSection);
+          showMessage('Could not verify your subscription. Please try again.', 'err');
+        }
         return false;
       }
 
