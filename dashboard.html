@@ -1325,7 +1325,7 @@ body[data-orion-side="SELL"]{--orion-active:#ff3558;--orion-active-soft:rgba(255
       <!-- Bronze/Silver locked -->
       <div id="notifLocked" style="display:none;min-height:70px;align-items:center;justify-content:center;flex-direction:column;gap:8px">
         <span style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px">🔒 NOTIFICATIONS AVAILABLE FROM GOLD PLAN</span>
-        <a href="/plans.html" style="font-family:var(--display);font-size:8px;color:var(--green);border:1px solid rgba(0,232,122,0.2);padding:4px 12px;border-radius:3px;text-decoration:none;letter-spacing:1px">UPGRADE PLAN →</a>
+        <a href='/plans' style='font-family:var(--display);font-size:8px;color:var(--green);border:1px solid rgba(0,232,122,0.2);padding:4px 12px;border-radius:3px;text-decoration:none;letter-spacing:1px'>UPGRADE PLAN →</a>
       </div>
       <!-- Gold+: site alerts -->
       <div id="notifSite" style="display:none">
@@ -2955,7 +2955,8 @@ document.addEventListener('DOMContentLoaded', async function(){
   loadSignals(); signalsPoller = setInterval(loadSignals, 15000);
   loadMarket();  marketPoller  = setInterval(loadMarket,  30000);
 
-  sb.auth.onAuthStateChange(ev => {
+  sb.auth.onAuthStateChange((ev, nextSession) => {
+    if (nextSession) session = nextSession;
     if (ev === 'SIGNED_OUT') {
       clearInterval(signalsPoller); clearInterval(marketPoller);
       window.location.href = '/';
@@ -3365,14 +3366,11 @@ document.addEventListener('DOMContentLoaded', async function(){
       <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:#3d6b52;
         letter-spacing:1.5px;line-height:1.8;margin-bottom:10px;">
         © 2026 ORION RADAR™. All rights reserved. &nbsp;|&nbsp;
-        <a href="/terms.html" style="color:#6b9a78;text-decoration:none;transition:color .13s"
-          onmouseover="this.style.color='#00e87a'" onmouseout="this.style.color='#6b9a78'">Terms of Service</a>
+        <a href='/terms' onmouseout='this.style.color=\'#6b9a78\'' onmouseover='this.style.color=\'#00e87a\'' style='color:#6b9a78;text-decoration:none;transition:color .13s'>Terms of Service</a>
         &nbsp;|&nbsp;
-        <a href="/privacy.html" style="color:#6b9a78;text-decoration:none;transition:color .13s"
-          onmouseover="this.style.color='#00e87a'" onmouseout="this.style.color='#6b9a78'">Privacy Policy</a>
+        <a href='/privacy' onmouseout='this.style.color=\'#6b9a78\'' onmouseover='this.style.color=\'#00e87a\'' style='color:#6b9a78;text-decoration:none;transition:color .13s'>Privacy Policy</a>
         &nbsp;|&nbsp;
-        <a href="/refund.html" style="color:#6b9a78;text-decoration:none;transition:color .13s"
-          onmouseover="this.style.color='#00e87a'" onmouseout="this.style.color='#6b9a78'">Refund Policy</a>
+        <a href='/refund' onmouseout='this.style.color=\'#6b9a78\'' onmouseover='this.style.color=\'#00e87a\'' style='color:#6b9a78;text-decoration:none;transition:color .13s'>Refund Policy</a>
       </div>
       <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:#2a4a38;letter-spacing:1px;line-height:1.6;">
         ORION RADAR™ is not a registered investment advisor. All signals are for informational purposes only.<br>
@@ -3686,7 +3684,10 @@ async function orionLoadChart(sym, tf, sig) {
                    'M15':'M15','M30':'M30','H1':'H1','H4':'H4','D':'D','W':'W' };
   const fetchTf = TF_MAP[tf] || 'M5';
   try {
-    const res = await fetch(`${BACKEND_URL}/ohlcv?symbol=${encodeURIComponent(sym)}&tf=${encodeURIComponent(fetchTf)}`, { cache:'no-cache' });
+    const res = await fetch(`${BACKEND_URL}/ohlcv?symbol=${encodeURIComponent(sym)}&tf=${encodeURIComponent(fetchTf)}`, {
+      cache:'no-cache',
+      headers: session?.access_token ? {'Authorization':'Bearer '+session.access_token} : {}
+    });
     if (res.ok) {
       const data = await res.json();
       if (data.candles?.length) candles = data.candles;
@@ -3696,7 +3697,10 @@ async function orionLoadChart(sym, tf, sig) {
   // If still no candles, try M5 as last resort
   if (!candles.length && fetchTf !== 'M5') {
     try {
-      const res2 = await fetch(`${BACKEND_URL}/ohlcv?symbol=${encodeURIComponent(sym)}&tf=M5`, { cache:'no-cache' });
+      const res2 = await fetch(`${BACKEND_URL}/ohlcv?symbol=${encodeURIComponent(sym)}&tf=M5`, {
+        cache:'no-cache',
+        headers: session?.access_token ? {'Authorization':'Bearer '+session.access_token} : {}
+      });
       if (res2.ok) { const d2 = await res2.json(); if (d2.candles?.length) candles = d2.candles; }
     } catch(e) {}
   }
