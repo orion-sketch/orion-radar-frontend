@@ -2178,7 +2178,10 @@ async function loadTgStatus() {
   const notConnected = document.getElementById('tgNotConnected');
   if (!lbl) return;
   try {
-    const r = await fetch(BACKEND_URL + '/telegram-status/' + session.user.id, {cache:'no-store'});
+    const r = await fetch(BACKEND_URL + '/telegram-status/' + encodeURIComponent(session.user.id), {
+      cache:'no-store',
+      headers:{'Authorization':'Bearer '+session.access_token}
+    });
     const d = await r.json();
     if (d.connected) {
       lbl.textContent = 'CONNECTED'; lbl.style.color = 'var(--green)';
@@ -2207,7 +2210,10 @@ function initTgButtons() {
       this.textContent = 'CONNECTING...';
       try {
         const r = await fetch(BACKEND_URL + '/register-telegram', {
-          method:'POST', headers:{'Content-Type':'application/json'},
+          method:'POST', headers:{
+            'Content-Type':'application/json',
+            'Authorization':'Bearer '+session.access_token
+          },
           body: JSON.stringify({ userId: session.user.id, chatId })
         });
         const d = await r.json();
@@ -2228,7 +2234,10 @@ function initTgButtons() {
       this.textContent = 'DISCONNECTING...';
       try {
         await fetch(BACKEND_URL + '/unregister-telegram', {
-          method:'POST', headers:{'Content-Type':'application/json'},
+          method:'POST', headers:{
+            'Content-Type':'application/json',
+            'Authorization':'Bearer '+session.access_token
+          },
           body: JSON.stringify({ userId: session.user.id })
         });
         loadTgStatus();
@@ -2879,7 +2888,16 @@ document.addEventListener('DOMContentLoaded', async function(){
 
   setLoad('VERIFYING CLEARANCE...');
   try{
-    const r = await fetch(BACKEND_URL+'/subscription-status/'+s.user.id,{cache:'no-store'});
+    const r = await fetch(BACKEND_URL+'/subscription-status/'+encodeURIComponent(s.user.id),{
+      cache:'no-store',
+      headers:{'Authorization':'Bearer '+s.access_token}
+    });
+    if (r.status === 401 || r.status === 403) {
+      await sb.auth.signOut();
+      window.location.href='/';
+      return;
+    }
+    if (!r.ok) throw new Error('Subscription check failed: '+r.status);
     const d = await r.json();
     const sub = d.subscription || {};
     if (!sub.plan) {
@@ -2893,8 +2911,9 @@ document.addEventListener('DOMContentLoaded', async function(){
     const pb = document.getElementById('planBadge');
     pb.textContent = currentPlan.toUpperCase();
     pb.className = 'plan-chip ' + currentPlan;
-  }catch(_){
-    currentPlan = 'bronze';
+  }catch(error){
+    console.error('[AUTH] Subscription check failed:', error);
+    currentPlan = 'free';
     document.getElementById('userName').textContent = s.user.email || '';
   }
 
@@ -3151,7 +3170,10 @@ document.addEventListener('DOMContentLoaded', async function(){
     this.textContent = 'LOADING...';
     try{
       const r = await fetch(BACKEND_URL+'/create-customer-portal-session',{
-        method:'POST', headers:{'Content-Type':'application/json'},
+        method:'POST', headers:{
+          'Content-Type':'application/json',
+          'Authorization':'Bearer '+session.access_token
+        },
         body: JSON.stringify({userId: session.user.id})
       });
       const d = await r.json();
