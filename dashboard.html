@@ -3006,7 +3006,13 @@ document.addEventListener('DOMContentLoaded', async function(){
     const input = document.getElementById('symSearchInput');
     const sym = (input.value||'').trim().toUpperCase();
     if (!sym) return;
-    if (!symCanChange) { showUpgradeModal('Asset Change', currentPlan); return; }
+    if (!symCanChange && currentPlan !== 'platinum') {
+      const message = symNextAt
+        ? 'Asset change available after ' + new Date(symNextAt).toLocaleString()
+        : 'Asset change is temporarily unavailable.';
+      showToast(message, 'warn');
+      return;
+    }
     if (mySymbols.includes(sym)) { input.value=''; return; }
     if (mySymbols.length >= maxSymbols()) {
       showUpgradeModal('More Assets', currentPlan === 'bronze' ? 'silver' : currentPlan === 'silver' ? 'gold' : 'platinum');
@@ -3020,13 +3026,23 @@ document.addEventListener('DOMContentLoaded', async function(){
         body: JSON.stringify({symbols: newList})
       });
       const d = await r.json();
-      if (d.ok) { mySymbols = d.allowedSymbols; symCanChange = false; symNextAt = d.nextChangeAt; renderSymChips(); input.value=''; }
+      if (d.ok) {
+        mySymbols = d.allowedSymbols || newList;
+        input.value = '';
+        await loadMySymbols();
+      }
       else if (d.error === 'Cooldown active.') { symCanChange = false; symNextAt = d.nextChangeAt; renderSymChips(); }
     } catch(e) { console.error('[SYM]', e.message); }
   };
 
   window.symRemove = async function(sym) {
-    if (!symCanChange) { showUpgradeModal('Asset Change', currentPlan); return; }
+    if (!symCanChange && currentPlan !== 'platinum') {
+      const message = symNextAt
+        ? 'Asset change available after ' + new Date(symNextAt).toLocaleString()
+        : 'Asset change is temporarily unavailable.';
+      showToast(message, 'warn');
+      return;
+    }
     const newList = mySymbols.filter(s => s !== sym);
     try {
       const r = await fetch(BACKEND_URL+'/set-symbols', {
@@ -3035,12 +3051,12 @@ document.addEventListener('DOMContentLoaded', async function(){
         body: JSON.stringify({symbols: newList})
       });
       const d = await r.json();
-      if (d.ok) { mySymbols = d.allowedSymbols; symCanChange = false; symNextAt = d.nextChangeAt; renderSymChips(); }
+      if (d.ok) {
+        mySymbols = d.allowedSymbols || newList;
+        await loadMySymbols();
+      }
     } catch(e) { console.error('[SYM]', e.message); }
   };
-
-  // Load symbols on init
-  if (canUse('bronze')) loadMySymbols();
 
   // Load symbols on init
   if (canUse('bronze')) loadMySymbols();
